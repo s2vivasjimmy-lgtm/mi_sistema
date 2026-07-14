@@ -100,14 +100,16 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # Mapa con altura de 600px y habilitación de pantalla completa
+    # Mapa con altura de 600px
     st.components.v1.html("""
         <iframe 
             src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
             width="100%" 
             height="600" 
             frameborder="0" 
-            style="border:0;" 
-            allowfullscreen>
+            style="border:0;">
         </iframe>
     """, height=610)
+    
+    # Botón de enlace para pantalla completa (abre en nueva pestaña)
+    st.link_button("🌐 Abrir Mapa en Pantalla Completa", "https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg")
