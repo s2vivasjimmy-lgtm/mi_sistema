@@ -4,9 +4,14 @@ import time
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS ajustado para mayor claridad y uniformidad
+# CSS para ocultar la barra superior, tarjetas, cintillo y animación del título
 st.markdown("""
     <style>
+    /* Ocultar elementos de la interfaz de Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
     .card-item {
         background-color: #262730;
         padding: 20px;
