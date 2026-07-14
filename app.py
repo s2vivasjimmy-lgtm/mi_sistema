@@ -4,8 +4,9 @@ import time
 
 st.set_page_config(page_title="Sala Situacional", layout="wide")
 
-# CSS optimizado
+# Usamos FontAwesome para garantizar que los iconos se vean bien en cualquier navegador
 st.markdown("""
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
     .card-item {
         background-color: #1c202a !important;
@@ -18,11 +19,11 @@ st.markdown("""
         height: 75px !important;
     }
     .icon-area { 
-        font-size: 32px !important; 
+        font-size: 24px !important; 
         margin-right: 15px !important; 
         min-width: 40px !important; 
         text-align: center !important; 
-        display: inline-block !important;
+        color: #4a90e2 !important;
     }
     .text-area { display: flex !important; flex-direction: column !important; justify-content: center !important; }
     .label-style { color: #808495 !important; font-size: 10px !important; text-transform: uppercase !important; font-weight: bold !important; }
@@ -34,26 +35,33 @@ st.title("🛡️ Monitoreo de Gestión de Salud")
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
-# Diccionario de iconos
+# Diccionario de clases de FontAwesome
 iconos = {
-    "ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀",
-    "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌",
-    "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"
+    "ATENCIONES": "fas fa-clipboard-list",
+    "ALTAS MÉDICAS": "fas fa-check-circle",
+    "FALLECIDOS": "fas fa-heart-broken",
+    "TRASLADOS": "fas fa-ambulance",
+    "CAMAS OCUPADAS": "fas fa-bed",
+    "CAMAS DISPONIBLES": "fas fa-procedures",
+    "HOSPITALIZACIONES": "fas fa-hospital",
+    "INMUNIZACIONES": "fas fa-syringe",
+    "INTERVENCIONES Q.": "fas fa-手术刀" # Nota: Usaremos fa-cut para bisturí
 }
+# Corrección rápida para el icono de intervención
+iconos["INTERVENCIONES Q."] = "fas fa-cut"
 
 try:
     df = pd.read_csv(f"{url}&nocache={time.time()}")
     cols = st.columns(3)
     
     for i, col in enumerate(df.columns):
-        icono = iconos.get(col, "📊")
+        clase_icono = iconos.get(col, "fas fa-chart-bar")
         valor = df[col].iloc[0]
         
         with cols[i % 3]:
-            # Forzamos el renderizado del icono como HTML estricto
             st.markdown(f"""
                 <div class="card-item">
-                    <span class="icon-area">{icono}</span>
+                    <i class="{clase_icono} icon-area"></i>
                     <div class="text-area">
                         <div class="label-style">{col}</div>
                         <div class="value-style">{valor}</div>
