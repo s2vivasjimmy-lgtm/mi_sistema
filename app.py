@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
 # --- CSS ---
 st.markdown("""
@@ -18,20 +18,23 @@ st.markdown("""
 
 ARCHIVO_DATOS = "mis_datos.csv"
 
-# --- FUNCIONES ---
 def inicializar_datos():
     if not os.path.exists(ARCHIVO_DATOS):
         data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
                 "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
-                "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"]}
+                "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCiones Q.": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_DATOS, index=False)
 
 inicializar_datos()
 
-# --- BARRA DE ACCESO FLOTANTE ---
-st.sidebar.markdown("### 🛠️ Configuración")
-with st.sidebar.popover("🔐 Acceso Administrativo"):
-    st.write("Ingrese credenciales para editar:")
+# --- INTERFAZ PRINCIPAL ---
+if os.path.exists("logo_institucional.jpg"):
+    st.image("logo_institucional.jpg", use_container_width=True)
+
+st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
+
+# --- VENTANA DE ACCESO ADMINISTRATIVO (EN EL CENTRO) ---
+with st.expander("🔐 Panel Administrativo"):
     user = st.text_input("Usuario")
     pwd = st.text_input("Contraseña", type="password")
     if st.button("Ingresar"):
@@ -41,10 +44,7 @@ with st.sidebar.popover("🔐 Acceso Administrativo"):
         else:
             st.error("Credenciales incorrectas")
 
-# --- RENDERIZADO PRINCIPAL ---
-st.image("logo_institucional.jpg", use_container_width=True)
-st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
-
+# --- DATOS ---
 df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
 iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
 
@@ -58,6 +58,7 @@ for i, col in enumerate(df.columns):
             </div>
         """, unsafe_allow_html=True)
 
+# --- MAPA ---
 st.subheader("📍 Mapa de Afectaciones")
 st.components.v1.html("""
     <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="500" frameborder="0" style="border:0;" allowfullscreen></iframe>
