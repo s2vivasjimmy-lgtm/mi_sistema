@@ -18,11 +18,15 @@ st.markdown("""
 
 ARCHIVO_DATOS = "mis_datos.csv"
 
+# --- LÓGICA DE INICIALIZACIÓN ---
+if "admin_logueado" not in st.session_state:
+    st.session_state.admin_logueado = False
+
 def inicializar_datos():
     if not os.path.exists(ARCHIVO_DATOS):
         data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
                 "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
-                "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCiones Q.": ["0"]}
+                "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_DATOS, index=False)
 
 inicializar_datos()
@@ -33,16 +37,22 @@ if os.path.exists("logo_institucional.jpg"):
 
 st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
 
-# --- VENTANA DE ACCESO ADMINISTRATIVO (EN EL CENTRO) ---
+# --- VENTANA DE ACCESO ADMINISTRATIVO ---
 with st.expander("🔐 Panel Administrativo"):
-    user = st.text_input("Usuario")
-    pwd = st.text_input("Contraseña", type="password")
-    if st.button("Ingresar"):
-        if user == "Admin" and pwd == "diges12..":
-            st.session_state.admin_logueado = True
+    if not st.session_state.admin_logueado:
+        user = st.text_input("Usuario")
+        pwd = st.text_input("Contraseña", type="password")
+        if st.button("Ingresar"):
+            if user == "Admin" and pwd == "diges12..":
+                st.session_state.admin_logueado = True
+                st.rerun()
+            else:
+                st.error("Credenciales incorrectas")
+    else:
+        st.success("Administrador conectado.")
+        if st.button("Cerrar Sesión"):
+            st.session_state.admin_logueado = False
             st.rerun()
-        else:
-            st.error("Credenciales incorrectas")
 
 # --- DATOS ---
 df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
@@ -64,8 +74,8 @@ st.components.v1.html("""
     <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="500" frameborder="0" style="border:0;" allowfullscreen></iframe>
 """, height=510)
 
-# --- PANEL DE EDICIÓN (VISIBLE SOLO SI ESTÁ LOGUEADO) ---
-if st.session_state.get("admin_logueado", False):
+# --- PANEL DE EDICIÓN ---
+if st.session_state.admin_logueado:
     st.markdown("---")
     st.header("📝 Panel de Edición de Registros")
     df_actual = pd.read_csv(ARCHIVO_DATOS, dtype=str)
@@ -73,5 +83,5 @@ if st.session_state.get("admin_logueado", False):
     
     if st.button("Guardar Cambios"):
         df_editado.to_csv(ARCHIVO_DATOS, index=False)
-        st.success("¡Datos guardados correctamente!")
+        st.success("¡Datos actualizados exitosamente!")
         st.rerun()
