@@ -100,16 +100,30 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # Mapa incrustado (solo para visualización rápida)
+    # --- MAPA CON MODAL ---
+    @st.dialog("Mapa de Afectaciones - Pantalla Completa", width="large")
+    def abrir_mapa_modal():
+        st.components.v1.html("""
+            <iframe 
+                src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
+                width="100%" 
+                height="700px" 
+                frameborder="0" 
+                style="border:0;">
+            </iframe>
+        """, height=720)
+
+    # Vista previa del mapa
     st.components.v1.html("""
         <iframe 
             src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
             width="100%" 
-            height="600" 
+            height="400" 
             frameborder="0" 
             style="border:0;">
         </iframe>
-    """, height=610)
-    
-    # Botón de enlace corregido para abrir la vista completa de Google My Maps
-    st.link_button("🌐 ABRIR MAPA EN PANTALLA COMPLETA", "https://www.google.com/maps/d/viewer?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg")
+    """, height=410)
+
+    # Botón de activación
+    if st.button("🌐 ABRIR MAPA EN PANTALLA COMPLETA"):
+        abrir_mapa_modal()
