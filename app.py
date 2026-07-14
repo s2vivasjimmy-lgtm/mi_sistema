@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 # Configuración de página
 st.set_page_config(page_title="Sala Situacional", layout="wide")
@@ -56,7 +57,8 @@ for i in range(0, 9, 3):
                 </div>
             """, unsafe_allow_html=True)
 
-# MAPA INTEGRADO
+# MAPA INTEGRADO CON REFRESH FORZADO
 st.subheader("📍 Mapa de Afectaciones en Tiempo Real")
-# Link configurado para incrustación automática
-st.components.v1.iframe("https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg", width=1200, height=500)
+# La variable 't' con time.time() obliga al navegador a recargar el mapa
+url_mapa = f"https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&t={time.time()}"
+st.components.v1.iframe(url_mapa, width=1200, height=500)
