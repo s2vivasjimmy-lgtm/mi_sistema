@@ -5,7 +5,7 @@ import os
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS actualizado con animación de derecha a izquierda continua
+# CSS actualizado: añadimos .cintillo-container img para controlar la altura
 st.markdown("""
     <style>
     /* Ocultar elementos de la interfaz de Streamlit */
@@ -25,6 +25,13 @@ st.markdown("""
         margin-left: -50vw;
         margin-right: -50vw;
         margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    /* MODIFICACIÓN: Ajuste de altura del logo */
+    .cintillo-container img {
+        max-height: 120px; /* Cambia este valor para hacerlo más delgado (ej. 100px) o grueso (ej. 150px) */
+        width: auto !important;
     }
     
     .card-item {
@@ -65,11 +72,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Carga del cintillo a ancho completo
+# Carga del cintillo (hemos quitado use_container_width=True para que el CSS tome el control de la altura)
 ruta_logo = "logo_institucional.jpg"
 if os.path.exists(ruta_logo):
     st.markdown('<div class="cintillo-container">', unsafe_allow_html=True)
-    st.image(ruta_logo, use_container_width=True)
+    st.image(ruta_logo) 
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Título con movimiento
