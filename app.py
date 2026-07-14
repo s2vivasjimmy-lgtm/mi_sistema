@@ -1,16 +1,19 @@
 import streamlit as st
 import pandas as pd
 import time
+import os # Necesario para verificar la existencia del archivo
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS para ocultar la barra superior, tarjetas, cintillo y animación del título
+# CSS para las tarjetas, el cintillo y la nueva animación del título
 st.markdown("""
     <style>
     /* Ocultar elementos de la interfaz de Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    .cintillo-img { width: 100%; max-width: 1000px; display: block; margin: 0 auto 20px auto; }
     
     .card-item {
         background-color: #262730;
@@ -27,15 +30,13 @@ st.markdown("""
     .label-style { color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
     .value-style { color: #ffffff; font-size: 26px; font-weight: 800; }
     
-    /* Animación del Título */
     .moving-title {
         overflow: hidden;
         white-space: nowrap;
         font-size: 2.5rem;
         font-weight: 900;
         color: #ffffff;
-        margin-bottom: 30px;
-        background-color: transparent;
+        margin-bottom: 20px;
         border-bottom: 2px solid #4a90e2;
         padding-bottom: 10px;
     }
@@ -53,6 +54,13 @@ st.markdown("""
 
 # Título con movimiento
 st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
+
+# Carga segura del cintillo
+ruta_logo = "images/logo_institucional.png"
+if os.path.exists(ruta_logo):
+    st.image(ruta_logo, use_container_width=False, width=1000)
+else:
+    st.markdown(f"*(Imagen no encontrada en: {ruta_logo})*", unsafe_allow_html=True)
 
 # Cargamos los datos
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
