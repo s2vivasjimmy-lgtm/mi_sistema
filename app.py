@@ -4,7 +4,7 @@ import time
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS exacto para mantener tu interfaz original + animación del cintillo
+# CSS corregido para visualización garantizada
 st.markdown("""
     <style>
     .card-item {
@@ -22,10 +22,10 @@ st.markdown("""
     .label-style { color: #808495; font-size: 10px; text-transform: uppercase; font-weight: bold; }
     .value-style { color: #ffffff; font-size: 22px; font-weight: bold; }
     
-    /* Estilos del cintillo */
-    .cintillo-container { width: 100%; overflow: hidden; background-color: white; padding: 10px 0; border-radius: 8px; margin-bottom: 20px; }
-    .cintillo-content { display: flex; white-space: nowrap; animation: slide 25s linear infinite; }
-    .cintillo-content img { height: 60px; margin: 0 50px; }
+    /* Corrección del Cintillo */
+    .cintillo-container { width: 100%; height: 70px; overflow: hidden; background-color: white; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
+    .cintillo-content { display: flex; align-items: center; white-space: nowrap; height: 100%; animation: slide 20s linear infinite; }
+    .cintillo-content img { height: 50px; width: auto; display: block; margin: 0 40px; }
     @keyframes slide {
         0% { transform: translateX(100%); }
         100% { transform: translateX(-100%); }
@@ -35,10 +35,11 @@ st.markdown("""
 
 st.title("Autoridad Única de Salud Militar del Estado La Guaira")
 
-# Cintillo de logos institucional
+# Cintillo con contenedor de altura fija para asegurar el renderizado
 st.markdown("""
     <div class="cintillo-container">
         <div class="cintillo-content">
+            <img src="https://i.imgur.com/L8ZzWn4.png">
             <img src="https://i.imgur.com/L8ZzWn4.png">
             <img src="https://i.imgur.com/L8ZzWn4.png">
         </div>
@@ -70,7 +71,6 @@ try:
                     </div>
                 </div>
             """, unsafe_allow_html=True)
-            
 except:
     st.error("Error al cargar datos.")
 
