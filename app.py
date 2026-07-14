@@ -14,6 +14,11 @@ st.markdown("""
     .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; }
     .card-value { font-size: 20px; font-weight: 700; }
     .floating-btn-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    
+    /* Efecto de marquesina */
+    .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; }
+    .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; }
+    @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 """, unsafe_allow_html=True)
 
@@ -50,8 +55,7 @@ if st.session_state.admin_logueado:
             st.rerun()
 
 else:
-    # --- VISTA PÚBLICA (LO QUE SE VE EN LA FOTO) ---
-    # Botón flotante para acceder
+    # --- VISTA PÚBLICA ---
     with st.container():
         st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
         with st.popover("🔐 ACCESO ADMIN"):
@@ -65,11 +69,17 @@ else:
                     st.error("Credenciales incorrectas")
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Contenido principal de la foto
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
 
-    st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
+    # Título con efecto de movimiento
+    st.markdown("""
+        <div class="marquee-container">
+            <h2 class="marquee-text" style="color:white;">
+                AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA
+            </h2>
+        </div>
+    """, unsafe_allow_html=True)
 
     df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
     iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
