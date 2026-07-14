@@ -34,16 +34,8 @@ if check_password():
         <style>
         .stApp { background-color: #0E1117 !important; }
         #MainMenu, footer, header { visibility: hidden !important; }
-        .full-width-logo {
-            width: 100vw; position: relative; left: 50%; right: 50%; 
-            margin-left: -50vw; margin-right: -50vw; margin-bottom: 25px;
-        }
-        .moving-title { 
-            width: 100%; overflow: hidden; white-space: nowrap; 
-            font-size: 1.8rem; font-weight: 700; color: #ffffff; 
-            margin: 30px 0; border-top: 1px solid #4a90e2; 
-            border-bottom: 1px solid #4a90e2; padding: 12px 0; 
-        }
+        .full-width-logo { width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; margin-bottom: 25px; }
+        .moving-title { width: 100%; overflow: hidden; white-space: nowrap; font-size: 1.8rem; font-weight: 700; color: #ffffff; margin: 30px 0; border-top: 1px solid #4a90e2; border-bottom: 1px solid #4a90e2; padding: 12px 0; }
         .moving-title span { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
         </style>
@@ -60,14 +52,15 @@ if check_password():
     url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
     iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
 
+    # --- CARGA DE DATOS CORREGIDA ---
     try:
-        df = pd.read_csv(f"{url}&nocache={time.time()}")
+        # dtype=str obliga a leer todo como texto para evitar problemas con puntos y decimales
+        df = pd.read_csv(f"{url}&nocache={time.time()}", dtype=str)
         cols = st.columns(3)
         for i, col in enumerate(df.columns):
             icono = iconos.get(col, "📊")
             valor = df[col].iloc[0]
             with cols[i % 3]:
-                # FORMA ROBUSTA: Icono e información integrados directamente
                 st.markdown(f"""
                     <div style="background-color: #1a1c23; padding: 20px; border-radius: 12px; border: 1px solid #31333f; margin-bottom: 20px; color: white;">
                         <div style="font-size: 14px; text-transform: uppercase; color: #b0b3b8; letter-spacing: 1px;">
@@ -78,7 +71,7 @@ if check_password():
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-    except:
+    except Exception as e:
         st.error("Error al cargar los datos.")
 
     st.subheader("📍 Mapa de Afectaciones")
