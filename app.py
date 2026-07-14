@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
 import time
-import os # Necesario para verificar la existencia del archivo
+import os
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS para las tarjetas, el cintillo y la nueva animación del título
+# CSS ajustado para el cintillo a ancho completo y limpieza de espacio superior
 st.markdown("""
     <style>
     /* Ocultar elementos de la interfaz de Streamlit */
@@ -13,7 +13,19 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    .cintillo-img { width: 100%; max-width: 1000px; display: block; margin: 0 auto 20px auto; }
+    /* Eliminar el espacio superior por defecto de Streamlit */
+    .block-container { padding-top: 0rem; }
+    
+    /* Contenedor para que el cintillo sea full-width */
+    .cintillo-container {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        margin-bottom: 20px;
+    }
     
     .card-item {
         background-color: #262730;
@@ -52,13 +64,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Título con movimiento
-st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
-
-# Carga segura del cintillo
+# Carga del cintillo a ancho completo
 ruta_logo = "logo_institucional.jpg"
 if os.path.exists(ruta_logo):
-    st.image(ruta_logo, use_container_width=False, width=1000)
+    st.markdown('<div class="cintillo-container">', unsafe_allow_html=True)
+    st.image(ruta_logo, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# Título con movimiento
+st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
 
 # Cargamos los datos
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
