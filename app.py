@@ -8,20 +8,15 @@ st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sideba
 # --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
-    /* Eliminar espacio superior */
     .block-container { padding-top: 0rem !important; }
-    
     .stApp { background-color: #0E1117 !important; }
     #MainMenu, footer, header { visibility: hidden !important; }
     
-    /* Tarjetas compactas */
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
     .card-value { font-size: 20px; font-weight: 800; color: #ffffff; }
-    
     .floating-btn-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
     
-    /* Marquesina ajustada */
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
     .marquee-text { display: inline-block; font-size: 24px; animation: marquee 15s linear infinite; margin: 0; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
@@ -100,9 +95,8 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # --- MAPA CON PANTALLA COMPLETA NATIVA ---
-    # Al incluir 'allowfullscreen' en el iframe, el botón de pantalla completa 
-    # de Google Maps debe aparecer y funcionar correctamente.
+    # --- MAPA CON CONFIGURACIÓN DE SEGURIDAD REFORZADA ---
+    # Añadimos sandbox para permitir que el botón nativo de Google ejecute la acción correcta
     st.components.v1.html("""
         <iframe 
             src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
@@ -110,6 +104,7 @@ else:
             height="600" 
             frameborder="0" 
             style="border:0;" 
-            allowfullscreen>
+            allowfullscreen 
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
         </iframe>
     """, height=610)
