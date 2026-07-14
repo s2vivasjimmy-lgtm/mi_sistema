@@ -62,12 +62,26 @@ if check_password():
 
     try:
         df = pd.read_csv(f"{url}&nocache={time.time()}")
+        
+        # --- RESUMEN ESTADÍSTICO ---
+        st.subheader("📈 Resumen Estadístico")
+        camas_oc = df["CAMAS OCUPADAS"].iloc[0]
+        camas_dis = df["CAMAS DISPONIBLES"].iloc[0]
+        total_camas = camas_oc + camas_dis
+        porcentaje_ocupacion = (camas_oc / total_camas) * 100 if total_camas > 0 else 0
+
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Total Atenciones", f"{df['ATENCIONES'].iloc[0]:,}")
+        m2.metric("Capacidad Total Camas", f"{total_camas}")
+        m3.metric("Ocupación de Camas", f"{porcentaje_ocupacion:.1f}%")
+        st.markdown("---")
+        # ---------------------------
+
         cols = st.columns(3)
         for i, col in enumerate(df.columns):
             icono = iconos.get(col, "📊")
             valor = df[col].iloc[0]
             with cols[i % 3]:
-                # FORMA ROBUSTA: Icono e información integrados directamente
                 st.markdown(f"""
                     <div style="background-color: #1a1c23; padding: 20px; border-radius: 12px; border: 1px solid #31333f; margin-bottom: 20px; color: white;">
                         <div style="font-size: 14px; text-transform: uppercase; color: #b0b3b8; letter-spacing: 1px;">
