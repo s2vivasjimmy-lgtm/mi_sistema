@@ -78,6 +78,8 @@ if check_password():
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
+    except:
+        st.error("Error al cargar los datos.")
 
     st.subheader("📍 Mapa de Afectaciones")
     mapa_html = """
