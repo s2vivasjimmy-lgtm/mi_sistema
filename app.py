@@ -2,27 +2,26 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 
-# Configuración de base de datos
-conn = sqlite3.connect('mis_datos.db')
-c = conn.cursor()
-c.execute('CREATE TABLE IF NOT EXISTS registros (nombre TEXT, cantidad INTEGER)')
-conn.commit()
-conn.close()
+st.set_page_config(page_title="Sala Situacional", layout="wide")
 
-st.title("Mi Sistema de Registros")
-nombre = st.text_input("Nombre del ítem:")
-cantidad = st.number_input("Cantidad:", min_value=0, step=1)
+st.title("📊 Sala Situacional - Panel de Control")
 
-if st.button("Guardar"):
-    conn = sqlite3.connect('mis_datos.db')
-    c = conn.cursor()
-    c.execute('INSERT INTO registros VALUES (?, ?)', (nombre, cantidad))
-    conn.commit()
-    conn.close()
-    st.success("Guardado")
+# Definimos las métricas
+metricas = [
+    "Atenciones", "Altas Medicas", "Fallecidos", 
+    "Traslados", "Camas ocupadas", "Camas disponibles", 
+    "Hospitalizaciones", "Inmunizaciones", "Intervenciones Quirurgicas"
+]
 
-st.subheader("Datos")
-conn = sqlite3.connect('mis_datos.db')
-df = pd.read_sql('SELECT * FROM registros', conn)
-st.table(df)
-conn.close()
+# Creamos 3 filas de 3 columnas cada una
+for i in range(0, 9, 3):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric(label=metricas[i], value=0)
+    with col2:
+        st.metric(label=metricas[i+1], value=0)
+    with col3:
+        st.metric(label=metricas[i+2], value=0)
+
+st.divider()
+st.subheader("Registro de Datos")
