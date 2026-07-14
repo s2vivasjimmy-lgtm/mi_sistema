@@ -4,7 +4,7 @@ import time
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS para las tarjetas y el contenedor del cintillo
+# CSS para las tarjetas
 st.markdown("""
     <style>
     .card-item {
@@ -21,26 +21,19 @@ st.markdown("""
     .text-area { display: flex; flex-direction: column; justify-content: center; }
     .label-style { color: #808495; font-size: 10px; text-transform: uppercase; font-weight: bold; }
     .value-style { color: #ffffff; font-size: 22px; font-weight: bold; }
-    
-    /* Contenedor del cintillo para centrar la imagen */
-    .cintillo-wrapper {
-        background-color: white;
-        padding: 10px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        text-align: center;
-    }
+    .cintillo-wrapper { background-color: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Autoridad Única de Salud Militar del Estado La Guaira")
 
-# Cintillo usando la ruta interna de tu repositorio en GitHub
-with st.container():
+# Cintillo robusto: si la imagen falla, no rompe la app
+try:
     st.markdown('<div class="cintillo-wrapper">', unsafe_allow_html=True)
-    # Ruta ajustada a tu estructura de archivos en GitHub
-    st.image("images/logo_institucional.png", use_container_width=False, width=1000)
+    st.image("images/logo_institucional.png", width=1000)
     st.markdown('</div>', unsafe_allow_html=True)
+except Exception:
+    st.warning("El logo institucional no se pudo cargar. Verifica que el archivo esté en la carpeta /images")
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
@@ -53,7 +46,6 @@ iconos = {
 try:
     df = pd.read_csv(f"{url}&nocache={time.time()}")
     cols = st.columns(3)
-    
     for i, col in enumerate(df.columns):
         icono = iconos.get(col, "📊")
         valor = df[col].iloc[0]
@@ -68,28 +60,21 @@ try:
                 </div>
             """, unsafe_allow_html=True)
 except:
-    st.error("Error al cargar datos.")
+    st.error("Error al cargar los datos desde la hoja de cálculo.")
 
 st.subheader("📍 Mapa de Afectaciones")
 
-mapa_html = f"""
+mapa_html = """
 <div id="map-wrapper" style="position: relative; width: 100%; height: 550px;">
-    <button id="fs-btn" 
-            style="position: absolute; top: 10px; right: 10px; z-index: 999; padding: 10px; cursor: pointer; background: white; border-radius: 5px; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+    <button id="fs-btn" style="position: absolute; top: 10px; right: 10px; z-index: 999; padding: 10px; cursor: pointer; background: white; border-radius: 5px; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
         ⛶ Pantalla Completa
     </button>
-    <iframe id="myMap" src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
-            width="100%" height="100%" frameborder="0"></iframe>
+    <iframe id="myMap" src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
 </div>
-
 <script>
     const btn = document.getElementById('fs-btn');
     const wrapper = document.getElementById('map-wrapper');
-    btn.onclick = function() {{
-        if (wrapper.requestFullscreen) {{
-            wrapper.requestFullscreen();
-        }}
-    }};
+    btn.onclick = function() { if (wrapper.requestFullscreen) { wrapper.requestFullscreen(); } };
 </script>
 """
 st.components.v1.html(mapa_html, height=560)
