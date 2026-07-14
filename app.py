@@ -1,47 +1,54 @@
 import streamlit as st
 
-# Configuración de página profesional
-st.set_page_config(page_title="Sala Situacional", page_icon="🏥", layout="wide")
+st.set_page_config(page_title="Sala Situacional", layout="wide")
 
-# Estilo CSS para que se vea como portal profesional
+# Estilo para el modo oscuro profesional
 st.markdown("""
     <style>
-    [data-testid="stSidebar"] {background-color: #f8f9fa;}
-    .css-1r6slp0 {padding-top: 0rem;}
+    .stApp {background-color: #0e1117;}
+    .metric-card {
+        background-color: #1c202a;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #31333F;
+    }
+    .metric-title {color: #808495; font-size: 14px; text-transform: uppercase;}
+    .metric-value {color: #ffffff; font-size: 28px; font-weight: bold;}
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# SIDEBAR PROFESIONAL
+# SIDEBAR (Menú lateral)
 with st.sidebar:
-    st.title("🏥 Sala Situacional")
+    st.image("https://upload.wikimedia.org/wikipedia/commons/0/06/Escudo_de_Venezuela.svg", width=80)
+    st.title("SALA SITUACIONAL")
     st.write("---")
-    opcion = st.radio("Navegación", ["Panel Principal", "Registrar Datos", "Reportes"])
-    st.write("---")
-    st.info("Usuario: Administrador")
+    st.write("PRINCIPAL")
+    st.button("Dashboard")
+    st.button("Reportes")
+    st.write("ADMINISTRACIÓN")
+    st.button("Gestión Usuarios")
+    st.button("Tablas del Sistema")
 
-# LÓGICA DE PÁGINAS
-if opcion == "Panel Principal":
-    st.title("📊 Panel de Indicadores")
-    
-    # Tarjetas de resumen (KPIs)
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Atenciones", "124", "+12%")
-        st.metric("Camas ocupadas", "45", "80%")
-    with col2:
-        st.metric("Altas Médicas", "89", "+5%")
-        st.metric("Camas disponibles", "15", "-10%")
-    with col3:
-        st.metric("Fallecidos", "2", "0%")
-        st.metric("Hospitalizaciones", "56", "+2%")
-        
-    st.subheader("Otras métricas")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Traslados", "12")
-    c2.metric("Inmunizaciones", "205")
-    c3.metric("Int. Quirúrgicas", "8")
+# DASHBOARD
+st.title("🛡️ Monitoreo de Gestión de Salud")
+st.caption("Panel de control en tiempo real — Sala Situacional")
 
-elif opcion == "Registrar Datos":
-    st.title("📝 Registro")
-    st.write("Formulario de carga de datos...")
-    # Aquí irá tu formulario luego
+# Tus datos en tarjetas
+datos = [
+    ("Atenciones", "1.240"), ("Altas Médicas", "950"), ("Fallecidos", "12"),
+    ("Traslados", "45"), ("Camas Ocupadas", "320"), ("Camas Disponibles", "85"),
+    ("Hospitalizaciones", "210"), ("Inmunizaciones", "540"), ("Intervenciones Q.", "35")
+]
+
+# Crear las filas de tarjetas
+for i in range(0, 9, 3):
+    cols = st.columns(3)
+    for j in range(3):
+        with cols[j]:
+            titulo, valor = datos[i+j]
+            st.markdown(f"""
+                <div class="metric-card">
+                    <div class="metric-title">{titulo}</div>
+                    <div class="metric-value">{valor}</div>
+                </div>
+            """, unsafe_allow_html=True)
