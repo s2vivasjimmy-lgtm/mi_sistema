@@ -5,7 +5,7 @@ import os
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# --- CSS DEFINITIVO PARA BOTÓN FLOTANTE ---
+# --- CSS ---
 st.markdown("""
     <style>
     .stApp { background-color: #0E1117 !important; }
@@ -13,20 +13,13 @@ st.markdown("""
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 10px; }
     .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; }
     .card-value { font-size: 20px; font-weight: 700; }
-    
-    /* Botón flotante superior derecho */
-    .floating-btn-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-    }
+    .floating-btn-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
     </style>
 """, unsafe_allow_html=True)
 
 ARCHIVO_DATOS = "mis_datos.csv"
 
-# --- LÓGICA DE INICIALIZACIÓN ---
+# --- INICIALIZACIÓN ---
 if "admin_logueado" not in st.session_state:
     st.session_state.admin_logueado = False
 
@@ -39,21 +32,29 @@ def inicializar_datos():
 
 inicializar_datos()
 
-# --- BOTÓN FLOTANTE (Usando un contenedor fijo) ---
-# Creamos un placeholder para el contenido del admin
-admin_placeholder = st.empty()
+# --- LÓGICA DE VISTAS ---
+if st.session_state.admin_logueado:
+    # --- VISTA DE EDICIÓN ---
+    st.header("📝 Panel de Edición de Registros")
+    df_actual = pd.read_csv(ARCHIVO_DATOS, dtype=str)
+    df_editado = st.data_editor(df_actual, use_container_width=True)
+    
+    col1, col2 = st.columns([1, 5])
+    with col1:
+        if st.button("💾 Guardar y Volver"):
+            df_editado.to_csv(ARCHIVO_DATOS, index=False)
+            st.rerun()
+    with col2:
+        if st.button("❌ Cerrar Sesión"):
+            st.session_state.admin_logueado = False
+            st.rerun()
 
-# --- INTERFAZ PRINCIPAL ---
-if os.path.exists("logo_institucional.jpg"):
-    st.image("logo_institucional.jpg", use_container_width=True)
-
-st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
-
-# Lógica del botón flotante
-with admin_placeholder.container():
-    st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
-    with st.popover("🔐 ACCESO"):
-        if not st.session_state.admin_logueado:
+else:
+    # --- VISTA PÚBLICA (LO QUE SE VE EN LA FOTO) ---
+    # Botón flotante para acceder
+    with st.container():
+        st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
+        with st.popover("🔐 ACCESO ADMIN"):
             user = st.text_input("Usuario")
             pwd = st.text_input("Contraseña", type="password")
             if st.button("Ingresar"):
@@ -62,40 +63,28 @@ with admin_placeholder.container():
                     st.rerun()
                 else:
                     st.error("Credenciales incorrectas")
-        else:
-            if st.button("Cerrar Sesión"):
-                st.session_state.admin_logueado = False
-                st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-# --- DATOS ---
-df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
-iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
+    # Contenido principal de la foto
+    if os.path.exists("logo_institucional.jpg"):
+        st.image("logo_institucional.jpg", use_container_width=True)
 
-cols = st.columns(4)
-for i, col in enumerate(df.columns):
-    with cols[i % 4]:
-        st.markdown(f"""
-            <div class="compact-card">
-                <div class="card-title">{iconos.get(col, '📊')} {col}</div>
-                <div class="card-value">{df[col].iloc[0]}</div>
-            </div>
-        """, unsafe_allow_html=True)
+    st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
 
-# --- MAPA ---
-st.subheader("📍 Mapa de Afectaciones")
-st.components.v1.html("""
-    <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="500" frameborder="0" style="border:0;" allowfullscreen></iframe>
-""", height=510)
-
-# --- PANEL DE EDICIÓN ---
-if st.session_state.admin_logueado:
-    st.markdown("---")
-    st.header("📝 Panel de Edición de Registros")
-    df_actual = pd.read_csv(ARCHIVO_DATOS, dtype=str)
-    df_editado = st.data_editor(df_actual, use_container_width=True)
+    df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
+    iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
     
-    if st.button("Guardar Cambios"):
-        df_editado.to_csv(ARCHIVO_DATOS, index=False)
-        st.success("¡Datos guardados!")
-        st.rerun()
+    cols = st.columns(4)
+    for i, col in enumerate(df.columns):
+        with cols[i % 4]:
+            st.markdown(f"""
+                <div class="compact-card">
+                    <div class="card-title">{iconos.get(col, '📊')} {col}</div>
+                    <div class="card-value">{df[col].iloc[0]}</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+    st.subheader("📍 Mapa de Afectaciones")
+    st.components.v1.html("""
+        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="500" frameborder="0" style="border:0;" allowfullscreen></iframe>
+    """, height=510)
