@@ -4,7 +4,7 @@ import time
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS exacto para mantener tu interfaz original
+# CSS exacto para mantener tu interfaz original + animación del cintillo
 st.markdown("""
     <style>
     .card-item {
@@ -21,14 +21,32 @@ st.markdown("""
     .text-area { display: flex; flex-direction: column; justify-content: center; }
     .label-style { color: #808495; font-size: 10px; text-transform: uppercase; font-weight: bold; }
     .value-style { color: #ffffff; font-size: 22px; font-weight: bold; }
+    
+    /* Estilos del cintillo */
+    .cintillo-container { width: 100%; overflow: hidden; background-color: white; padding: 10px 0; border-radius: 8px; margin-bottom: 20px; }
+    .cintillo-content { display: flex; white-space: nowrap; animation: slide 25s linear infinite; }
+    .cintillo-content img { height: 60px; margin: 0 50px; }
+    @keyframes slide {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Autoridad Única de Salud Militar del Estado La Guaira")
 
+# Cintillo de logos institucional
+st.markdown("""
+    <div class="cintillo-container">
+        <div class="cintillo-content">
+            <img src="https://i.imgur.com/L8ZzWn4.png">
+            <img src="https://i.imgur.com/L8ZzWn4.png">
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
-# Diccionario de emojis
 iconos = {
     "ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀",
     "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌",
@@ -58,7 +76,6 @@ except:
 
 st.subheader("📍 Mapa de Afectaciones")
 
-# Mapa con botón de pantalla completa ajustado para evitar redirección
 mapa_html = f"""
 <div id="map-wrapper" style="position: relative; width: 100%; height: 550px;">
     <button id="fs-btn" 
