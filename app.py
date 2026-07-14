@@ -5,18 +5,21 @@ import os
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="collapsed")
 
-# --- CSS OPTIMIZADO PARA PANTALLA ÚNICA ---
+# --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
+    /* Eliminar espacio superior */
+    .block-container { padding-top: 0rem !important; }
+    
     .stApp { background-color: #0E1117 !important; }
     #MainMenu, footer, header { visibility: hidden !important; }
     
-    /* Tarjetas más compactas */
+    /* Tarjetas compactas */
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
     .card-value { font-size: 20px; font-weight: 800; color: #ffffff; }
     
-    .floating-btn-container { position: fixed; top: 10px; right: 10px; z-index: 9999; }
+    .floating-btn-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
     
     /* Marquesina ajustada */
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
@@ -57,6 +60,7 @@ if st.session_state.admin_logueado:
             st.rerun()
 
 else:
+    # Botón de acceso movido a la izquierda para no estorbar
     with st.container():
         st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
         with st.popover("⚙️"):
@@ -66,13 +70,13 @@ else:
                 if user == "Admin" and pwd == "diges12..":
                     st.session_state.admin_logueado = True
                     st.rerun()
-                else:
-                    st.error("Credenciales incorrectas")
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # Logo
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
 
+    # Título marquesina
     st.markdown("""
         <div class="marquee-container">
             <h2 class="marquee-text" style="color:white;">
@@ -81,10 +85,10 @@ else:
         </div>
     """, unsafe_allow_html=True)
 
+    # Grid de tarjetas
     df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
     iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
     
-    # Grid de tarjetas
     cols = st.columns(4)
     columnas_lista = list(df.columns)
     for i in range(len(columnas_lista)):
@@ -95,9 +99,3 @@ else:
                     <div class="card-value">{df[columnas_lista[i]].iloc[0]}</div>
                 </div>
             """, unsafe_allow_html=True)
-
-    # Mapa con altura ajustada
-    st.markdown("### Mapa de Afectaciones")
-    st.components.v1.html("""
-        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="250" frameborder="0" style="border:0;"></iframe>
-    """, height=260)
