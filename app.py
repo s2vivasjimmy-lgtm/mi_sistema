@@ -53,6 +53,10 @@ try:
     st.markdown('<div class="cintillo-wrapper">', unsafe_allow_html=True)
     st.image("images/logo_institucional.png", width=1000)
     st.markdown('</div>', unsafe_allow_html=True)
+except Exception:
+    st.warning("El logo institucional no se pudo cargar.")
+
+# Definición de URL
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
 iconos = {
@@ -60,6 +64,8 @@ iconos = {
     "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌",
     "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"
 }
+
+# Carga de datos
 try:
     df = pd.read_csv(f"{url}&nocache={time.time()}")
     cols = st.columns(3)
@@ -76,6 +82,9 @@ try:
                     </div>
                 </div>
             """, unsafe_allow_html=True)
+except Exception:
+    st.error("Error al cargar los datos desde la hoja de cálculo.")
+
 st.subheader("📍 Mapa de Afectaciones")
 
 mapa_html = """
