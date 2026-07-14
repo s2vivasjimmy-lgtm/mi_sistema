@@ -5,7 +5,7 @@ import os
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS ajustado para el cintillo a ancho completo y limpieza de espacio superior
+# CSS actualizado con animación de derecha a izquierda continua
 st.markdown("""
     <style>
     /* Ocultar elementos de la interfaz de Streamlit */
@@ -51,11 +51,12 @@ st.markdown("""
         margin-bottom: 20px;
         border-bottom: 2px solid #4a90e2;
         padding-bottom: 10px;
+        width: 100%;
     }
     .moving-title span {
         display: inline-block;
         padding-left: 100%;
-        animation: marquee 20s linear infinite;
+        animation: marquee 15s linear infinite;
     }
     @keyframes marquee {
         0% { transform: translate(0, 0); }
