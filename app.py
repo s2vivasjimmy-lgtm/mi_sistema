@@ -60,7 +60,7 @@ if st.session_state.admin_logueado:
             st.rerun()
 
 else:
-    # Botón de acceso movido a la izquierda para no estorbar
+    # Botón de acceso
     with st.container():
         st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
         with st.popover("⚙️"):
@@ -99,3 +99,8 @@ else:
                     <div class="card-value">{df[columnas_lista[i]].iloc[0]}</div>
                 </div>
             """, unsafe_allow_html=True)
+
+    # Mapa de Afectaciones reintegrado
+    st.components.v1.html("""
+        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="300" frameborder="0" style="border:0;"></iframe>
+    """, height=310)
