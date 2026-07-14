@@ -5,32 +5,16 @@ import os
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS optimizado para un aspecto profesional y limpio
+# CSS optimizado
 st.markdown("""
     <style>
-    /* Forzar fondo oscuro y limpiar interfaz */
     .stApp { background-color: #0E1117 !important; }
     #MainMenu, footer, header { visibility: hidden !important; }
     
-    /* Contenedor del logo con fondo transparente y sombra sutil */
-    .logo-wrapper { 
-        display: flex; 
-        justify-content: center; 
-        margin-bottom: 25px; 
-        padding: 10px;
-    }
-    .logo-wrapper img { 
-        max-height: 90px; 
-        width: auto !important; 
-        background-color: transparent !important; 
-        border-radius: 8px;
-    }
-    
-    /* Título con diseño integrado */
     .moving-title { 
         width: 100%; overflow: hidden; white-space: nowrap; 
         font-size: 1.8rem; font-weight: 700; color: #ffffff; 
-        margin-bottom: 30px; border-top: 1px solid #4a90e2; 
+        margin: 30px 0; border-top: 1px solid #4a90e2; 
         border-bottom: 1px solid #4a90e2; padding: 12px 0; 
     }
     .moving-title span { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
@@ -38,12 +22,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Carga del cintillo (Logo)
+# --- CORRECCIÓN: CENTRADO DEL LOGO ---
 ruta_logo = "logo_institucional.jpg"
 if os.path.exists(ruta_logo):
-    st.markdown('<div class="logo-wrapper">', unsafe_allow_html=True)
-    st.image(ruta_logo)
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Creamos 3 columnas: [1 espacio, 4 espacios para logo, 1 espacio]
+    _, col_centro, _ = st.columns([1, 4, 1])
+    with col_centro:
+        st.image(ruta_logo, use_container_width=True)
 
 # Título con movimiento
 st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
