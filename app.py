@@ -100,7 +100,14 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # Mapa de Afectaciones reintegrado
+    # Mapa con altura de 600px y habilitación de pantalla completa
     st.components.v1.html("""
-        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="300" frameborder="0" style="border:0;"></iframe>
-    """, height=310)
+        <iframe 
+            src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
+            width="100%" 
+            height="600" 
+            frameborder="0" 
+            style="border:0;" 
+            allowfullscreen>
+        </iframe>
+    """, height=610)
