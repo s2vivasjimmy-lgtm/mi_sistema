@@ -18,7 +18,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # SIDEBAR (Menú lateral)
-ith st.sidebar:
+with st.sidebar:
     st.image("https://i.postimg.cc/85zK6R7R/escudo.jpg", width=120)
     st.markdown("## SALA SITUACIONAL") # Usamos markdown para mayor control
     st.write("---")
