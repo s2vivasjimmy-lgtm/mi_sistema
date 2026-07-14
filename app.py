@@ -19,7 +19,7 @@ st.markdown("""
 
 # SIDEBAR (Menú lateral)
 with st.sidebar:
-   st.image("https://i.ibb.co/6wXbKqZ/escudo-salud-fanb.jpg", width=120)
+    st.image("https://upload.wikimedia.org/wikipedia/commons/0/06/Escudo_de_Venezuela.svg", width=80)
     st.title("SALA SITUACIONAL")
     st.write("---")
     st.write("PRINCIPAL")
@@ -29,7 +29,7 @@ with st.sidebar:
     st.button("Gestión Usuarios")
     st.button("Tablas del Sistema")
 
-# DASHBOARD
+# DASHBOARD - ESTA LÍNEA DEBE EMPEZAR SIN ESPACIOS A LA IZQUIERDA
 st.title("🛡️ Monitoreo de Gestión de Salud")
 st.caption("Panel de control en tiempo real — Sala Situacional")
 
