@@ -2,8 +2,32 @@ import streamlit as st
 import pandas as pd
 import os
 
-# --- CONFIGURACIÓN FORZADA ---
-st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
+# --- CONFIGURACIÓN ---
+st.set_page_config(page_title="Puesto de Comando", layout="wide")
+
+# --- CSS PARA EL EFECTO DE APARICIÓN AL PASAR EL CURSOR ---
+st.markdown("""
+    <style>
+    /* Ocultar la barra lateral por defecto */
+    [data-testid="stSidebar"] {
+        width: 0px !important;
+        transition: width 0.3s ease;
+        overflow: hidden;
+    }
+    
+    /* Expandir al pasar el cursor por el borde izquierdo */
+    [data-testid="stSidebar"]:hover {
+        width: 250px !important;
+    }
+    
+    /* Estilos generales */
+    .stApp { background-color: #0E1117 !important; }
+    #MainMenu, footer, header { visibility: hidden !important; }
+    .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 10px; }
+    .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; }
+    .card-value { font-size: 20px; font-weight: 700; }
+    </style>
+""", unsafe_allow_html=True)
 
 ARCHIVO_DATOS = "mis_datos.csv"
 
@@ -16,7 +40,6 @@ def inicializar_datos():
 
 inicializar_datos()
 
-# --- LÓGICA DE ACCESO (SOLO PARA EL PANEL) ---
 def verificar_admin():
     if "admin_logueado" not in st.session_state:
         st.session_state.admin_logueado = False
@@ -34,18 +57,7 @@ def verificar_admin():
         return False
     return True
 
-# --- INTERFAZ ---
-st.markdown("""
-    <style>
-    .stApp { background-color: #0E1117 !important; }
-    #MainMenu, footer, header { visibility: hidden !important; }
-    .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 10px; }
-    .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; }
-    .card-value { font-size: 20px; font-weight: 700; }
-    </style>
-""", unsafe_allow_html=True)
-
-# Navegación
+# --- NAVEGACIÓN ---
 menu = st.sidebar.radio("Menú de Navegación", ["Vista de Comando", "Panel de Registros"])
 
 if menu == "Vista de Comando":
@@ -69,9 +81,6 @@ if menu == "Vista de Comando":
 
     st.subheader("📍 Mapa de Afectaciones")
     st.components.v1.html('<iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="300" frameborder="0"></iframe>', height=300)
-
-    st.markdown("---")
-    st.caption("¿Necesitas editar datos? Usa el menú en la barra lateral izquierda.")
 
 else:
     if verificar_admin():
