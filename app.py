@@ -95,16 +95,15 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # --- MAPA CON CONFIGURACIÓN DE SEGURIDAD REFORZADA ---
-    # Añadimos sandbox para permitir que el botón nativo de Google ejecute la acción correcta
-    st.components.v1.html("""
-        <iframe 
-            src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
-            width="100%" 
-            height="600" 
-            frameborder="0" 
-            style="border:0;" 
-            allowfullscreen 
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
-        </iframe>
-    """, height=610)
+    # --- MAPA CON EXPANDIDOR DE MÁXIMA ALTURA ---
+    # Usamos un expander para que el mapa ocupe el máximo espacio posible sin forzar redirecciones
+    with st.expander("🌐 MAPA DE AFECTACIONES (CLIC PARA EXPANDIR VISTA)", expanded=True):
+        st.components.v1.html("""
+            <iframe 
+                src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
+                width="100%" 
+                height="800" 
+                frameborder="0" 
+                style="border:0;">
+            </iframe>
+        """, height=820)
