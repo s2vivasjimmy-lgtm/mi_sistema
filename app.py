@@ -35,11 +35,11 @@ st.markdown("""
 
 st.title("Autoridad Única de Salud Militar del Estado La Guaira")
 
-# Cintillo usando el componente nativo de Streamlit (más seguro)
+# Cintillo usando la ruta interna de tu repositorio en GitHub
 with st.container():
     st.markdown('<div class="cintillo-wrapper">', unsafe_allow_html=True)
-    # Cambiamos el <img> por el componente nativo st.image
-    st.image("https://i.imgur.com/L8ZzWn4.png", use_container_width=False, width=800)
+    # Ruta ajustada a tu estructura de archivos en GitHub
+    st.image("images/logo_institucional.png", use_container_width=False, width=1000)
     st.markdown('</div>', unsafe_allow_html=True)
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
