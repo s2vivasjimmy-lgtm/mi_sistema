@@ -11,6 +11,17 @@ st.markdown("""
     .stApp { background-color: #0E1117 !important; }
     #MainMenu, footer, header { visibility: hidden !important; }
     
+    /* Clase para expandir el logo de borde a borde */
+    .full-width-logo {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        margin-bottom: 25px;
+    }
+    
     .moving-title { 
         width: 100%; overflow: hidden; white-space: nowrap; 
         font-size: 1.8rem; font-weight: 700; color: #ffffff; 
@@ -22,13 +33,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- CORRECCIÓN: CENTRADO DEL LOGO ---
+# --- CORRECCIÓN: CINTILLO EXPANDIDO TOTAL ---
 ruta_logo = "logo_institucional.jpg"
 if os.path.exists(ruta_logo):
-    # Creamos 3 columnas: [1 espacio, 4 espacios para logo, 1 espacio]
-    _, col_centro, _ = st.columns([1, 4, 1])
-    with col_centro:
-        st.image(ruta_logo, use_container_width=True)
+    st.markdown('<div class="full-width-logo">', unsafe_allow_html=True)
+    st.image(ruta_logo, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Título con movimiento
 st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
