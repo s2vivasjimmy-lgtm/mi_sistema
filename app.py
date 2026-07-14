@@ -3,28 +3,25 @@ import pandas as pd
 import os
 
 # --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Puesto de Comando", layout="wide")
+st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="collapsed")
 
-# --- CSS CON TAMAÑOS AUMENTADOS ---
+# --- CSS OPTIMIZADO PARA PANTALLA ÚNICA ---
 st.markdown("""
     <style>
     .stApp { background-color: #0E1117 !important; }
     #MainMenu, footer, header { visibility: hidden !important; }
     
-    /* Tarjetas más grandes y legibles */
-    .compact-card { background-color: #1a1c23; padding: 25px; border-radius: 12px; border: 2px solid #31333f; color: white; margin-bottom: 20px; }
-    .card-title { font-size: 18px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 10px; }
-    .card-value { font-size: 45px; font-weight: 800; color: #ffffff; }
+    /* Tarjetas más compactas */
+    .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
+    .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
+    .card-value { font-size: 20px; font-weight: 800; color: #ffffff; }
     
-    .floating-btn-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .floating-btn-container { position: fixed; top: 10px; right: 10px; z-index: 9999; }
     
-    /* Título grande y con marquesina */
-    .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 30px; }
-    .marquee-text { display: inline-block; font-size: 40px; animation: marquee 20s linear infinite; }
-    @keyframes marquee { 
-        0% { transform: translate(100%, 0); } 
-        100% { transform: translate(-100%, 0); } 
-    }
+    /* Marquesina ajustada */
+    .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
+    .marquee-text { display: inline-block; font-size: 24px; animation: marquee 15s linear infinite; margin: 0; }
+    @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 """, unsafe_allow_html=True)
 
@@ -45,7 +42,7 @@ inicializar_datos()
 
 # --- LÓGICA DE VISTAS ---
 if st.session_state.admin_logueado:
-    st.header("📝 Panel de Edición de Registros")
+    st.header("📝 Panel de Edición")
     df_actual = pd.read_csv(ARCHIVO_DATOS, dtype=str)
     df_editado = st.data_editor(df_actual, use_container_width=True)
     
@@ -62,7 +59,7 @@ if st.session_state.admin_logueado:
 else:
     with st.container():
         st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
-        with st.popover("🔐 ACCESO ADMIN"):
+        with st.popover("⚙️"):
             user = st.text_input("Usuario")
             pwd = st.text_input("Contraseña", type="password")
             if st.button("Ingresar"):
@@ -87,23 +84,20 @@ else:
     df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
     iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
     
+    # Grid de tarjetas
     cols = st.columns(4)
-    # Convertimos los items del df para poder iterar en grupos de 4
     columnas_lista = list(df.columns)
-    for i in range(0, len(columnas_lista), 4):
-        fila = st.columns(4)
-        for j in range(4):
-            if i + j < len(columnas_lista):
-                col = columnas_lista[i + j]
-                with fila[j]:
-                    st.markdown(f"""
-                        <div class="compact-card">
-                            <div class="card-title">{iconos.get(col, '📊')} {col}</div>
-                            <div class="card-value">{df[col].iloc[0]}</div>
-                        </div>
-                    """, unsafe_allow_html=True)
+    for i in range(len(columnas_lista)):
+        with cols[i % 4]:
+            st.markdown(f"""
+                <div class="compact-card">
+                    <div class="card-title">{iconos.get(columnas_lista[i], '📊')} {columnas_lista[i]}</div>
+                    <div class="card-value">{df[columnas_lista[i]].iloc[0]}</div>
+                </div>
+            """, unsafe_allow_html=True)
 
-    st.subheader("📍 Mapa de Afectaciones")
+    # Mapa con altura ajustada
+    st.markdown("### Mapa de Afectaciones")
     st.components.v1.html("""
-        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="500" frameborder="0" style="border:0;" allowfullscreen></iframe>
-    """, height=510)
+        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="250" frameborder="0" style="border:0;"></iframe>
+    """, height=260)
