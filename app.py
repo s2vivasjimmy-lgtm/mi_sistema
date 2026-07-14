@@ -4,7 +4,7 @@ import time
 
 st.set_page_config(page_title="Sala Situacional", layout="wide")
 
-# CSS optimizado para asegurar compatibilidad
+# CSS optimizado
 st.markdown("""
     <style>
     .card-item {
@@ -17,29 +17,10 @@ st.markdown("""
         margin-bottom: 20px;
         height: 75px;
     }
-    .icon-area { 
-        font-size: 30px; 
-        margin-right: 15px; 
-        min-width: 40px; 
-        text-align: center; 
-    }
-    .text-area { 
-        display: flex; 
-        flex-direction: column; 
-        justify-content: center; 
-    }
-    .label-style { 
-        color: #808495; 
-        font-size: 10px; 
-        text-transform: uppercase; 
-        font-weight: bold; 
-        letter-spacing: 0.5px;
-    }
-    .value-style { 
-        color: #ffffff; 
-        font-size: 22px; 
-        font-weight: bold; 
-    }
+    .icon-area { font-size: 30px; margin-right: 15px; min-width: 40px; text-align: center; }
+    .text-area { display: flex; flex-direction: column; justify-content: center; }
+    .label-style { color: #808495; font-size: 10px; text-transform: uppercase; font-weight: bold; }
+    .value-style { color: #ffffff; font-size: 22px; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -47,25 +28,36 @@ st.title("🛡️ Monitoreo de Gestión de Salud")
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
-# Diccionario de iconos
 iconos = {
-    "ATENCIONES": "📋",
-    "ALTAS MÉDICAS": "✅",
-    "FALLECIDOS": "🥀",
-    "TRASLADOS": "🚑",
-    "CAMAS OCUPADAS": "🛏️",
-    "CAMAS DISPONIBLES": "🛌",
-    "HOSPITALIZACIONES": "🏥",
-    "INMUNIZACIONES": "💉",
-    "INTERVENCIONES Q.": "🔪"
+    "ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀",
+    "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌",
+    "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"
 }
 
 try:
     df = pd.read_csv(f"{url}&nocache={time.time()}")
-    
-    # Crear las tres columnas para el grid
     cols = st.columns(3)
     
     for i, col in enumerate(df.columns):
         icono = iconos.get(col, "📊")
         valor = df[col].iloc[0]
+        
+        with cols[i % 3]:
+            st.markdown(f"""
+                <div class="card-item">
+                    <div class="icon-area">{icono}</div>
+                    <div class="text-area">
+                        <div class="label-style">{col}</div>
+                        <div class="value-style">{valor}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+            
+    st.caption(f"🕒 Última actualización: {time.strftime('%H:%M:%S')}")
+
+except Exception as e:
+    st.error("Error al cargar los datos.")
+
+st.subheader("📍 Mapa de Afectaciones")
+url_mapa = f"https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&t={time.time()}"
+st.components.v1.iframe(url_mapa, width=1200, height=500)
