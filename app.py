@@ -104,9 +104,17 @@ else:
             with cols[i % 4]:
                 st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
 
-        # Mapa y botón pantalla completa
-        if st.button("🌐 ABRIR MAPA EN PANTALLA COMPLETA"):
-            st.session_state.mostrar_mapa = True
-            st.rerun()
-            
-        st.components.v1.html('<iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="400" frameborder="0" style="border:0;"></iframe>', height=410)
+        st.subheader("📍 Mapa de Afectaciones")
+    mapa_html = """
+    <div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+        <button onclick="toggleFS()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">⛶ Pantalla Completa</button>
+        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+    <script>
+        function toggleFS() {
+            var elem = document.getElementById("map-container");
+            if (!document.fullscreenElement) { elem.requestFullscreen(); } else { document.exitFullscreen(); }
+        }
+    </script>
+    """
+    st.components.v1.html(mapa_html, height=510)
