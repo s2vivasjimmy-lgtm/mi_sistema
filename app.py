@@ -5,7 +5,7 @@ import os
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# --- CSS ---
+# --- CSS DEFINITIVO PARA BOTÓN FLOTANTE ---
 st.markdown("""
     <style>
     .stApp { background-color: #0E1117 !important; }
@@ -13,6 +13,14 @@ st.markdown("""
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 10px; }
     .card-title { font-size: 11px; text-transform: uppercase; color: #b0b3b8; }
     .card-value { font-size: 20px; font-weight: 700; }
+    
+    /* Botón flotante superior derecho */
+    .floating-btn-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -31,10 +39,20 @@ def inicializar_datos():
 
 inicializar_datos()
 
-# --- BARRA LATERAL CON VENTANA FLOTANTE (POPOVER) ---
-with st.sidebar:
-    st.markdown("### Acceso del Sistema")
-    with st.popover("🔐 Panel Administrativo"):
+# --- BOTÓN FLOTANTE (Usando un contenedor fijo) ---
+# Creamos un placeholder para el contenido del admin
+admin_placeholder = st.empty()
+
+# --- INTERFAZ PRINCIPAL ---
+if os.path.exists("logo_institucional.jpg"):
+    st.image("logo_institucional.jpg", use_container_width=True)
+
+st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
+
+# Lógica del botón flotante
+with admin_placeholder.container():
+    st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
+    with st.popover("🔐 ACCESO"):
         if not st.session_state.admin_logueado:
             user = st.text_input("Usuario")
             pwd = st.text_input("Contraseña", type="password")
@@ -45,16 +63,10 @@ with st.sidebar:
                 else:
                     st.error("Credenciales incorrectas")
         else:
-            st.success("Sesión iniciada correctamente")
             if st.button("Cerrar Sesión"):
                 st.session_state.admin_logueado = False
                 st.rerun()
-
-# --- INTERFAZ PRINCIPAL ---
-if os.path.exists("logo_institucional.jpg"):
-    st.image("logo_institucional.jpg", use_container_width=True)
-
-st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # --- DATOS ---
 df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
@@ -85,5 +97,5 @@ if st.session_state.admin_logueado:
     
     if st.button("Guardar Cambios"):
         df_editado.to_csv(ARCHIVO_DATOS, index=False)
-        st.success("¡Datos actualizados exitosamente!")
+        st.success("¡Datos guardados!")
         st.rerun()
