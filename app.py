@@ -48,7 +48,7 @@ st.markdown("""
 
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
 
-    .marquee-text { display: inline-block; font-size: 24px; animation: marquee 15s linear infinite; margin: 0; }
+    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; }
 
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
 
