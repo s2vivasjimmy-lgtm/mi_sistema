@@ -25,7 +25,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("Autoridad Única de Salud Militar del Estado La Guaira")
+st.title("AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LAGUAIRA")
 
 # Cintillo robusto: si la imagen falla, no rompe la app
 try:
