@@ -4,39 +4,40 @@ import time
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS para las tarjetas, el cintillo y la nueva animación del título
+# CSS ajustado para mayor claridad y uniformidad
 st.markdown("""
     <style>
     .card-item {
-        background-color: #1c202a;
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid #31333F;
+        background-color: #262730;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #464e5f;
         display: flex;
         align-items: center;
         margin-bottom: 20px;
-        height: 75px;
+        height: 80px;
     }
-    .icon-area { font-size: 28px; margin-right: 15px; min-width: 40px; color: #4a90e2; text-align: center; }
+    .icon-area { font-size: 30px; margin-right: 20px; color: #ffffff; }
     .text-area { display: flex; flex-direction: column; justify-content: center; }
-    .label-style { color: #808495; font-size: 10px; text-transform: uppercase; font-weight: bold; }
-    .value-style { color: #ffffff; font-size: 22px; font-weight: bold; }
-    .cintillo-wrapper { background-color: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+    .label-style { color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+    .value-style { color: #ffffff; font-size: 26px; font-weight: 800; }
     
     /* Animación del Título */
     .moving-title {
         overflow: hidden;
         white-space: nowrap;
-        font-size: 2.2rem;
-        font-weight: bold;
+        font-size: 2.5rem;
+        font-weight: 900;
         color: #ffffff;
-        margin-bottom: 20px;
-        background-color: #0e1117;
+        margin-bottom: 30px;
+        background-color: transparent;
+        border-bottom: 2px solid #4a90e2;
+        padding-bottom: 10px;
     }
     .moving-title span {
         display: inline-block;
         padding-left: 100%;
-        animation: marquee 15s linear infinite;
+        animation: marquee 20s linear infinite;
     }
     @keyframes marquee {
         0% { transform: translate(0, 0); }
@@ -45,18 +46,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Título con movimiento aplicado
+# Título con movimiento
 st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LAGUAIRA</span></div>', unsafe_allow_html=True)
 
-# Cintillo robusto
-try:
-    st.markdown('<div class="cintillo-wrapper">', unsafe_allow_html=True)
-    st.image("images/logo_institucional.png", width=1000)
-    st.markdown('</div>', unsafe_allow_html=True)
-except Exception:
-    st.warning("El logo institucional no se pudo cargar.")
-
-# Definición de URL
+# Cargamos los datos
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
 iconos = {
@@ -65,7 +58,6 @@ iconos = {
     "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"
 }
 
-# Carga de datos
 try:
     df = pd.read_csv(f"{url}&nocache={time.time()}")
     cols = st.columns(3)
@@ -83,7 +75,7 @@ try:
                 </div>
             """, unsafe_allow_html=True)
 except Exception:
-    st.error("Error al cargar los datos desde la hoja de cálculo.")
+    st.error("Error al cargar los datos.")
 
 st.subheader("📍 Mapa de Afectaciones")
 
