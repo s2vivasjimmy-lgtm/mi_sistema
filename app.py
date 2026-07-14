@@ -8,7 +8,7 @@ st.set_page_config(page_title="Puesto de Comando", layout="wide")
 # --- LÓGICA DE ACCESO ---
 def check_password():
     def password_entered():
-        if st.session_state["username"] == "admin" and st.session_state["password"] == "123456":
+        if st.session_state["username"] == "Admin" and st.session_state["password"] == "diges12..":
             st.session_state["password_correct"] = True
             del st.session_state["password"]
             del st.session_state["username"]
