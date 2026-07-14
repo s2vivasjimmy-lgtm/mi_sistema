@@ -28,7 +28,7 @@ st.title("🛡️ Monitoreo de Gestión de Salud")
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
-# Diccionario de emojis (más confiables en columnas de Streamlit)
+# Diccionario de emojis
 iconos = {
     "ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀",
     "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌",
@@ -58,15 +58,25 @@ except:
 
 st.subheader("📍 Mapa de Afectaciones")
 
-# Mapa con botón de pantalla completa
+# Mapa con botón de pantalla completa ajustado para evitar redirección
 mapa_html = f"""
-<div style="position: relative; width: 100%; height: 550px;">
-    <button onclick="document.getElementById('myMap').requestFullscreen()" 
+<div id="map-wrapper" style="position: relative; width: 100%; height: 550px;">
+    <button id="fs-btn" 
             style="position: absolute; top: 10px; right: 10px; z-index: 999; padding: 10px; cursor: pointer; background: white; border-radius: 5px; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
         ⛶ Pantalla Completa
     </button>
     <iframe id="myMap" src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
-            width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+            width="100%" height="100%" frameborder="0"></iframe>
 </div>
+
+<script>
+    const btn = document.getElementById('fs-btn');
+    const wrapper = document.getElementById('map-wrapper');
+    btn.onclick = function() {{
+        if (wrapper.requestFullscreen) {{
+            wrapper.requestFullscreen();
+        }}
+    }};
+</script>
 """
 st.components.v1.html(mapa_html, height=560)
