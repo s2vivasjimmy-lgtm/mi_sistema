@@ -56,7 +56,7 @@ st.markdown("""
 st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
 
 # Carga segura del cintillo
-ruta_logo = "images/logo_institucional.png"
+ruta_logo = "logo_institucional.png"
 if os.path.exists(ruta_logo):
     st.image(ruta_logo, use_container_width=False, width=1000)
 else:
