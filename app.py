@@ -30,7 +30,6 @@ def check_password():
 
 # --- INICIO DE LA APLICACIÓN ---
 if check_password():
-    # CSS optimizado
     st.markdown("""
         <style>
         .stApp { background-color: #0E1117 !important; }
@@ -68,12 +67,14 @@ if check_password():
             icono = iconos.get(col, "📊")
             valor = df[col].iloc[0]
             with cols[i % 3]:
+                # FORMA ROBUSTA: Icono e información integrados directamente
                 st.markdown(f"""
-                    <div style="background-color: #1a1c23; padding: 20px; border-radius: 12px; border: 1px solid #31333f; display: flex; align-items: center; margin-bottom: 20px; color: white;">
-                        <div style="font-size: 28px; margin-right: 20px;">{icono}</div>
-                        <div>
-                            <div style="font-size: 11px; text-transform: uppercase; color: #b0b3b8; letter-spacing: 1px;">{col}</div>
-                            <div style="font-size: 24px; font-weight: 800;">{valor}</div>
+                    <div style="background-color: #1a1c23; padding: 20px; border-radius: 12px; border: 1px solid #31333f; margin-bottom: 20px; color: white;">
+                        <div style="font-size: 14px; text-transform: uppercase; color: #b0b3b8; letter-spacing: 1px;">
+                            {icono} {col}
+                        </div>
+                        <div style="font-size: 28px; font-weight: 800; margin-top: 5px;">
+                            {valor}
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
