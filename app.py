@@ -100,7 +100,7 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # Mapa con altura de 600px
+    # Mapa incrustado (solo para visualización rápida)
     st.components.v1.html("""
         <iframe 
             src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
@@ -111,5 +111,5 @@ else:
         </iframe>
     """, height=610)
     
-    # Botón de enlace para pantalla completa (abre en nueva pestaña)
-    st.link_button("🌐 Abrir Mapa en Pantalla Completa", "https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg")
+    # Botón de enlace corregido para abrir la vista completa de Google My Maps
+    st.link_button("🌐 ABRIR MAPA EN PANTALLA COMPLETA", "https://www.google.com/maps/d/viewer?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg")
