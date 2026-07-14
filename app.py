@@ -18,9 +18,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # SIDEBAR (Menú lateral)
-with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Coat_of_arms_of_Venezuela.svg/512px-Coat_of_arms_of_Venezuela.svg.png", width=120)
-    st.title("SALA SITUACIONAL")
+ith st.sidebar:
+    st.image("https://i.postimg.cc/85zK6R7R/escudo.jpg", width=120)
+    st.markdown("## SALA SITUACIONAL") # Usamos markdown para mayor control
     st.write("---")
     st.write("PRINCIPAL")
     st.button("Dashboard")
