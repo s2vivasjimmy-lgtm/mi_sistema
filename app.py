@@ -19,7 +19,7 @@ st.markdown("""
 
 # SIDEBAR (Menú lateral)
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/0/06/Escudo_de_Venezuela.svg", width=80)
+   st.image("https://i.ibb.co/6wXbKqZ/escudo-salud-fanb.jpg", width=120)
     st.title("SALA SITUACIONAL")
     st.write("---")
     st.write("PRINCIPAL")
