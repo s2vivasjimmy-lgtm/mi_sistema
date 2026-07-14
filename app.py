@@ -210,7 +210,7 @@ else:
 
 
 
-        st.subheader("📍Ubicaciones en Tiempo Real")
+        st.subheader("📍UBICACIONES EN TIEMPO REAL")
 
     mapa_html = """
 
