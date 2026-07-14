@@ -4,7 +4,7 @@ import time
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS corregido para visualización garantizada
+# CSS para las tarjetas y el contenedor del cintillo
 st.markdown("""
     <style>
     .card-item {
@@ -22,29 +22,25 @@ st.markdown("""
     .label-style { color: #808495; font-size: 10px; text-transform: uppercase; font-weight: bold; }
     .value-style { color: #ffffff; font-size: 22px; font-weight: bold; }
     
-    /* Corrección del Cintillo */
-    .cintillo-container { width: 100%; height: 70px; overflow: hidden; background-color: white; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
-    .cintillo-content { display: flex; align-items: center; white-space: nowrap; height: 100%; animation: slide 20s linear infinite; }
-    .cintillo-content img { height: 50px; width: auto; display: block; margin: 0 40px; }
-    @keyframes slide {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
+    /* Contenedor del cintillo para centrar la imagen */
+    .cintillo-wrapper {
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
     }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Autoridad Única de Salud Militar del Estado La Guaira")
 
-# Cintillo con contenedor de altura fija para asegurar el renderizado
-st.markdown("""
-    <div class="cintillo-container">
-        <div class="cintillo-content">
-            <img src="https://i.imgur.com/L8ZzWn4.png">
-            <img src="https://i.imgur.com/L8ZzWn4.png">
-            <img src="https://i.imgur.com/L8ZzWn4.png">
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+# Cintillo usando el componente nativo de Streamlit (más seguro)
+with st.container():
+    st.markdown('<div class="cintillo-wrapper">', unsafe_allow_html=True)
+    # Cambiamos el <img> por el componente nativo st.image
+    st.image("https://i.imgur.com/L8ZzWn4.png", use_container_width=False, width=800)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
