@@ -1,15 +1,8 @@
 import streamlit as st
 
 import time
-
-
-
 # Configuración de página
-
 st.set_page_config(page_title="Sala Situacional", layout="wide")
-
-
-
 # Estilo CSS para el modo oscuro profesional
 
 st.markdown("""
