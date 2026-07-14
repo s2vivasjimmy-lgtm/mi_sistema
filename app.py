@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import time
 
-st.set_page_config(page_title="Sala Situacional", layout="wide")
+st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
 # CSS exacto para mantener tu interfaz original
 st.markdown("""
@@ -24,7 +24,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🛡️ Monitoreo de Gestión de Salud")
+st.title("Autoridad Unica de Salud Militar del Estado La Guaira")
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
