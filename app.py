@@ -1,6 +1,4 @@
 import streamlit as st
-import folium
-from streamlit_folium import st_folium
 
 # Configuración de página
 st.set_page_config(page_title="Sala Situacional", layout="wide")
@@ -23,7 +21,6 @@ st.markdown("""
 
 # SIDEBAR
 with st.sidebar:
-    # URL directa del escudo
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Coat_of_arms_of_Venezuela.svg/512px-Coat_of_arms_of_Venezuela.svg.png", width=120)
     st.markdown("## SALA SITUACIONAL")
     st.write("Dirección General de Salud")
@@ -39,7 +36,7 @@ with st.sidebar:
 st.title("🛡️ Monitoreo de Gestión de Salud")
 st.caption("Panel de control en tiempo real — Sala Situacional")
 
-# Datos
+# Datos del sistema
 datos = [
     ("Atenciones", "1.240"), ("Altas Médicas", "950"), ("Fallecidos", "12"),
     ("Traslados", "45"), ("Camas Ocupadas", "320"), ("Camas Disponibles", "85"),
@@ -59,19 +56,7 @@ for i in range(0, 9, 3):
                 </div>
             """, unsafe_allow_html=True)
 
-# MAPA INTERACTIVO
-st.subheader("📍 Mapa de Afectaciones")
-st.caption("Datos en tiempo real")
-
-# Crear el mapa con estilo oscuro
-m = folium.Map(location=[8.0, -66.0], zoom_start=6, tiles="CartoDB dark_matter")
-
-# Añadir punto de ejemplo
-folium.Marker(
-    [10.48, -66.87], 
-    popup="Zona de Afectación",
-    icon=folium.Icon(color="red", icon="info-sign")
-).add_to(m)
-
-# Mostrar mapa
-st_folium(m, width=1200, height=400)
+# MAPA INTEGRADO
+st.subheader("📍 Mapa de Afectaciones en Tiempo Real")
+# Link configurado para incrustación automática
+st.components.v1.iframe("https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg", width=1200, height=500)
