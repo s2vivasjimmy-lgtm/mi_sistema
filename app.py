@@ -2,74 +2,75 @@ import streamlit as st
 import pandas as pd
 import time
 
-# Configuración de la página
 st.set_page_config(page_title="Sala Situacional", layout="wide")
 
-# Estilos CSS Profesional
+# Estilos CSS para círculos
 st.markdown("""
     <style>
-    .metric-container {
+    .grid-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        margin-bottom: 30px;
+        gap: 30px;
+        padding: 20px;
     }
-    .metric-card {
-        background-color: #161a22;
-        padding: 24px;
-        border-radius: 12px;
-        border: 1px solid #2d3446;
-        transition: transform 0.2s, border-color 0.2s;
+    .circle-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 3px solid var(--border-color);
     }
-    .metric-card:hover {
-        border-color: #4a90e2;
-        transform: translateY(-5px);
-    }
-    .metric-title {
-        color: #8892b0;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 12px;
-    }
-    .metric-value {
-        color: #e6edf3;
-        font-size: 2.2rem;
-        font-weight: 700;
-        font-family: 'Segoe UI', sans-serif;
-    }
+    .icon-box { font-size: 40px; margin-right: 20px; }
+    .content-box { text-align: left; }
+    .metric-title { color: #555; font-size: 12px; text-transform: uppercase; font-weight: bold; }
+    .metric-value { color: #333; font-size: 28px; font-weight: 800; }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("🛡️ Monitoreo de Gestión de Salud")
 
-# URL directa de tu Google Sheet
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
-# Carga de datos
+# Diccionario de configuración para colores e íconos
+config = {
+    "ATENCIONES": {"color": "#FF6B6B", "icon": "🏥"},
+    "ALTAS MÉDICAS": {"color": "#4ECDC4", "icon": "✅"},
+    "FALLECIDOS": {"color": "#2D3436", "icon": "🕊️"},
+    "TRASLADOS": {"color": "#FFE66D", "icon": "🚑"},
+    "CAMAS OCUPADAS": {"color": "#FF9F1C", "icon": "🛏️"},
+    "CAMAS DISPONIBLES": {"color": "#2ECC71", "icon": "🔋"},
+    "HOSPITALIZACIONES": {"color": "#3498DB", "icon": "🩺"},
+    "INMUNIZACIONES": {"color": "#9B59B6", "icon": "💉"},
+    "INTERVENCIONES Q.": {"color": "#E74C3C", "icon": "✂️"}
+}
+
 try:
-    # Añadimos timestamp para evitar caché
     df = pd.read_csv(f"{url}&nocache={time.time()}")
     
-    # Inicio del contenedor de tarjetas
-    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    st.markdown('<div class="grid-container">', unsafe_allow_html=True)
     
-    # Ciclo para crear las tarjetas
     for col in df.columns:
+        # Buscamos configuración, si no existe usamos gris por defecto
+        c = config.get(col, {"color": "#BDC3C7", "icon": "📊"})
+        
         st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-title">{col}</div>
-                <div class="metric-value">{df[col].iloc[0]}</div>
+            <div class="circle-card" style="--border-color: {c['color']}">
+                <div class="icon-box">{c['icon']}</div>
+                <div class="content-box">
+                    <div class="metric-title">{col}</div>
+                    <div class="metric-value">{df[col].iloc[0]}</div>
+                </div>
             </div>
         """, unsafe_allow_html=True)
         
     st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.caption(f"🕒 Última actualización: {time.strftime('%H:%M:%S')}, {time.strftime('%d/%m/%Y')}")
+    st.caption(f"🕒 Última actualización: {time.strftime('%H:%M:%S')}")
 
-except Exception as e:
-    st.error("Error al conectar con la base de datos. Asegúrate de que el archivo esté publicado.")
+except Exception:
+    st.error("Error al cargar los datos.")
 
 # Mapa
 st.subheader("📍 Mapa de Afectaciones")
