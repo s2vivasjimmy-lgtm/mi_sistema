@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Puesto de Comando", layout="wide")
+st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
 # --- CSS ---
 st.markdown("""
@@ -17,19 +17,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ARCHIVO_DATOS = "mis_datos.csv"
-
-# --- LÓGICA DE NAVEGACIÓN ---
-if "pagina_actual" not in st.session_state:
-    st.session_state.pagina_actual = "Vista de Comando"
-
-# Botón lateral para alternar vistas
-if st.sidebar.button("🏠 Vista de Comando"):
-    st.session_state.pagina_actual = "Vista de Comando"
-    st.rerun()
-
-if st.sidebar.button("📝 Panel de Registros"):
-    st.session_state.pagina_actual = "Panel de Registros"
-    st.rerun()
 
 # --- FUNCIONES ---
 def inicializar_datos():
@@ -58,8 +45,11 @@ def verificar_admin():
 
 inicializar_datos()
 
+# --- NAVEGACIÓN ---
+menu = st.sidebar.radio("Navegación", ["Vista de Comando", "Panel de Registros"])
+
 # --- RENDERIZADO ---
-if st.session_state.pagina_actual == "Vista de Comando":
+if menu == "Vista de Comando":
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
 
@@ -79,7 +69,10 @@ if st.session_state.pagina_actual == "Vista de Comando":
             """, unsafe_allow_html=True)
 
     st.subheader("📍 Mapa de Afectaciones")
-    st.components.v1.html('<iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="300" frameborder="0"></iframe>', height=300)
+    # Se ajustó el estilo para garantizar que el mapa se renderice completo
+    st.components.v1.html("""
+        <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" width="100%" height="500" frameborder="0" style="border:0;" allowfullscreen></iframe>
+    """, height=510)
 
 else:
     if verificar_admin():
