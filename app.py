@@ -5,55 +5,71 @@ import time
 # Configuración de la página
 st.set_page_config(page_title="Sala Situacional", layout="wide")
 
-# Estilos CSS
+# Estilos CSS Profesional
 st.markdown("""
     <style>
+    .metric-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
     .metric-card {
-        background-color: #1c202a; 
-        padding: 20px; 
-        border-radius: 10px; 
-        border: 1px solid #31333F; 
-        margin-bottom: 20px;
-    } 
+        background-color: #161a22;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid #2d3446;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .metric-card:hover {
+        border-color: #4a90e2;
+        transform: translateY(-5px);
+    }
     .metric-title {
-        color: #808495; 
-        font-size: 14px; 
+        color: #8892b0;
+        font-size: 0.85rem;
+        font-weight: 600;
         text-transform: uppercase;
-        margin-bottom: 5px;
-    } 
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+    }
     .metric-value {
-        color: #ffffff; 
-        font-size: 32px; 
-        font-weight: bold;
+        color: #e6edf3;
+        font-size: 2.2rem;
+        font-weight: 700;
+        font-family: 'Segoe UI', sans-serif;
     }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("🛡️ Monitoreo de Gestión de Salud")
 
-# URL directa de tu Google Sheet publicada
+# URL directa de tu Google Sheet
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
-# Carga de datos forzando refresco
+# Carga de datos
 try:
-    # Añadimos un timestamp al final para evitar caché del navegador
+    # Añadimos timestamp para evitar caché
     df = pd.read_csv(f"{url}&nocache={time.time()}")
     
-    # Mostrar métricas en columnas
-    cols = st.columns(3)
-    for i, col in enumerate(df.columns):
-        with cols[i % 3]:
-            st.markdown(f"""
-                <div class="metric-card">
-                    <div class="metric-title">{col}</div>
-                    <div class="metric-value">{df.iloc[0, i]}</div>
-                </div>
-            """, unsafe_allow_html=True)
-            
-    st.write(f"🕒 *Última actualización: {time.strftime('%H:%M:%S')}, {time.strftime('%d/%m/%Y')}*")
+    # Inicio del contenedor de tarjetas
+    st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+    
+    # Ciclo para crear las tarjetas
+    for col in df.columns:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-title">{col}</div>
+                <div class="metric-value">{df[col].iloc[0]}</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.caption(f"🕒 Última actualización: {time.strftime('%H:%M:%S')}, {time.strftime('%d/%m/%Y')}")
 
 except Exception as e:
-    st.error("Error al conectar con la base de datos. Asegúrate de que el archivo esté publicado en la web.")
+    st.error("Error al conectar con la base de datos. Asegúrate de que el archivo esté publicado.")
 
 # Mapa
 st.subheader("📍 Mapa de Afectaciones")
