@@ -4,7 +4,7 @@ import time
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
 
-# CSS para las tarjetas
+# CSS para las tarjetas, el cintillo y la nueva animación del título
 st.markdown("""
     <style>
     .card-item {
@@ -22,12 +22,33 @@ st.markdown("""
     .label-style { color: #808495; font-size: 10px; text-transform: uppercase; font-weight: bold; }
     .value-style { color: #ffffff; font-size: 22px; font-weight: bold; }
     .cintillo-wrapper { background-color: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+    
+    /* Animación del Título */
+    .moving-title {
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: #ffffff;
+        margin-bottom: 20px;
+        background-color: #0e1117;
+    }
+    .moving-title span {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 15s linear infinite;
+    }
+    @keyframes marquee {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(-100%, 0); }
+    }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LAGUAIRA")
+# Título con movimiento aplicado
+st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LAGUAIRA</span></div>', unsafe_allow_html=True)
 
-# Cintillo robusto: si la imagen falla, no rompe la app
+# Cintillo robusto
 try:
     st.markdown('<div class="cintillo-wrapper">', unsafe_allow_html=True)
     st.image("images/logo_institucional.png", width=1000)
