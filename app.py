@@ -15,11 +15,12 @@ st.markdown("""
         display: flex;
         align-items: center;
         margin-bottom: 15px;
+        height: 80px;
     }
-    .icon { font-size: 30px; margin-right: 15px; }
-    .text-box { display: flex; flex-direction: column; }
+    .icon { font-size: 35px; margin-right: 15px; min-width: 40px; text-align: center; }
+    .text-box { display: flex; flex-direction: column; justify-content: center; }
     .title { color: #808495; font-size: 11px; text-transform: uppercase; font-weight: bold; }
-    .value { color: #ffffff; font-size: 22px; font-weight: bold; }
+    .value { color: #ffffff; font-size: 24px; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -27,24 +28,28 @@ st.title("🛡️ Monitoreo de Gestión de Salud")
 
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
-# Íconos por métrica
+# Íconos precisos por métrica
 iconos = {
-    "ATENCIONES": "🏥", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🕊️",
-    "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🔋",
-    "HOSPITALIZACIONES": "🩺", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "✂️"
+    "ATENCIONES": "📋",
+    "ALTAS MÉDICAS": "✅",
+    "FALLECIDOS": "🥀",
+    "TRASLADOS": "🚑",
+    "CAMAS OCUPADAS": "🛏️",
+    "CAMAS DISPONIBLES": "🛌",
+    "HOSPITALIZACIONES": "🏥",
+    "INMUNIZACIONES": "💉",
+    "INTERVENCIONES Q.": "🔪"
 }
 
 try:
     df = pd.read_csv(f"{url}&nocache={time.time()}")
     
-    # Creamos 3 columnas para que las tarjetas se agrupen en filas de 3
     columnas = st.columns(3)
     
     for i, col in enumerate(df.columns):
         icono = iconos.get(col, "📊")
         valor = df[col].iloc[0]
         
-        # Distribuimos en las 3 columnas usando el índice
         with columnas[i % 3]:
             st.markdown(f"""
                 <div class="card">
