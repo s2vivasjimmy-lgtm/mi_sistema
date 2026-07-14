@@ -1,17 +1,27 @@
 import streamlit as st
 import pandas as pd
-import time
 import os
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide")
+
+# --- ARCHIVO DE DATOS LOCAL ---
+ARCHIVO_DATOS = "mis_datos.csv"
+
+def inicializar_datos():
+    if not os.path.exists(ARCHIVO_DATOS):
+        # Datos iniciales si no existe el archivo
+        data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
+                "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
+                "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"]}
+        pd.DataFrame(data).to_csv(ARCHIVO_DATOS, index=False)
+
+inicializar_datos()
 
 # --- LÓGICA DE ACCESO ---
 def check_password():
     def password_entered():
         if st.session_state["username"] == "Admin" and st.session_state["password"] == "diges12..":
             st.session_state["password_correct"] = True
-            del st.session_state["password"]
-            del st.session_state["username"]
         else:
             st.session_state["password_correct"] = False
 
@@ -20,15 +30,9 @@ def check_password():
         st.text_input("Usuario", key="username")
         st.text_input("Contraseña", type="password", key="password", on_change=password_entered)
         return False
-    elif not st.session_state["password_correct"]:
-        st.error("Usuario o contraseña incorrectos")
-        st.text_input("Usuario", key="username")
-        st.text_input("Contraseña", type="password", key="password", on_change=password_entered)
-        return False
-    else:
-        return True
+    return st.session_state["password_correct"]
 
-# --- INICIO DE LA APLICACIÓN ---
+# --- INTERFAZ ---
 if check_password():
     st.markdown("""
         <style>
@@ -41,50 +45,45 @@ if check_password():
         </style>
     """, unsafe_allow_html=True)
 
-    ruta_logo = "logo_institucional.jpg"
-    if os.path.exists(ruta_logo):
-        st.markdown('<div class="full-width-logo">', unsafe_allow_html=True)
-        st.image(ruta_logo, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+    # Navegación
+    menu = st.sidebar.radio("Menú", ["Vista de Comando", "Panel de Registros"])
 
-    st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
+    if menu == "Vista de Comando":
+        if os.path.exists("logo_institucional.jpg"):
+            st.markdown('<div class="full-width-logo">', unsafe_allow_html=True)
+            st.image("logo_institucional.jpg", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
-    iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
+        st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
 
-    # --- CARGA DE DATOS CORREGIDA ---
-    try:
-        # dtype=str obliga a leer todo como texto para evitar problemas con puntos y decimales
-        df = pd.read_csv(f"{url}&nocache={time.time()}", dtype=str)
+        df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
+        iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
+        
         cols = st.columns(3)
         for i, col in enumerate(df.columns):
-            icono = iconos.get(col, "📊")
-            valor = df[col].iloc[0]
             with cols[i % 3]:
                 st.markdown(f"""
                     <div style="background-color: #1a1c23; padding: 20px; border-radius: 12px; border: 1px solid #31333f; margin-bottom: 20px; color: white;">
-                        <div style="font-size: 14px; text-transform: uppercase; color: #b0b3b8; letter-spacing: 1px;">
-                            {icono} {col}
-                        </div>
-                        <div style="font-size: 28px; font-weight: 800; margin-top: 5px;">
-                            {valor}
-                        </div>
+                        <div style="font-size: 14px; text-transform: uppercase; color: #b0b3b8;">{iconos.get(col, '📊')} {col}</div>
+                        <div style="font-size: 28px; font-weight: 800;">{df[col].iloc[0]}</div>
                     </div>
                 """, unsafe_allow_html=True)
-    except Exception as e:
-        st.error("Error al cargar los datos.")
 
+    else:
+        st.header("📝 Panel de Registros")
+        df_actual = pd.read_csv(ARCHIVO_DATOS, dtype=str)
+        # Editor interactivo
+        df_editado = st.data_editor(df_actual, use_container_width=True)
+        
+        if st.button("Guardar Cambios"):
+            df_editado.to_csv(ARCHIVO_DATOS, index=False)
+            st.success("¡Datos guardados con éxito!")
+            st.rerun()
+
+    # Mapa (Visible en ambos)
     st.subheader("📍 Mapa de Afectaciones")
-    mapa_html = """
+    st.components.v1.html("""
     <div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-        <button onclick="toggleFS()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">⛶ Pantalla Completa</button>
         <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
     </div>
-    <script>
-        function toggleFS() {
-            var elem = document.getElementById("map-container");
-            if (!document.fullscreenElement) { elem.requestFullscreen(); } else { document.exitFullscreen(); }
-        }
-    </script>
-    """
-    st.components.v1.html(mapa_html, height=510)
+    """, height=510)
