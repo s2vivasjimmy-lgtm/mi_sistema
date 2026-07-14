@@ -15,10 +15,13 @@ st.markdown("""
     .card-value { font-size: 20px; font-weight: 700; }
     .floating-btn-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
     
-    /* Efecto de marquesina */
+    /* Efecto de marquesina ajustado */
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; }
-    .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 15s linear infinite; }
-    @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+    .marquee-text { display: inline-block; animation: marquee 15s linear infinite; }
+    @keyframes marquee { 
+        0% { transform: translate(100%, 0); } 
+        100% { transform: translate(-100%, 0); } 
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -72,7 +75,7 @@ else:
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
 
-    # Título con efecto de movimiento
+    # Título con efecto de movimiento corregido
     st.markdown("""
         <div class="marquee-container">
             <h2 class="marquee-text" style="color:white;">
