@@ -20,15 +20,28 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# SIDEBAR
+# SIDEBAR CON PANEL DE EDICIÓN
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Coat_of_arms_of_Venezuela.svg/512px-Coat_of_arms_of_Venezuela.svg.png", width=120)
     st.markdown("## SALA SITUACIONAL")
     st.write("Dirección General de Salud")
     st.write("---")
+    
+    st.write("🛠️ ADMINISTRACIÓN")
+    with st.expander("Actualizar Estadísticas"):
+        v1 = st.text_input("Atenciones", value="1.240")
+        v2 = st.text_input("Altas Médicas", value="950")
+        v3 = st.text_input("Fallecidos", value="12")
+        v4 = st.text_input("Traslados", value="45")
+        v5 = st.text_input("Camas Ocupadas", value="320")
+        v6 = st.text_input("Camas Disponibles", value="85")
+        v7 = st.text_input("Hospitalizaciones", value="210")
+        v8 = st.text_input("Inmunizaciones", value="540")
+        v9 = st.text_input("Intervenciones Q.", value="35")
+
+    st.write("---")
     st.button("Dashboard")
     st.button("Reportes")
-    st.write("ADMINISTRACIÓN")
     st.button("Gestión Usuarios")
     st.button("Tablas del Sistema")
 
@@ -36,9 +49,9 @@ with st.sidebar:
 st.title("🛡️ Monitoreo de Gestión de Salud")
 
 datos = [
-    ("Atenciones", "1.240"), ("Altas Médicas", "950"), ("Fallecidos", "12"),
-    ("Traslados", "45"), ("Camas Ocupadas", "320"), ("Camas Disponibles", "85"),
-    ("Hospitalizaciones", "210"), ("Inmunizaciones", "540"), ("Intervenciones Q.", "35")
+    ("Atenciones", v1), ("Altas Médicas", v2), ("Fallecidos", v3),
+    ("Traslados", v4), ("Camas Ocupadas", v5), ("Camas Disponibles", v6),
+    ("Hospitalizaciones", v7), ("Inmunizaciones", v8), ("Intervenciones Q.", v9)
 ]
 
 for i in range(0, 9, 3):
