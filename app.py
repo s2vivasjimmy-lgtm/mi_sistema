@@ -56,11 +56,9 @@ st.markdown("""
 st.markdown('<div class="moving-title"><span>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</span></div>', unsafe_allow_html=True)
 
 # Carga segura del cintillo
-ruta_logo = "logo_institucional.png"
+ruta_logo = "logo_institucional.jpg"
 if os.path.exists(ruta_logo):
     st.image(ruta_logo, use_container_width=False, width=1000)
-else:
-    st.markdown(f"*(Imagen no encontrada en: {ruta_logo})*", unsafe_allow_html=True)
 
 # Cargamos los datos
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
