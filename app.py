@@ -31,28 +31,30 @@ def inicializar_datos():
 
 inicializar_datos()
 
+# --- BARRA LATERAL CON VENTANA FLOTANTE (POPOVER) ---
+with st.sidebar:
+    st.markdown("### Acceso del Sistema")
+    with st.popover("🔐 Panel Administrativo"):
+        if not st.session_state.admin_logueado:
+            user = st.text_input("Usuario")
+            pwd = st.text_input("Contraseña", type="password")
+            if st.button("Ingresar"):
+                if user == "Admin" and pwd == "diges12..":
+                    st.session_state.admin_logueado = True
+                    st.rerun()
+                else:
+                    st.error("Credenciales incorrectas")
+        else:
+            st.success("Sesión iniciada correctamente")
+            if st.button("Cerrar Sesión"):
+                st.session_state.admin_logueado = False
+                st.rerun()
+
 # --- INTERFAZ PRINCIPAL ---
 if os.path.exists("logo_institucional.jpg"):
     st.image("logo_institucional.jpg", use_container_width=True)
 
 st.markdown('<h2 style="color:white; text-align:center;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2>', unsafe_allow_html=True)
-
-# --- VENTANA DE ACCESO ADMINISTRATIVO ---
-with st.expander("🔐 Panel Administrativo"):
-    if not st.session_state.admin_logueado:
-        user = st.text_input("Usuario")
-        pwd = st.text_input("Contraseña", type="password")
-        if st.button("Ingresar"):
-            if user == "Admin" and pwd == "diges12..":
-                st.session_state.admin_logueado = True
-                st.rerun()
-            else:
-                st.error("Credenciales incorrectas")
-    else:
-        st.success("Administrador conectado.")
-        if st.button("Cerrar Sesión"):
-            st.session_state.admin_logueado = False
-            st.rerun()
 
 # --- DATOS ---
 df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
