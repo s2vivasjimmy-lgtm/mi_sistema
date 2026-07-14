@@ -100,30 +100,16 @@ else:
                 </div>
             """, unsafe_allow_html=True)
 
-    # --- MAPA CON MODAL ---
-    @st.dialog("Mapa de Afectaciones - Pantalla Completa", width="large")
-    def abrir_mapa_modal():
-        st.components.v1.html("""
-            <iframe 
-                src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
-                width="100%" 
-                height="700px" 
-                frameborder="0" 
-                style="border:0;">
-            </iframe>
-        """, height=720)
-
-    # Vista previa del mapa
+    # --- MAPA CON PANTALLA COMPLETA NATIVA ---
+    # Al incluir 'allowfullscreen' en el iframe, el botón de pantalla completa 
+    # de Google Maps debe aparecer y funcionar correctamente.
     st.components.v1.html("""
         <iframe 
             src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" 
             width="100%" 
-            height="400" 
+            height="600" 
             frameborder="0" 
-            style="border:0;">
+            style="border:0;" 
+            allowfullscreen>
         </iframe>
-    """, height=410)
-
-    # Botón de activación
-    if st.button("🌐 ABRIR MAPA EN PANTALLA COMPLETA"):
-        abrir_mapa_modal()
+    """, height=610)
