@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import os
 
-st.set_page_config(page_title="Puesto de Comando", layout="wide")
+# --- CONFIGURACIÓN FORZADA ---
+st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
-# --- ARCHIVO DE DATOS LOCAL ---
 ARCHIVO_DATOS = "mis_datos.csv"
 
 def inicializar_datos():
@@ -46,7 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Navegación
-menu = st.sidebar.radio("Menú", ["Vista de Comando", "Panel de Registros"])
+menu = st.sidebar.radio("Menú de Navegación", ["Vista de Comando", "Panel de Registros"])
 
 if menu == "Vista de Comando":
     if os.path.exists("logo_institucional.jpg"):
@@ -57,7 +57,7 @@ if menu == "Vista de Comando":
     df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
     iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "🥀", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
     
-    cols = st.columns(4) # 4 columnas para que sea más compacto
+    cols = st.columns(4)
     for i, col in enumerate(df.columns):
         with cols[i % 4]:
             st.markdown(f"""
@@ -70,8 +70,10 @@ if menu == "Vista de Comando":
     st.subheader("📍 Mapa de Afectaciones")
     st.components.v1.html('<iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="300" frameborder="0"></iframe>', height=300)
 
+    st.markdown("---")
+    st.caption("¿Necesitas editar datos? Usa el menú en la barra lateral izquierda.")
+
 else:
-    # Esta parte solicita contraseña
     if verificar_admin():
         st.header("📝 Panel de Edición de Registros")
         df_actual = pd.read_csv(ARCHIVO_DATOS, dtype=str)
