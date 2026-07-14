@@ -8,34 +8,32 @@ st.set_page_config(page_title="Sala Situacional", layout="wide")
 st.markdown("""
     <style>
     .metric-card {
-        background-color: #1c202a; 
-        padding: 20px; 
-        border-radius: 10px; 
-        border: 1px solid #31333F; 
-        margin-bottom: 10px;
+        background-color: #1c202a; padding: 20px; border-radius: 10px; 
+        border: 1px solid #31333F; margin-bottom: 10px;
     } 
     .metric-title {
-        color: #808495; 
-        font-size: 14px; 
-        text-transform: uppercase;
+        color: #808495; font-size: 14px; text-transform: uppercase;
     } 
     .metric-value {
-        color: #ffffff; 
-        font-size: 28px; 
-        font-weight: bold;
+        color: #ffffff; font-size: 28px; font-weight: bold;
     }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("🛡️ Monitoreo de Gestión de Salud")
 
-# Carga de datos desde Google Sheets
+# URL de tu Google Sheet
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_Np_DS4r1_ICdu3Yh0Xh41cH_vTf2KMABcRVbB1Vfowe5IBcf3ty7ulOnyfplAJiFwMRjxGmzuWc7/pub?output=csv"
 
+# Función para cargar datos con refresco automático
+@st.cache_data(ttl=60) # ttl=60 significa que se refrescará cada 60 segundos
+def load_data(url):
+    return pd.read_csv(url)
+
 try:
-    df = pd.read_csv(url)
+    df = load_data(url)
     
-    # Mostrar métricas en columnas de 3
+    # Mostrar métricas
     cols = st.columns(3)
     for i, col in enumerate(df.columns):
         with cols[i % 3]:
@@ -46,7 +44,7 @@ try:
                 </div>
             """, unsafe_allow_html=True)
 except Exception as e:
-    st.error("No se pudieron cargar los datos. Verifica que el archivo esté publicado en la web.")
+    st.error("No se pudieron cargar los datos. Verifica la publicación del Sheet.")
 
 # Mapa
 st.subheader("📍 Mapa de Afectaciones")
