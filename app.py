@@ -19,7 +19,7 @@ st.markdown("""
     .floating-btn-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
     
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
-    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; }
+    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: white; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 """, unsafe_allow_html=True)
@@ -38,7 +38,7 @@ def inicializar_datos():
 
 inicializar_datos()
 
-# --- BARRA LATERAL DE NAVEGACIÓN ---
+# --- BARRA LATERAL ---
 with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
@@ -48,7 +48,6 @@ with st.sidebar:
 # --- LÓGICA DE VISTAS ---
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
-    # Nota: Aquí puedes separar archivos CSV si deseas guardar datos distintos por categoría
     df_actual = pd.read_csv(ARCHIVO_DATOS, dtype=str)
     df_editado = st.data_editor(df_actual, use_container_width=True)
     if st.button("💾 Guardar Cambios"):
@@ -74,7 +73,7 @@ else:
     # Logo y Marquesina
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
-    st.markdown('<div class="marquee-container"><h2 class="marquee-text" style="color:white;">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
+    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
     # LÓGICA DE CONTENIDO SEGÚN SELECCIÓN
     if seleccion == "Resumen General":
@@ -100,5 +99,6 @@ else:
         """
         st.components.v1.html(mapa_html, height=510)
     else:
-        st.subheader(f"📊 Registros Detallados: {seleccion}")
-        st.info(f"Sección en desarrollo. Aquí podrás visualizar y editar la data correspondiente a {seleccion}.")
+        # Aquí se mostrará el contenido de las otras categorías
+        st.subheader(f"📊 Detalle: {seleccion}")
+        st.info("Espacio reservado para los registros de esta categoría.")
