@@ -120,19 +120,21 @@ else:
         for i, col_name in enumerate(df.columns):
             with cols[i % 4]:
                 st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+ 
+st.subheader("📍 UBICACIONES EN TIEMPO REAL")
+st.components.v1.html("""<div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;"><button onclick="toggleFS()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">⛶ Pantalla Completa</button><iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe></div><script>function toggleFS() { var elem = document.getElementById("map-container"); if (!document.fullscreenElement) { elem.requestFullscreen(); } else { document.exitFullscreen(); } }</script>""", height=510)
+else:
+st.subheader(f"📊 Detalle: {seleccion}")
+ archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
 
-        st.subheader("📍 UBICACIONES EN TIEMPO REAL")
-        # Mapa con atributos de seguridad para carga correcta
-        st.components.v1.html("""
-            <div style="width: 100%; height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid #31333f;">
-                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
-                width="100%" height="100%" frameborder="0" allowfullscreen="true" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-        """, height=510)
-    else:
-        st.subheader(f"📊 Detalle: {seleccion}")
-        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
+
             st.table(pd.read_csv(archivo_detalle, dtype=str))
+
         else:
+
+            st.info("Aún no hay registros cargados para esta categoría.") 
+
+
+     
             st.info("Aún no hay registros cargados.")
