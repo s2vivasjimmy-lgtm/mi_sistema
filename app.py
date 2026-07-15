@@ -1,10 +1,3 @@
-Entiendo perfectamente. El problema es que al inyectar CSS para ocultar elementos de la interfaz de Streamlit, a veces también se bloquea el botón nativo de "☰" que Streamlit coloca automáticamente para abrir la barra lateral.
-
-Para solucionar esto sin añadir botones adicionales que rompan tu diseño, he ajustado el CSS para asegurar que el botón nativo de apertura siempre esté visible y funcional, incluso cuando la barra está colapsada, y mantendré todo tu código exactamente como lo necesitas.
-
-Copia este código completo:
-
-Python
 import streamlit as st
 import pandas as pd
 import os
