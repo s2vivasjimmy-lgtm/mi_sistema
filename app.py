@@ -20,6 +20,15 @@ st.markdown("""
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
     .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
+    
+    /* CORRECCIÓN PARA TABLAS LEGIBLES */
+    .stTable table, .stTable thead, .stTable tbody, .stTable th, .stTable td {
+        color: #ffffff !important;
+        background-color: #1a1c23 !important;
+    }
+    .stTable table {
+        border: 1px solid #31333f !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
