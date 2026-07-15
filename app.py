@@ -3,29 +3,20 @@ import pandas as pd
 import os
 
 # --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="collapsed")
+# expanded = Barra siempre abierta, datos seguros y siempre accesibles
+st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS INTEGRADO Y OPTIMIZADO ---
+# --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
-    /* Ocultar header original de Streamlit totalmente */
     header { visibility: hidden !important; }
-    #MainMenu { visibility: hidden !important; }
-    footer { visibility: hidden !important; }
+    .stApp { background-color: #0E1117 !important; }
+    .gear-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
     
     .block-container { padding-top: 1rem !important; }
-    .stApp { background-color: #0E1117 !important; }
+    #MainMenu { visibility: hidden !important; }
+    footer { visibility: hidden !important; }
     h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
-
-    /* Contenedor flotante unificado */
-    .floating-btn-container { 
-        position: fixed; top: 10px; left: 10px; z-index: 9999; 
-        display: flex; gap: 5px; background: #1a1c23; padding: 5px; border-radius: 8px; border: 1px solid #31333f;
-    }
-    
-    .custom-sidebar-btn { 
-        background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 5px 10px; 
-    }
     
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 20px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
@@ -42,40 +33,23 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- BOTONES FLOTANTES (Sidebar + Engranaje) ---
-st.markdown("""
-    <script>
-    function toggleSidebar() {
-        // Simula la pulsación de la tecla para abrir/cerrar sidebar
-        window.dispatchEvent(new KeyboardEvent('keydown', {key: 'e', keyCode: 69, code: 'KeyE', ctrlKey: true}));
-    }
-    </script>
-    <div class="floating-btn-container">
-        <button class="custom-sidebar-btn" onclick="toggleSidebar()">≫</button>
-    </div>
-""", unsafe_allow_html=True)
+ARCHIVO_RESUMEN = "mis_datos.csv"
 
 # --- INICIALIZACIÓN ---
-ARCHIVO_RESUMEN = "mis_datos.csv"
 if "admin_logueado" not in st.session_state: st.session_state.admin_logueado = False
 
 def inicializar_resumen():
     if not os.path.exists(ARCHIVO_RESUMEN):
         data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
-                "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPRES": ["0"],
+                "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
                 "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
 
 inicializar_resumen()
 
-# --- LÓGICA DE LOGIN (Engranaje dentro del mismo contenedor) ---
-with st.sidebar:
-    st.header("📋 Registros")
-    seleccion = st.radio("Seleccionar categoría:", ["Resumen General", "Hospitales de Campaña", "Campamentos Transitorios", "Puntos de Inmunización", "Daños de Infraestructura"])
-
-# Colocamos el engranaje justo al lado del botón de sidebar (se verá en la UI)
+# --- PANEL DE CONTROL FLOTANTE (Solo engranaje) ---
 with st.container():
-    st.markdown('<div style="position:fixed; top:15px; left:60px; z-index:9999;">', unsafe_allow_html=True)
+    st.markdown('<div class="gear-container">', unsafe_allow_html=True)
     with st.popover("⚙️"):
         user = st.text_input("Usuario")
         pwd = st.text_input("Contraseña", type="password")
@@ -85,7 +59,14 @@ with st.container():
                 st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- LÓGICA PRINCIPAL ---
+# --- BARRA LATERAL ---
+with st.sidebar:
+    st.header("📋 Registros")
+    seleccion = st.radio("Seleccionar categoría:", 
+                         ["Resumen General", "Hospitales de Campaña", 
+                          "Campamentos Transitorios", "Puntos de Inmunización", "Daños de Infraestructura"])
+
+# --- LÓGICA ---
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
@@ -93,13 +74,16 @@ if st.session_state.admin_logueado:
     if not os.path.exists(archivo_a_editar):
         cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
         pd.DataFrame(columns=cols).to_csv(archivo_a_editar, index=False)
-    
+        
     df_actual = pd.read_csv(archivo_a_editar, dtype=str)
     df_editado = st.data_editor(df_actual, use_container_width=True, num_rows="dynamic")
     
     if st.button("💾 Guardar Cambios"):
         df_editado.to_csv(archivo_a_editar, index=False)
         st.success("Guardado exitosamente")
+        st.rerun()
+    if st.button("❌ Cerrar Sesión"):
+        st.session_state.admin_logueado = False
         st.rerun()
 else:
     if os.path.exists("logo_institucional.jpg"):
@@ -113,9 +97,11 @@ else:
         for i, col_name in enumerate(df.columns):
             with cols[i % 4]:
                 st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+        
         st.subheader("📍 UBICACIONES EN TIEMPO REAL")
         st.components.v1.html("""<div id="map-container" style="width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;"><iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe></div>""", height=510)
     else:
+        st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle): st.table(pd.read_csv(archivo_detalle, dtype=str))
         else: st.info("Aún no hay registros cargados.")
