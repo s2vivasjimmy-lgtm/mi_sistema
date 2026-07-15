@@ -3,15 +3,20 @@ import pandas as pd
 import os
 
 # --- CONFIGURACIÓN ---
-# expanded = Barra siempre abierta, datos seguros y siempre accesibles
-st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
+# collapsed = La barra está oculta al iniciar, pero el botón nativo "≡" aparece arriba a la izquierda.
+st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="collapsed")
 
 # --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
-    header { visibility: hidden !important; }
+    /* Ocultar header, pero dejamos que el botón de sidebar nativo funcione */
+    header { visibility: visible !important; background: transparent !important; }
+    [data-testid="stHeader"] { background-color: transparent !important; }
+    
     .stApp { background-color: #0E1117 !important; }
-    .gear-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
+    
+    /* Contenedor del engranaje flotante desplazado a la derecha para no tapar el botón de la sidebar */
+    .gear-container { position: fixed; top: 10px; left: 50px; z-index: 9999; }
     
     .block-container { padding-top: 1rem !important; }
     #MainMenu { visibility: hidden !important; }
@@ -47,7 +52,8 @@ def inicializar_resumen():
 
 inicializar_resumen()
 
-# --- PANEL DE CONTROL FLOTANTE (Solo engranaje) ---
+# --- PANEL DE CONTROL FLOTANTE (Engranaje) ---
+# Se mueve ligeramente a la derecha (left: 50px) para no tapar el botón nativo de Streamlit
 with st.container():
     st.markdown('<div class="gear-container">', unsafe_allow_html=True)
     with st.popover("⚙️"):
@@ -66,7 +72,7 @@ with st.sidebar:
                          ["Resumen General", "Hospitales de Campaña", 
                           "Campamentos Transitorios", "Puntos de Inmunización", "Daños de Infraestructura"])
 
-# --- LÓGICA ---
+# --- LÓGICA (Tus archivos están 100% seguros aquí) ---
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
@@ -86,6 +92,7 @@ if st.session_state.admin_logueado:
         st.session_state.admin_logueado = False
         st.rerun()
 else:
+    # ... (Resto de tu lógica visual)
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
     st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
