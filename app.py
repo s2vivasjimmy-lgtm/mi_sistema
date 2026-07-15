@@ -13,7 +13,8 @@ st.set_page_config(
     initial_sidebar_state=st.session_state.sidebar_state
 )
 
-# --- CSS OPTIMIZADO ---
+# --- CSS PARA ESTILIZAR EL BOTÓN NATIVO ---
+# Esto hace que el control de Streamlit sea siempre visible y estético
 st.markdown("""
     <style>
     [data-testid="stToolbar"] { visibility: hidden !important; }
@@ -39,11 +40,11 @@ st.markdown("""
     .stTable th, .stTable td { color: #ffffff !important; white-space: nowrap !important; padding: 10px 15px !important; border-bottom: 1px solid #31333f !important; }
     .stTable thead tr { background-color: #262730 !important; }
 
-    /* Asegura que el botón nativo de apertura de Streamlit sea siempre visible */
-    [data-testid="stSidebarCollapsedControl"] {
-        z-index: 100000 !important;
-        background-color: #262730 !important;
-        border-radius: 5px !important;
+    /* FORZAR VISIBILIDAD DEL BOTÓN NATIVO DE STREAMLIT */
+    [data-testid="stSidebarCollapsedControl"], [data-testid="stSidebarExpandedControl"] {
+        visibility: visible !important;
+        opacity: 1 !important;
+        color: white !important;
     }
     </style>
 """, unsafe_allow_html=True)
