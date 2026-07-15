@@ -22,23 +22,10 @@ st.markdown("""
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     
     /* CORRECCIÓN PARA TABLAS LEGIBLES Y EN UNA LÍNEA */
-    .stTable {
-        width: 100% !important;
-    }
-    .stTable table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        background-color: #1a1c23 !important;
-    }
-    .stTable th, .stTable td {
-        color: #ffffff !important;
-        white-space: nowrap !important;
-        padding: 10px 15px !important;
-        border-bottom: 1px solid #31333f !important;
-    }
-    .stTable thead tr {
-        background-color: #262730 !important;
-    }
+    .stTable { width: 100% !important; }
+    .stTable table { width: 100% !important; border-collapse: collapse !important; background-color: #1a1c23 !important; }
+    .stTable th, .stTable td { color: #ffffff !important; white-space: nowrap !important; padding: 10px 15px !important; border-bottom: 1px solid #31333f !important; }
+    .stTable thead tr { background-color: #262730 !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -67,14 +54,18 @@ with st.sidebar:
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     
-    # Definir archivo según selección
     if seleccion == "Resumen General":
         archivo_a_editar = ARCHIVO_RESUMEN
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
     else:
         archivo_a_editar = f"{seleccion.lower().replace(' ', '_')}.csv"
         if not os.path.exists(archivo_a_editar):
-            pd.DataFrame(columns=["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIDAD", "PAIS RESPONSABLE"]).to_csv(archivo_a_editar, index=False)
+            # Lógica personalizada según categoría
+            if seleccion == "Campamentos Transitorios":
+                cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+            else:
+                cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIDAD", "PAIS RESPONSABLE"]
+            pd.DataFrame(columns=cols).to_csv(archivo_a_editar, index=False)
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
 
     df_editado = st.data_editor(df_actual, use_container_width=True, num_rows="dynamic")
@@ -88,7 +79,6 @@ if st.session_state.admin_logueado:
         st.rerun()
 
 else:
-    # Botón acceso admin
     with st.container():
         st.markdown('<div class="floating-btn-container">', unsafe_allow_html=True)
         with st.popover("⚙️"):
