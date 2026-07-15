@@ -47,7 +47,7 @@ with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Hospitales de Campaña", 
-                          "Campamentos Transitorios", "Puntos de Inmunización"])
+                          "Campamentos Transitorios", "Puntos de Inmunización", "Daños de Infraestructura"])
 
 # --- LÓGICA DE VISTAS ---
 if st.session_state.admin_logueado:
