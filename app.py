@@ -21,13 +21,23 @@ st.markdown("""
     .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     
-    /* CORRECCIÓN PARA TABLAS LEGIBLES */
-    .stTable table, .stTable thead, .stTable tbody, .stTable th, .stTable td {
-        color: #ffffff !important;
-        background-color: #1a1c23 !important;
+    /* CORRECCIÓN PARA TABLAS LEGIBLES Y EN UNA LÍNEA */
+    .stTable {
+        width: 100% !important;
     }
     .stTable table {
-        border: 1px solid #31333f !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        background-color: #1a1c23 !important;
+    }
+    .stTable th, .stTable td {
+        color: #ffffff !important;
+        white-space: nowrap !important;
+        padding: 10px 15px !important;
+        border-bottom: 1px solid #31333f !important;
+    }
+    .stTable thead tr {
+        background-color: #262730 !important;
     }
     </style>
 """, unsafe_allow_html=True)
