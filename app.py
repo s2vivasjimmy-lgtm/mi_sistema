@@ -1,3 +1,4 @@
+Python
 import streamlit as st
 import pandas as pd
 import os
@@ -13,6 +14,9 @@ st.markdown("""
     #MainMenu { visibility: hidden !important; }
     footer { visibility: hidden !important; }
     
+    /* CORRECCIÓN: Forzar blanco en todos los títulos y encabezados */
+    h1, h2, h3, h4, h5, h6, .st-emotion-cache-10tr34c { color: #ffffff !important; }
+    
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 15px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
     .card-value { font-size: 20px; font-weight: 800; color: #ffffff; }
@@ -20,7 +24,7 @@ st.markdown("""
     .floating-btn-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
     
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
-    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: white; }
+    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 """, unsafe_allow_html=True)
