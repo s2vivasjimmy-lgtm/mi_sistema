@@ -8,9 +8,15 @@ st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sideba
 # --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
-    /* Ocultar elementos de la barra superior (Fork y GitHub) */
-    [data-testid="stToolbar"] { visibility: hidden !important; }
-    
+    /* Ocultar el menú de GitHub/Fork (el contenedor del Toolbar) */
+    [data-testid="stToolbar"] {
+        display: none !important;
+    }
+    /* Asegurar transparencia en la cabecera */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+    }
+
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
     #MainMenu { visibility: hidden !important; }
@@ -63,7 +69,6 @@ if st.session_state.admin_logueado:
     else:
         archivo_a_editar = f"{seleccion.lower().replace(' ', '_')}.csv"
         if not os.path.exists(archivo_a_editar):
-            # Lógica personalizada según categoría
             if seleccion == "Campamentos Transitorios":
                 cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
             elif seleccion == "Puntos de Inmunización":
