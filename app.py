@@ -5,24 +5,24 @@ import os
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS OPTIMIZADO ---
+# --- CSS QUIRÚRGICO (NO TOCA LA BARRA LATERAL) ---
 st.markdown("""
     <style>
-    /* Ocultar elementos de Streamlit pero dejar el botón de Sidebar */
+    /* Ocultar elementos de menú de GitHub y Fork pero dejar intacto el botón de Sidebar */
+    .stApp > header { background-color: transparent !important; }
     [data-testid="stToolbar"] { display: none !important; }
+    
+    .block-container { padding-top: 1rem !important; }
+    .stApp { background-color: #0E1117 !important; }
     #MainMenu { visibility: hidden !important; }
     footer { visibility: hidden !important; }
     
-    /* Asegurar que el botón de la barra lateral sea visible */
-    button[aria-label="Toggle sidebar"] { visibility: visible !important; }
-
-    .block-container { padding-top: 1rem !important; }
-    .stApp { background-color: #0E1117 !important; }
-    h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+    /* MANTENEMOS ESTILOS DE DISEÑO */
+    h1, h2, h3, h4, h5, h6, .st-emotion-cache-10tr34c { color: #ffffff !important; }
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 20px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
     .card-value { font-size: 20px; font-weight: 800; color: #ffffff; }
-    .floating-btn-container { position: fixed; top: 10px; left: 50px; z-index: 9999; }
+    .floating-btn-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
     .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
@@ -34,9 +34,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-ARCHIVO_RESUMEN = "mis_datos.csv"
-
 # --- INICIALIZACIÓN ---
+ARCHIVO_RESUMEN = "mis_datos.csv"
 if "admin_logueado" not in st.session_state: st.session_state.admin_logueado = False
 
 def inicializar_resumen():
@@ -65,9 +64,9 @@ if st.session_state.admin_logueado:
     else:
         archivo_a_editar = f"{seleccion.lower().replace(' ', '_')}.csv"
         if not os.path.exists(archivo_a_editar):
-            cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
-            if seleccion == "Puntos de Inmunización": cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "DOSIS ADMINISTRADAS"]
-            elif seleccion != "Campamentos Transitorios": cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIDAD", "PAIS RESPONSABLE"]
+            if seleccion == "Campamentos Transitorios": cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+            elif seleccion == "Puntos de Inmunización": cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "DOSIS ADMINISTRADAS"]
+            else: cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIDAD", "PAIS RESPONSABLE"]
             pd.DataFrame(columns=cols).to_csv(archivo_a_editar, index=False)
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
 
@@ -104,6 +103,7 @@ else:
         for i, col_name in enumerate(df.columns):
             with cols[i % 4]:
                 st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+
         st.subheader("📍 UBICACIONES EN TIEMPO REAL")
         st.components.v1.html("""<div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;"><button onclick="toggleFS()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">⛶ Pantalla Completa</button><iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe></div><script>function toggleFS() { var elem = document.getElementById("map-container"); if (!document.fullscreenElement) { elem.requestFullscreen(); } else { document.exitFullscreen(); } }</script>""", height=510)
     else:
