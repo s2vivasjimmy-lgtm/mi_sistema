@@ -63,6 +63,8 @@ if st.session_state.admin_logueado:
             # Lógica personalizada según categoría
             if seleccion == "Campamentos Transitorios":
                 cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+            elif seleccion == "Puntos de Inmunización":
+                cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "DOSIS ADMINISTRADAS"]
             else:
                 cols = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIDAD", "PAIS RESPONSABLE"]
             pd.DataFrame(columns=cols).to_csv(archivo_a_editar, index=False)
