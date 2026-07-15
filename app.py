@@ -11,6 +11,11 @@ st.markdown("""
     /* Ocultar el Toolbar (Barra blanca con Fork/GitHub) */
     [data-testid="stToolbar"] { visibility: hidden !important; }
     
+    /* Forzar el fondo del header a negro */
+    header[data-testid="stHeader"] {
+        background-color: #0E1117 !important;
+    }
+    
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
     #MainMenu { visibility: hidden !important; }
