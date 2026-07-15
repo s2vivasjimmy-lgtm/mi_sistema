@@ -1,3 +1,10 @@
+Entiendo perfectamente. El problema es que al inyectar CSS para ocultar elementos de la interfaz de Streamlit, a veces también se bloquea el botón nativo de "☰" que Streamlit coloca automáticamente para abrir la barra lateral.
+
+Para solucionar esto sin añadir botones adicionales que rompan tu diseño, he ajustado el CSS para asegurar que el botón nativo de apertura siempre esté visible y funcional, incluso cuando la barra está colapsada, y mantendré todo tu código exactamente como lo necesitas.
+
+Copia este código completo:
+
+Python
 import streamlit as st
 import pandas as pd
 import os
@@ -39,28 +46,14 @@ st.markdown("""
     .stTable th, .stTable td { color: #ffffff !important; white-space: nowrap !important; padding: 10px 15px !important; border-bottom: 1px solid #31333f !important; }
     .stTable thead tr { background-color: #262730 !important; }
 
-    /* Estilo estético para el botón de menú */
-    div.stButton > button[kind="secondary"] {
-        background-color: transparent !important;
-        border: none !important;
-        color: #ffffff !important;
-        font-size: 24px !important;
-        padding: 0px 10px !important;
-        position: fixed !important;
-        top: 10px !important;
-        left: 10px !important;
-        z-index: 99999 !important;
-    }
-    div.stButton > button[kind="secondary"]:hover {
-        color: #4b8bf5 !important;
+    /* Asegura que el botón nativo de apertura de Streamlit sea siempre visible */
+    [data-testid="stSidebarCollapsedControl"] {
+        z-index: 100000 !important;
+        background-color: #262730 !important;
+        border-radius: 5px !important;
     }
     </style>
 """, unsafe_allow_html=True)
-
-# --- BOTÓN DE CONTROL ESTILIZADO ---
-if st.button("☰"):
-    st.session_state.sidebar_state = "collapsed" if st.session_state.sidebar_state == "expanded" else "expanded"
-    st.rerun()
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
