@@ -38,11 +38,27 @@ st.markdown("""
     .stTable table { width: 100% !important; border-collapse: collapse !important; background-color: #1a1c23 !important; }
     .stTable th, .stTable td { color: #ffffff !important; white-space: nowrap !important; padding: 10px 15px !important; border-bottom: 1px solid #31333f !important; }
     .stTable thead tr { background-color: #262730 !important; }
+
+    /* Estilo estético para el botón de menú */
+    div.stButton > button[kind="secondary"] {
+        background-color: transparent !important;
+        border: none !important;
+        color: #ffffff !important;
+        font-size: 24px !important;
+        padding: 0px 10px !important;
+        position: fixed !important;
+        top: 10px !important;
+        left: 10px !important;
+        z-index: 99999 !important;
+    }
+    div.stButton > button[kind="secondary"]:hover {
+        color: #4b8bf5 !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# --- BOTÓN DE CONTROL NATIVO ---
-if st.button("☰ Menú"):
+# --- BOTÓN DE CONTROL ESTILIZADO ---
+if st.button("☰"):
     st.session_state.sidebar_state = "collapsed" if st.session_state.sidebar_state == "expanded" else "expanded"
     st.rerun()
 
