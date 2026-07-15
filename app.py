@@ -8,9 +8,10 @@ st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sideba
 # --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
-    .block-container { padding-top: 0rem !important; }
+    .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
-    #MainMenu, footer, header { visibility: hidden !important; }
+    #MainMenu { visibility: hidden !important; }
+    footer { visibility: hidden !important; }
     
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 15px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
@@ -56,7 +57,6 @@ if st.session_state.admin_logueado:
     if st.button("❌ Cerrar Sesión"):
         st.session_state.admin_logueado = False
         st.rerun()
-
 else:
     # Botón acceso admin
     with st.container():
@@ -75,7 +75,7 @@ else:
         st.image("logo_institucional.jpg", use_container_width=True)
     st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
-    # LÓGICA DE CONTENIDO SEGÚN SELECCIÓN
+    # Lógica según selección
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_DATOS, dtype=str)
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
@@ -99,6 +99,5 @@ else:
         """
         st.components.v1.html(mapa_html, height=510)
     else:
-        # Aquí se mostrará el contenido de las otras categorías
         st.subheader(f"📊 Detalle: {seleccion}")
-        st.info("Espacio reservado para los registros de esta categoría.")
+        st.info("Espacio de gestión para esta categoría.")
