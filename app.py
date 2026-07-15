@@ -2,45 +2,34 @@ import streamlit as st
 import pandas as pd
 import os
 
+# --- ESTADO DE LA BARRA ---
+if "sidebar_state" not in st.session_state:
+    st.session_state.sidebar_state = "expanded"
+
 # --- CONFIGURACIÓN ---
-st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="Puesto de Comando", 
+    layout="wide", 
+    initial_sidebar_state=st.session_state.sidebar_state
+)
 
 # --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
-    /* Ocultar el Toolbar (Barra blanca con Fork/GitHub) */
     [data-testid="stToolbar"] { visibility: hidden !important; }
-    
-    /* Forzar el fondo del header a negro */
-    header[data-testid="stHeader"] {
-        background-color: #0E1117 !important;
-    }
+    header[data-testid="stHeader"] { background-color: #0E1117 !important; }
+    .stApp { background-color: #0E1117 !important; }
     
     .block-container { padding-top: 1rem !important; }
-    .stApp { background-color: #0E1117 !important; }
     #MainMenu { visibility: hidden !important; }
     footer { visibility: hidden !important; }
-    h1, h2, h3, h4, h5, h6, .st-emotion-cache-10tr34c { color: #ffffff !important; }
+    h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+    
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 20px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
     .card-value { font-size: 20px; font-weight: 800; color: #ffffff; }
     
-    /* Estilos para el botón flotante de control de Sidebar */
-    .sidebar-toggle-btn {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 100000;
-        background-color: #262730;
-        color: white;
-        border: 1px solid #31333f;
-        padding: 8px 12px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 20px;
-    }
-    
-    .floating-btn-container { position: fixed; top: 10px; left: 60px; z-index: 9999; }
+    .floating-btn-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
     .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
@@ -52,10 +41,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- BOTÓN FLOTANTE PARA ABRIR/CERRAR SIDEBAR ---
-st.markdown("""
-    <button class="sidebar-toggle-btn" onclick="window.parent.postMessage({type: 'streamlit:setSidebarState', value: 'toggle'}, '*')">☰</button>
-""", unsafe_allow_html=True)
+# --- BOTÓN DE CONTROL NATIVO ---
+if st.button("☰ Menú"):
+    st.session_state.sidebar_state = "collapsed" if st.session_state.sidebar_state == "expanded" else "expanded"
+    st.rerun()
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
