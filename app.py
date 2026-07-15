@@ -8,6 +8,9 @@ st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sideba
 # --- CSS OPTIMIZADO ---
 st.markdown("""
     <style>
+    /* Ocultar elementos de la barra superior (Fork y GitHub) */
+    [data-testid="stToolbar"] { visibility: hidden !important; }
+    
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
     #MainMenu { visibility: hidden !important; }
