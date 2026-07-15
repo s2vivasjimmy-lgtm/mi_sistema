@@ -2,53 +2,24 @@ import streamlit as st
 import pandas as pd
 import os
 
-# --- ESTADO DE LA BARRA ---
-if "sidebar_state" not in st.session_state:
-    st.session_state.sidebar_state = "expanded"
-
-# --- CONFIGURACIÓN ---
+# --- CONFIGURACIÓN MÍNIMA ---
 st.set_page_config(
     page_title="Puesto de Comando", 
     layout="wide", 
-    initial_sidebar_state=st.session_state.sidebar_state
+    initial_sidebar_state="expanded"
 )
 
-# --- CSS PARA ESTILIZAR EL BOTÓN NATIVO ---
-# Esto hace que el control de Streamlit sea siempre visible y estético
+# --- CSS LIMPIO (Solo lo necesario, sin ocultar controles) ---
 st.markdown("""
     <style>
-    [data-testid="stToolbar"] { visibility: hidden !important; }
-    header[data-testid="stHeader"] { background-color: #0E1117 !important; }
     .stApp { background-color: #0E1117 !important; }
-    
-    .block-container { padding-top: 1rem !important; }
-    #MainMenu { visibility: hidden !important; }
-    footer { visibility: hidden !important; }
     h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
     
     .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 8px; border: 1px solid #31333f; color: white; margin-bottom: 5px; text-align: center; }
     .card-title { font-size: 20px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 2px; }
     .card-value { font-size: 20px; font-weight: 800; color: #ffffff; }
-    
-    .floating-btn-container { position: fixed; top: 10px; left: 10px; z-index: 9999; }
-    .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 10px; }
-    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; }
-    @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
-    
-    .stTable { width: 100% !important; }
-    .stTable table { width: 100% !important; border-collapse: collapse !important; background-color: #1a1c23 !important; }
-    .stTable th, .stTable td { color: #ffffff !important; white-space: nowrap !important; padding: 10px 15px !important; border-bottom: 1px solid #31333f !important; }
-    .stTable thead tr { background-color: #262730 !important; }
-
-    /* FORZAR VISIBILIDAD DEL BOTÓN NATIVO DE STREAMLIT */
-    [data-testid="stSidebarCollapsedControl"], [data-testid="stSidebarExpandedControl"] {
-        visibility: visible !important;
-        opacity: 1 !important;
-        color: white !important;
-    }
     </style>
 """, unsafe_allow_html=True)
-
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
 # --- INICIALIZACIÓN ---
