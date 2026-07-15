@@ -76,7 +76,7 @@ else:
     # Logo y Marquesina
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
-    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
+    st.markdown('<div class="marquee-container"><h2 class="marquee-text">>AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA<</h2></div>', unsafe_allow_html=True)
 
     # Lógica según selección
     if seleccion == "Resumen General":
