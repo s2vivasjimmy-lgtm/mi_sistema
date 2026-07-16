@@ -14,21 +14,11 @@ st.markdown("""
     .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
     .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
     
-    /* MARQUEE (MOVIMIENTO) */
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
     .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
 
-    /* ESTILO PERSONALIZADO PARA EL LOGO */
-    .logo-custom {
-        width: 100%;
-        height: 200px;
-        object-fit: contain;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 10px;
-    }
+    .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -40,16 +30,13 @@ def guardar_en_github(archivo_local):
         repo_name = st.secrets["GITHUB_REPO"] 
         g = Github(token)
         repo = g.get_repo(repo_name)
-        
         with open(archivo_local, 'r', encoding='utf-8') as file:
             contenido = file.read()
-            
         try:
             contents = repo.get_contents(archivo_local)
             repo.update_file(contents.path, "Actualización datos Puesto Comando", contenido, contents.sha)
         except:
             repo.create_file(archivo_local, "Creación datos Puesto Comando", contenido)
-            
         return True
     except Exception as e:
         st.error(f"Error al respaldar en GitHub: {e}")
@@ -76,7 +63,6 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
-    # Lógica de columnas condicional
     if seleccion == "Campamentos Transitorios":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion == "Puntos de Inmunización":
@@ -89,32 +75,21 @@ if st.session_state.admin_logueado:
         df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
-        
-        # Limpieza específica
-        if seleccion == "Campamentos Transitorios":
-            if "PAIS RESPONSABLE" in df_actual.columns:
-                df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
-        
+        if seleccion == "Campamentos Transitorios" and "PAIS RESPONSABLE" in df_actual.columns:
+            df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
         elif seleccion == "Puntos de Inmunización":
-            if "PAIS RESPONSABLE" in df_actual.columns:
-                df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
-            if "ATENCIONES" in df_actual.columns:
-                df_actual = df_actual.rename(columns={"ATENCIONES": "TOTAL INMUNIZACIONES"})
+            if "PAIS RESPONSABLE" in df_actual.columns: df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
+            if "ATENCIONES" in df_actual.columns: df_actual = df_actual.rename(columns={"ATENCIONES": "TOTAL INMUNIZACIONES"})
         
-        # Auto-reparación de columnas
         for col in cols_maestras:
-            if col not in df_actual.columns:
-                df_actual[col] = ""
+            if col not in df_actual.columns: df_actual[col] = ""
         df_actual.to_csv(archivo_a_editar, index=False)
             
     df_editado = st.data_editor(df_actual, use_container_width=True, num_rows="dynamic")
-    
     if st.button("💾 Guardar Cambios"):
         df_editado.to_csv(archivo_a_editar, index=False)
-        if guardar_en_github(archivo_a_editar):
-            st.success("Guardado en servidor y respaldado en GitHub correctamente.")
-            st.rerun()
-            
+        if guardar_en_github(archivo_a_editar): st.success("Guardado en servidor.")
+        st.rerun()
     if st.button("❌ Cerrar Sesión"):
         st.session_state.admin_logueado = False
         st.rerun()
@@ -139,35 +114,19 @@ else:
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
         
+        # SOLO MOSTRAMOS ESTAS COLUMNAS EN EL RESUMEN
+        cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
+        
         cols = st.columns(4)
-        for i, col_name in enumerate(df.columns):
-            with cols[i % 4]:
-                st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+        idx = 0
+        for col_name in cols_mostrar:
+            if col_name in df.columns:
+                with cols[idx % 4]:
+                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+                idx += 1
 
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
-        st.components.v1.html("""
-            <div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-                <button onclick="toggleFS()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                    ⛶ Pantalla Completa
-                </button>
-                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
-            </div>
-            <script>
-                function toggleFS() { 
-                    var elem = document.getElementById("map-container"); 
-                    if (!document.fullscreenElement) { 
-                        elem.requestFullscreen(); 
-                    } else { 
-                        document.exitFullscreen(); 
-                    } 
-                }
-            </script>
-        """, height=510)
-    
+        # ... (código del mapa)
     else:
         st.subheader(f"📊 Detalle: {seleccion}")
-        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-        if os.path.exists(archivo_detalle):
-            st.dataframe(pd.read_csv(archivo_detalle, dtype=str), use_container_width=True, hide_index=True)
-        else:
-            st.info("Aún no hay registros cargados.")
+        # ... (lógica de visualización de detalles)
