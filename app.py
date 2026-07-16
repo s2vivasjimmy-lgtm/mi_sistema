@@ -11,8 +11,8 @@ st.markdown("""
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
     .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
-    .card-title { font-size: 12px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
-    .card-value { font-size: 25px; font-weight: 800; color: #ffffff; }
+    .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
+    .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
     
     /* MARQUEE (MOVIMIENTO) */
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
