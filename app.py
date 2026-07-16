@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import base64
 from github import Github
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
@@ -17,6 +18,17 @@ st.markdown("""
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
     .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
+
+    /* ESTILO PERSONALIZADO PARA EL LOGO */
+    .logo-custom {
+        width: 300px;   /* AJUSTA ESTE ANCHO */
+        height: 150px;  /* AJUSTA ESTE ALTO */
+        object-fit: contain;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 10px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -90,7 +102,10 @@ else:
                 st.rerun()
                 
     if os.path.exists("logo_institucional.jpg"):
-        st.image("logo_institucional.jpg", width=300)
+        with open("logo_institucional.jpg", "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
+            
     st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
     if seleccion == "Resumen General":
