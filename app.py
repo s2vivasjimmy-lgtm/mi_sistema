@@ -74,7 +74,6 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
-    # Definición exhaustiva de columnas
     if seleccion == "Resumen General":
         cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
                          "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.",
@@ -158,7 +157,33 @@ else:
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+            
+            # --- PROCESAMIENTO DE ESTADÍSTICAS Y DONA ---
+            suma_nac, suma_ext, total = 0, 0, 0
+            if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
+                df_stats = df_detalle.copy()
+                df_stats['ATENCIONES'] = df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False)
+                df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'], errors='coerce').fillna(0)
+                df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
+                resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
+                suma_nac = resumen.get('NACIONAL', 0)
+                suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
+                total = suma_nac + suma_ext
+                
+                cols = st.columns(2)
+                with cols[0]:
+                    st.metric(label="Total Atenciones NACIONALES", value=f"{int(suma_nac):,}".replace(",", "."))
+                with cols[1]:
+                    st.metric(label="Total Atenciones EXTRANJEROS", value=f"{int(suma_ext):,}".replace(",", "."))
+            
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            # ... lógica restante de gráficos y excel ...
+            
+            if total > 0:
+                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='text', text=[f"NACIONAL<br>{int(suma_nac/total*100)}%", f"EXTRANJERO<br>{int(suma_ext/total*100)}%"])])
+                fig.update_layout(height=400, margin=dict(t=40, b=40, l=40, r=40))
+                st.plotly_chart(fig, use_container_width=True)
+            
+            excel_data = convertir_df_a_excel(df_detalle)
+            st.download_button("📥 Descargar Reporte en Excel", data=excel_data, file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         else:
             st.info("Aún no hay registros cargados.")
