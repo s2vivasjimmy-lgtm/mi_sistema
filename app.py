@@ -74,6 +74,7 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
+    # Definición exhaustiva de columnas para edición
     if seleccion == "Resumen General":
         cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
                          "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.",
@@ -158,7 +159,7 @@ else:
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             
-            # --- PROCESAMIENTO DE ESTADÍSTICAS Y DONA ---
+            # --- LÓGICA ESTADÍSTICA Y DONA ---
             suma_nac, suma_ext, total = 0, 0, 0
             if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
@@ -179,8 +180,18 @@ else:
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
             if total > 0:
-                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='text', text=[f"NACIONAL<br>{int(suma_nac/total*100)}%", f"EXTRANJERO<br>{int(suma_ext/total*100)}%"])])
-                fig.update_layout(height=400, margin=dict(t=40, b=40, l=40, r=40))
+                fig = go.Figure(data=[go.Pie(
+                    labels=['NACIONAL', 'EXTRANJERO'], 
+                    values=[suma_nac, suma_ext], 
+                    hole=.6, 
+                    marker_colors=['#FF0000', '#002060'],
+                    textinfo='none'
+                )])
+                fig.update_layout(
+                    showlegend=True,
+                    legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
+                    margin=dict(t=20, b=80, l=20, r=20)
+                )
                 st.plotly_chart(fig, use_container_width=True)
             
             excel_data = convertir_df_a_excel(df_detalle)
