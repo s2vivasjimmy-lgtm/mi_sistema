@@ -144,7 +144,6 @@ else:
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             
-            # Cálculo de variables de estadística
             suma_nac, suma_ext, total = 0, 0, 0
             if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
@@ -157,17 +156,17 @@ else:
                 suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
                 total = suma_nac + suma_ext
                 
-                # 1. Métricas
+                # Métricas
                 cols = st.columns(2)
                 with cols[0]:
                     st.metric(label="Total Atenciones NACIONALES", value=f"{int(suma_nac):,}".replace(",", "."))
                 with cols[1]:
                     st.metric(label="Total Atenciones EXTRANJEROS", value=f"{int(suma_ext):,}".replace(",", "."))
             
-            # 2. Tabla de datos
+            # Tabla de datos
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
-            # 3. Gráfico de Dona (debajo de la tabla)
+            # Gráfico de Dona (debajo de la tabla)
             if total > 0:
                 fig = go.Figure(data=[go.Pie(
                     labels=['NACIONAL', 'EXTRANJERO'],
@@ -178,7 +177,20 @@ else:
                     text=[f"{int(suma_nac/total*100)}%; {int(suma_nac):,}".replace(",", "."), 
                           f"{int(suma_ext/total*100)}%; {int(suma_ext):,}".replace(",", ".")]
                 )])
-                fig.update_layout(showlegend=True, margin=dict(t=0, b=0, l=0, r=0), height=300)
+                
+                # Configuración de leyenda horizontal
+                fig.update_layout(
+                    showlegend=True,
+                    legend=dict(
+                        orientation="h",
+                        yanchor="top",
+                        y=-0.1,
+                        xanchor="center",
+                        x=0.5
+                    ),
+                    margin=dict(t=20, b=50, l=0, r=0),
+                    height=350
+                )
                 st.plotly_chart(fig, use_container_width=True)
             
             excel_data = convertir_df_a_excel(df_detalle)
