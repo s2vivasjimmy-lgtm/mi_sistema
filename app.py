@@ -3,10 +3,8 @@ import pandas as pd
 import os
 from github import Github
 
-# --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS CON MOVIMIENTO Y ESTILO ---
 st.markdown("""
     <style>
     .block-container { padding-top: 1rem !important; }
@@ -24,11 +22,10 @@ st.markdown("""
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
-# --- FUNCIÓN DE RESPALDO EN GITHUB OPTIMIZADA ---
 def guardar_en_github(archivo_local):
     try:
         token = st.secrets["GITHUB_TOKEN"]
-        repo_name = st.secrets["GITHUB_REPO"] # Asegúrate de que coincida con tu Secret
+        repo_name = st.secrets["GITHUB_REPO"] 
         g = Github(token)
         repo = g.get_repo(repo_name)
         
@@ -36,11 +33,9 @@ def guardar_en_github(archivo_local):
             contenido = file.read()
             
         try:
-            # Intentamos obtener el archivo existente
             contents = repo.get_contents(archivo_local)
             repo.update_file(contents.path, "Actualización datos Puesto Comando", contenido, contents.sha)
         except:
-            # Si el archivo no existe (404), lo creamos desde cero
             repo.create_file(archivo_local, "Creación datos Puesto Comando", contenido)
             
         return True
@@ -48,7 +43,6 @@ def guardar_en_github(archivo_local):
         st.error(f"Error al respaldar en GitHub: {e}")
         return False
 
-# --- INICIALIZACIÓN ---
 if "admin_logueado" not in st.session_state: st.session_state.admin_logueado = False
 
 def inicializar_resumen():
@@ -60,14 +54,12 @@ def inicializar_resumen():
 
 inicializar_resumen()
 
-# --- BARRA LATERAL ---
 with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Hospitales de Campaña", 
                           "Campamentos Transitorios", "Puntos de Inmunización", "Daños de Infraestructura"])
 
-# --- LÓGICA ---
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
