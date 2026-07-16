@@ -59,7 +59,7 @@ def inicializar_resumen():
         data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
                 "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
                 "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
-                "SALUD PÚBLICA": ["0"], "HOSP. NACIONALES": ["0"], "HOSP. EXTRANJEROS": ["0"], "CAMP. TRANSITORIOS": ["0"]}
+                "SISTEMA DE SALUD TARDICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], "CAMP. TRANSITORIOS": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
 
 inicializar_resumen()
