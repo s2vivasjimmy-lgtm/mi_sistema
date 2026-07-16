@@ -59,8 +59,20 @@ def inicializar_resumen():
         data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
                 "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
                 "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
-                "SISTEMA DE SALUD TARDICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], "CAMP. TRANSITORIOS": ["0"]}
+                "SISTEMA DE SALUD TARDICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], 
+                "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], "CAMP. TRANSITORIOS": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
+    else:
+        # MIGRACIÓN AUTOMÁTICA DE NOMBRES
+        df_mig = pd.read_csv(ARCHIVO_RESUMEN)
+        mapeo = {
+            "SALUD PÚBLICA": "SISTEMA DE SALUD TARDICIONAL",
+            "HOSP. NACIONALES": "HOSP. DE CAMPAÑA NACIONALES",
+            "HOSP. EXTRANJEROS": "HOSP. DE CAMPAÑA INTERNACIONALES"
+        }
+        if any(col in df_mig.columns for col in mapeo.keys()):
+            df_mig.rename(columns=mapeo, inplace=True)
+            df_mig.to_csv(ARCHIVO_RESUMEN, index=False)
 
 inicializar_resumen()
 
@@ -74,11 +86,11 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
-    # Definición exhaustiva de columnas para edición
     if seleccion == "Resumen General":
         cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
                          "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.",
-                         "SALUD PÚBLICA", "HOSP. NACIONALES", "HOSP. EXTRANJEROS", "CAMP. TRANSITORIOS"]
+                         "SISTEMA DE SALUD TARDICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
+                         "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     elif seleccion == "Campamentos Transitorios":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES", "NACIONALIAD"]
     elif seleccion == "Puntos de Inmunización":
@@ -124,7 +136,8 @@ else:
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
         
         st.subheader("📊 INDICADORES ESTRATÉGICOS")
-        strat_cols = ["SALUD PÚBLICA", "HOSP. NACIONALES", "HOSP. EXTRANJEROS", "CAMP. TRANSITORIOS"]
+        strat_cols = ["SISTEMA DE SALUD TARDICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
+                      "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
         c_strat = st.columns(4)
         for i, campo in enumerate(strat_cols):
             val = df[campo].iloc[0] if campo in df.columns else "0"
@@ -159,7 +172,6 @@ else:
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             
-            # --- LÓGICA ESTADÍSTICA Y DONA ---
             suma_nac, suma_ext, total = 0, 0, 0
             if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
