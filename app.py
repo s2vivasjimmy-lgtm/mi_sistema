@@ -76,15 +76,22 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
-    # Columnas Maestras
-    cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "PAIS RESPONSABLE", "ATENCIONES"]
+    # Lógica de columnas condicional
+    if seleccion == "Campamentos Transitorios":
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
+    else:
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "PAIS RESPONSABLE", "ATENCIONES"]
     
     if not os.path.exists(archivo_a_editar):
         df_actual = pd.DataFrame(columns=cols_maestras)
         df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
-        # Auto-reparación de columnas faltantes
+        # Limpieza: si es campamentos y tiene la columna, la eliminamos
+        if seleccion == "Campamentos Transitorios" and "PAIS RESPONSABLE" in df_actual.columns:
+            df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
+        
+        # Auto-reparación de columnas
         for col in cols_maestras:
             if col not in df_actual.columns:
                 df_actual[col] = ""
