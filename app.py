@@ -173,12 +173,12 @@ else:
                     values=[suma_nac, suma_ext],
                     hole=.6,
                     marker_colors=['#FF0000', '#002060'],
+                    textposition='outside', 
                     textinfo='text',
-                    text=[f"{int(suma_nac/total*100)}%; {int(suma_nac):,}".replace(",", "."), 
-                          f"{int(suma_ext/total*100)}%; {int(suma_ext):,}".replace(",", ".")]
+                    text=[f"NACIONAL<br>{int(suma_nac/total*100)}% ({int(suma_nac):,})".replace(",", "."), 
+                          f"EXTRANJERO<br>{int(suma_ext/total*100)}% ({int(suma_ext):,})".replace(",", ".")]
                 )])
                 
-                # Configuración de leyenda horizontal
                 fig.update_layout(
                     showlegend=True,
                     legend=dict(
@@ -188,8 +188,8 @@ else:
                         xanchor="center",
                         x=0.5
                     ),
-                    margin=dict(t=20, b=50, l=0, r=0),
-                    height=350
+                    margin=dict(t=40, b=80, l=40, r=40),
+                    height=400
                 )
                 st.plotly_chart(fig, use_container_width=True)
             
