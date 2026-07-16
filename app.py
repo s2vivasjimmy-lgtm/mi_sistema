@@ -108,7 +108,7 @@ else:
             encoded_string = base64.b64encode(image_file.read()).decode()
             st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
             
-    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
+    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUB MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
@@ -143,17 +143,31 @@ else:
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             
-            # --- NUEVA LÓGICA DE ESTADÍSTICAS ---
+            # --- NUEVA LÓGICA DE ESTADÍSTICAS MEJORADA ---
             if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
+                
+                # 1. Limpieza de números: quitamos los puntos de miles para que Python sume bien
+                df_stats['ATENCIONES'] = df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False)
                 df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'], errors='coerce').fillna(0)
+                
+                # 2. Limpieza de texto: convertimos a mayúsculas y quitamos espacios en blanco
+                df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
+                
+                # 3. Sumamos agrupando
                 resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
+                
+                # Buscamos "NACIONAL"
+                suma_nac = resumen.get('NACIONAL', 0)
+                
+                # Buscamos "EXTRANJERO" o "ESTRANJERO" (por si acaso hay errores ortográficos en el CSV)
+                suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
                 
                 cols = st.columns(2)
                 with cols[0]:
-                    st.metric(label="Total Atenciones NACIONALES", value=f"{int(resumen.get('NACIONAL', 0)):,}")
+                    st.metric(label="Total Atenciones NACIONALES", value=f"{int(suma_nac):,}".replace(",", "."))
                 with cols[1]:
-                    st.metric(label="Total Atenciones EXTRANJEROS", value=f"{int(resumen.get('EXTRANJERO', 0)):,}")
+                    st.metric(label="Total Atenciones EXTRANJEROS", value=f"{int(suma_ext):,}".replace(",", "."))
             
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
