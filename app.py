@@ -9,13 +9,13 @@ st.markdown("""
     <style>
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
-    .compact-card { background-color: #1a1c23; padding: 8px; border-radius: 8px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
+    .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
     .card-title { font-size: 16px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
     .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
     
     /* MARQUEE (MOVIMIENTO) */
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 10px 0; }
-    .marquee-text { display: inline-block; font-size: 15px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
+    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 """, unsafe_allow_html=True)
