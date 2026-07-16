@@ -77,7 +77,7 @@ if st.session_state.admin_logueado:
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
     if not os.path.exists(archivo_a_editar):
-        pd.DataFrame(columns=["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]).to_csv(archivo_a_editar, index=False)
+        pd.DataFrame(columns=["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "PAIS RESPONSABLE", "ATENCIONES"]).to_csv(archivo_a_editar, index=False)
         
     df_actual = pd.read_csv(archivo_a_editar, dtype=str)
     df_editado = st.data_editor(df_actual, use_container_width=True, num_rows="dynamic")
