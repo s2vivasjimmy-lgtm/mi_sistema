@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from github import Github  # Nueva librería para el respaldo
+from github import Github
 
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
@@ -24,11 +24,11 @@ st.markdown("""
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
-# --- FUNCIÓN DE RESPALDO EN GITHUB ---
+# --- FUNCIÓN DE RESPALDO EN GITHUB OPTIMIZADA ---
 def guardar_en_github(archivo_local):
     try:
         token = st.secrets["GITHUB_TOKEN"]
-        repo_name = st.secrets["REPO_NAME"]
+        repo_name = st.secrets["GITHUB_REPO"] # Asegúrate de que coincida con tu Secret
         g = Github(token)
         repo = g.get_repo(repo_name)
         
@@ -36,10 +36,13 @@ def guardar_en_github(archivo_local):
             contenido = file.read()
             
         try:
+            # Intentamos obtener el archivo existente
             contents = repo.get_contents(archivo_local)
             repo.update_file(contents.path, "Actualización datos Puesto Comando", contenido, contents.sha)
         except:
+            # Si el archivo no existe (404), lo creamos desde cero
             repo.create_file(archivo_local, "Creación datos Puesto Comando", contenido)
+            
         return True
     except Exception as e:
         st.error(f"Error al respaldar en GitHub: {e}")
@@ -86,7 +89,6 @@ if st.session_state.admin_logueado:
         st.rerun()
 
 else:
-    # Login flotante
     with st.popover("⚙️"):
         user = st.text_input("Usuario")
         pwd = st.text_input("Contraseña", type="password")
@@ -95,7 +97,6 @@ else:
                 st.session_state.admin_logueado = True
                 st.rerun()
 
-    # Logo y Marquee
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
     
