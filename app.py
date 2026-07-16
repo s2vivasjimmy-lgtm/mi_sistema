@@ -53,7 +53,7 @@ def actualizar_totales_maestro():
         df.to_csv(ARCHIVO_RESUMEN, index=False)
         guardar_en_github(ARCHIVO_RESUMEN)
 
-# --- CSS Y JS PARA MAPA ---
+# --- CSS ---
 st.markdown("""
     <style>
     .block-container { padding-top: 1rem !important; }
@@ -77,6 +77,7 @@ if "hosp_logueado" not in st.session_state: st.session_state.hosp_logueado = Fal
 
 with st.sidebar:
     st.header("📋 Registros")
+    # Login Hospitales
     if es_acceso_hospital and not st.session_state.hosp_logueado:
         st.subheader("🏥 Ingreso Hospitales")
         user = st.text_input("Usuario")
@@ -86,6 +87,7 @@ with st.sidebar:
                 st.session_state.hosp_logueado = True
                 st.session_state.hosp_id = user
                 st.rerun()
+    # Login Admin
     elif not st.session_state.admin_logueado and not st.session_state.hosp_logueado and not es_acceso_hospital:
         with st.popover("⚙️ Acceso Admin"):
             user = st.text_input("Usuario")
@@ -96,6 +98,7 @@ with st.sidebar:
                     st.rerun()
 
     seleccion = st.radio("Seleccionar categoría:", ["Resumen General", "Hospitales de Campaña", "Campamentos Transitorios", "Puntos de Inmunización", "Daños de Infraestructura"])
+    
     if (st.session_state.admin_logueado or st.session_state.hosp_logueado) and st.button("❌ Cerrar Sesión"):
         st.session_state.admin_logueado = False
         st.session_state.hosp_logueado = False
@@ -138,6 +141,17 @@ else:
             val = df[campo].iloc[0] if campo in df.columns else "0"
             c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_allow_html=True)
         
+        st.subheader("🏥 RESUMEN OPERATIVO")
+        iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
+        cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
+        cols = st.columns(4)
+        idx = 0
+        for col_name in cols_mostrar:
+            if col_name in df.columns:
+                with cols[idx % 4]:
+                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+                idx += 1
+        
         st.subheader("📍 UBICACIONES EN TIEMPO REAL")
         st.components.v1.html("""
             <div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
@@ -156,3 +170,5 @@ else:
         if os.path.exists(archivo_detalle):
             df_d = pd.read_csv(archivo_detalle, dtype=str)
             st.dataframe(df_d, use_container_width=True)
+            if st.button("📥 Descargar Excel"):
+                st.download_button("Descargar Reporte", data=convertir_df_a_excel(df_d), file_name=f"{seleccion}.xlsx")
