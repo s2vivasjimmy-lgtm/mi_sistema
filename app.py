@@ -15,7 +15,7 @@ st.markdown("""
     
     /* MARQUEE (MOVIMIENTO) */
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 10px 0; }
-    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
+    .marquee-text { display: inline-block; font-size: 25px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 """, unsafe_allow_html=True)
