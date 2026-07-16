@@ -3,8 +3,27 @@ import pandas as pd
 import os
 import base64
 from github import Github
+from fpdf import FPDF
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
+
+# --- FUNCIÓN PARA GENERAR PDF ---
+def generar_pdf(df, titulo):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(200, 10, txt=titulo, ln=True, align='C')
+    pdf.ln(10)
+    pdf.set_font("Arial", 'B', 10)
+    for col in df.columns:
+        pdf.cell(40, 10, col, border=1)
+    pdf.ln()
+    pdf.set_font("Arial", '', 9)
+    for i in range(len(df)):
+        for col in df.columns:
+            pdf.cell(40, 10, str(df.iloc[i][col]), border=1)
+        pdf.ln()
+    return pdf.output(dest='S').encode('latin-1')
 
 st.markdown("""
     <style>
@@ -13,11 +32,9 @@ st.markdown("""
     .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
     .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
     .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
-    
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
     .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
-
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
     </style>
 """, unsafe_allow_html=True)
@@ -75,13 +92,11 @@ if st.session_state.admin_logueado:
         df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
-        # Limpieza de columnas antiguas al editar
         if seleccion == "Campamentos Transitorios" and "PAIS RESPONSABLE" in df_actual.columns:
             df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
         elif seleccion == "Puntos de Inmunización":
             if "PAIS RESPONSABLE" in df_actual.columns: df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
             if "ATENCIONES" in df_actual.columns: df_actual = df_actual.rename(columns={"ATENCIONES": "TOTAL INMUNIZACIONES"})
-        
         for col in cols_maestras:
             if col not in df_actual.columns: df_actual[col] = ""
         df_actual.to_csv(archivo_a_editar, index=False)
@@ -114,9 +129,7 @@ else:
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
-        
         cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
-        
         cols = st.columns(4)
         idx = 0
         for col_name in cols_mostrar:
@@ -124,7 +137,6 @@ else:
                 with cols[idx % 4]:
                     st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
                 idx += 1
-
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
         st.components.v1.html("""
             <div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
@@ -136,19 +148,18 @@ else:
             <script>
                 function toggleFS() { 
                     var elem = document.getElementById("map-container"); 
-                    if (!document.fullscreenElement) { 
-                        elem.requestFullscreen(); 
-                    } else { 
-                        document.exitFullscreen(); 
-                    } 
+                    if (!document.fullscreenElement) { elem.requestFullscreen(); } 
+                    else { document.exitFullscreen(); } 
                 }
             </script>
         """, height=510)
-    
     else:
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
-            st.dataframe(pd.read_csv(archivo_detalle, dtype=str), use_container_width=True, hide_index=True)
+            df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            pdf_bytes = generar_pdf(df_detalle, seleccion)
+            st.download_button(label="📥 Descargar Reporte en PDF", data=pdf_bytes, file_name=f"{seleccion}.pdf", mime="application/pdf")
         else:
             st.info("Aún no hay registros cargados.")
