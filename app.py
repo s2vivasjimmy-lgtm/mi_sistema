@@ -142,6 +142,19 @@ else:
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+            
+            # --- NUEVA LÓGICA DE ESTADÍSTICAS ---
+            if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
+                df_stats = df_detalle.copy()
+                df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'], errors='coerce').fillna(0)
+                resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
+                
+                cols = st.columns(2)
+                with cols[0]:
+                    st.metric(label="Total Atenciones NACIONALES", value=f"{int(resumen.get('NACIONAL', 0)):,}")
+                with cols[1]:
+                    st.metric(label="Total Atenciones EXTRANJEROS", value=f"{int(resumen.get('EXTRANJERO', 0)):,}")
+            
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
             # --- BOTÓN DE DESCARGA EXCEL ---
