@@ -79,6 +79,8 @@ if st.session_state.admin_logueado:
     # Lógica de columnas condicional
     if seleccion == "Campamentos Transitorios":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
+    elif seleccion == "Puntos de Inmunización":
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
     else:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "PAIS RESPONSABLE", "ATENCIONES"]
     
@@ -87,9 +89,17 @@ if st.session_state.admin_logueado:
         df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
-        # Limpieza: si es campamentos y tiene la columna, la eliminamos
-        if seleccion == "Campamentos Transitorios" and "PAIS RESPONSABLE" in df_actual.columns:
-            df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
+        
+        # Limpieza específica
+        if seleccion == "Campamentos Transitorios":
+            if "PAIS RESPONSABLE" in df_actual.columns:
+                df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
+        
+        elif seleccion == "Puntos de Inmunización":
+            if "PAIS RESPONSABLE" in df_actual.columns:
+                df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
+            if "ATENCIONES" in df_actual.columns:
+                df_actual = df_actual.rename(columns={"ATENCIONES": "TOTAL INMUNIZACIONES"})
         
         # Auto-reparación de columnas
         for col in cols_maestras:
