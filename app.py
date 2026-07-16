@@ -3,27 +3,8 @@ import pandas as pd
 import os
 import base64
 from github import Github
-from fpdf import FPDF
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
-
-# --- FUNCIÓN PARA GENERAR PDF ---
-def generar_pdf(df, titulo):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(200, 10, txt=titulo, ln=True, align='C')
-    pdf.ln(10)
-    pdf.set_font("Arial", 'B', 10)
-    for col in df.columns:
-        pdf.cell(40, 10, col, border=1)
-    pdf.ln()
-    pdf.set_font("Arial", '', 9)
-    for i in range(len(df)):
-        for col in df.columns:
-            pdf.cell(40, 10, str(df.iloc[i][col]), border=1)
-        pdf.ln()
-    return pdf.output(dest='S').encode('latin-1')
 
 st.markdown("""
     <style>
@@ -32,9 +13,11 @@ st.markdown("""
     .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
     .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
     .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
+    
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
     .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
+
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
     </style>
 """, unsafe_allow_html=True)
@@ -157,9 +140,6 @@ else:
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
-            df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            pdf_bytes = generar_pdf(df_detalle, seleccion)
-            st.download_button(label="📥 Descargar Reporte en PDF", data=pdf_bytes, file_name=f"{seleccion}.pdf", mime="application/pdf")
+            st.dataframe(pd.read_csv(archivo_detalle, dtype=str), use_container_width=True, hide_index=True)
         else:
             st.info("Aún no hay registros cargados.")
