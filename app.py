@@ -21,7 +21,7 @@ st.markdown("""
 
     /* ESTILO PERSONALIZADO PARA EL LOGO */
     .logo-custom {
-        width: 3200px;   /* AJUSTA ESTE ANCHO */
+        width: 3500px;   /* AJUSTA ESTE ANCHO */
         height: 200px;  /* AJUSTA ESTE ALTO */
         object-fit: contain;
         display: block;
