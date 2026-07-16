@@ -90,8 +90,7 @@ else:
                 st.rerun()
 
     if os.path.exists("logo_institucional.jpg"):
-        st.image("logo_institucional.jpg", use_container_width=True)
-    
+        st.image("logo_institucional.jpg", width=300)
     st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
     if seleccion == "Resumen General":
