@@ -2,9 +2,17 @@ import streamlit as st
 import pandas as pd
 import os
 import base64
+import io
 from github import Github
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
+
+# --- FUNCIÓN PARA GENERAR EXCEL ---
+def convertir_df_a_excel(df):
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Reporte')
+    return output.getvalue()
 
 st.markdown("""
     <style>
@@ -13,11 +21,9 @@ st.markdown("""
     .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
     .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
     .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
-    
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
     .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
-
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
     </style>
 """, unsafe_allow_html=True)
@@ -75,11 +81,6 @@ if st.session_state.admin_logueado:
         df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
-        if seleccion == "Campamentos Transitorios" and "PAIS RESPONSABLE" in df_actual.columns:
-            df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
-        elif seleccion == "Puntos de Inmunización":
-            if "PAIS RESPONSABLE" in df_actual.columns: df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
-            if "ATENCIONES" in df_actual.columns: df_actual = df_actual.rename(columns={"ATENCIONES": "TOTAL INMUNIZACIONES"})
         for col in cols_maestras:
             if col not in df_actual.columns: df_actual[col] = ""
         df_actual.to_csv(archivo_a_editar, index=False)
@@ -140,6 +141,16 @@ else:
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
-            st.dataframe(pd.read_csv(archivo_detalle, dtype=str), use_container_width=True, hide_index=True)
+            df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            
+            # --- BOTÓN DE DESCARGA EXCEL ---
+            excel_data = convertir_df_a_excel(df_detalle)
+            st.download_button(
+                label="📥 Descargar Reporte en Excel",
+                data=excel_data,
+                file_name=f"{seleccion}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
         else:
             st.info("Aún no hay registros cargados.")
