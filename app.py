@@ -66,7 +66,7 @@ def inicializar_resumen():
         # MIGRACIÓN AUTOMÁTICA DE NOMBRES
         df_mig = pd.read_csv(ARCHIVO_RESUMEN)
         mapeo = {
-            "SALUD PÚBLICA": "SISTEMA DE SALUD TARDICIONAL",
+            "SALUD PÚBLICA": "SISTEMA DE SALUD TRADICIONAL",
             "HOSP. NACIONALES": "HOSP. DE CAMPAÑA NACIONALES",
             "HOSP. EXTRANJEROS": "HOSP. DE CAMPAÑA INTERNACIONALES"
         }
