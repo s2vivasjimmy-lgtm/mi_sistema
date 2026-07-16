@@ -20,7 +20,6 @@ st.markdown("""
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
     .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
-    /* Estilos Estratégicos */
     .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
     .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
     .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
@@ -75,7 +74,12 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
-    if seleccion == "Campamentos Transitorios":
+    # Definición exhaustiva de columnas
+    if seleccion == "Resumen General":
+        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
+                         "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.",
+                         "SALUD PÚBLICA", "HOSP. NACIONALES", "HOSP. EXTRANJEROS", "CAMP. TRANSITORIOS"]
+    elif seleccion == "Campamentos Transitorios":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES", "NACIONALIAD"]
     elif seleccion == "Puntos de Inmunización":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
@@ -83,15 +87,15 @@ if st.session_state.admin_logueado:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "PAIS RESPONSABLE", "ATENCIONES", "NACIONALIAD"]
     
     if not os.path.exists(archivo_a_editar):
-        df_actual = pd.DataFrame(columns=cols_maestras if seleccion != "Resumen General" else None)
+        df_actual = pd.DataFrame(columns=cols_maestras)
         df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
         for col in cols_maestras:
-            if col not in df_actual.columns: df_actual[col] = ""
+            if col not in df_actual.columns: df_actual[col] = "0"
         df_actual.to_csv(archivo_a_editar, index=False)
             
-    df_editado = st.data_editor(df_actual, use_container_width=True, num_rows="dynamic")
+    df_editado = st.data_editor(df_actual[cols_maestras], use_container_width=True, num_rows="dynamic")
     if st.button("💾 Guardar Cambios"):
         df_editado.to_csv(archivo_a_editar, index=False)
         if guardar_en_github(archivo_a_editar): st.success("Guardado en servidor.")
@@ -119,7 +123,6 @@ else:
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
         
-        # --- INDICADORES ESTRATÉGICOS ---
         st.subheader("📊 INDICADORES ESTRATÉGICOS")
         strat_cols = ["SALUD PÚBLICA", "HOSP. NACIONALES", "HOSP. EXTRANJEROS", "CAMP. TRANSITORIOS"]
         c_strat = st.columns(4)
@@ -127,7 +130,6 @@ else:
             val = df[campo].iloc[0] if campo in df.columns else "0"
             c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_allow_html=True)
         
-        # --- RESUMEN OPERATIVO ---
         st.subheader("🏥 RESUMEN OPERATIVO")
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
         cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
@@ -139,7 +141,6 @@ else:
                     st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
                 idx += 1
         
-        # --- MAPA ---
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
         st.components.v1.html("""
             <div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
@@ -149,21 +150,15 @@ else:
                 <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
             </div>
             <script>
-                function toggleFS() { 
-                    var elem = document.getElementById("map-container"); 
-                    if (!document.fullscreenElement) { elem.requestFullscreen(); } 
-                    else { document.exitFullscreen(); } 
-                }
+                function toggleFS() { var elem = document.getElementById("map-container"); if (!document.fullscreenElement) { elem.requestFullscreen(); } else { document.exitFullscreen(); } }
             </script>
         """, height=510)
     else:
-        # --- DETALLE DE OTRAS CATEGORÍAS ---
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-            # ... [Lógica de estadísticas de nacionalidad] ...
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            # ... [Lógica de Gráfico y Descarga] ...
+            # ... lógica restante de gráficos y excel ...
         else:
             st.info("Aún no hay registros cargados.")
