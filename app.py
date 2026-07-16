@@ -144,6 +144,8 @@ else:
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             
+            # Cálculo de variables de estadística
+            suma_nac, suma_ext, total = 0, 0, 0
             if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
                 df_stats['ATENCIONES'] = df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False)
@@ -153,30 +155,31 @@ else:
                 
                 suma_nac = resumen.get('NACIONAL', 0)
                 suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
+                total = suma_nac + suma_ext
                 
-                # Métricas
+                # 1. Métricas
                 cols = st.columns(2)
                 with cols[0]:
                     st.metric(label="Total Atenciones NACIONALES", value=f"{int(suma_nac):,}".replace(",", "."))
                 with cols[1]:
                     st.metric(label="Total Atenciones EXTRANJEROS", value=f"{int(suma_ext):,}".replace(",", "."))
-                
-                # Gráfico de Dona Automático
-                total = suma_nac + suma_ext
-                if total > 0:
-                    fig = go.Figure(data=[go.Pie(
-                        labels=['NACIONAL', 'EXTRANJERO'],
-                        values=[suma_nac, suma_ext],
-                        hole=.6,
-                        marker_colors=['#FF0000', '#002060'],
-                        textinfo='text',
-                        text=[f"{int(suma_nac/total*100)}%; {int(suma_nac):,}".replace(",", "."), 
-                              f"{int(suma_ext/total*100)}%; {int(suma_ext):,}".replace(",", ".")]
-                    )])
-                    fig.update_layout(showlegend=True, margin=dict(t=0, b=0, l=0, r=0), height=300)
-                    st.plotly_chart(fig, use_container_width=True)
             
+            # 2. Tabla de datos
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            
+            # 3. Gráfico de Dona (debajo de la tabla)
+            if total > 0:
+                fig = go.Figure(data=[go.Pie(
+                    labels=['NACIONAL', 'EXTRANJERO'],
+                    values=[suma_nac, suma_ext],
+                    hole=.6,
+                    marker_colors=['#FF0000', '#002060'],
+                    textinfo='text',
+                    text=[f"{int(suma_nac/total*100)}%; {int(suma_nac):,}".replace(",", "."), 
+                          f"{int(suma_ext/total*100)}%; {int(suma_ext):,}".replace(",", ".")]
+                )])
+                fig.update_layout(showlegend=True, margin=dict(t=0, b=0, l=0, r=0), height=300)
+                st.plotly_chart(fig, use_container_width=True)
             
             excel_data = convertir_df_a_excel(df_detalle)
             st.download_button("📥 Descargar Reporte en Excel", data=excel_data, file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
