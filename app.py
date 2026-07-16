@@ -5,7 +5,7 @@ import os
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS OPTIMIZADO ---
+# --- CSS CON MOVIMIENTO Y ESTILO ---
 st.markdown("""
     <style>
     .block-container { padding-top: 1rem !important; }
@@ -13,8 +13,11 @@ st.markdown("""
     .compact-card { background-color: #1a1c23; padding: 15px; border-radius: 8px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
     .card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
     .card-value { font-size: 24px; font-weight: 800; color: #ffffff; }
-    .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 20px; }
-    .marquee-text { font-size: 24px; color: #ffffff; font-weight: bold; }
+    
+    /* MARQUEE (MOVIMIENTO) */
+    .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 10px 0; }
+    .marquee-text { display: inline-block; font-size: 30px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
+    @keyframes marquee { 0% { transform: translate(100%, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 """, unsafe_allow_html=True)
 
@@ -42,8 +45,6 @@ with st.sidebar:
 # --- LÓGICA ---
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
-    
-    # Lógica de carga de archivos dinámica
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
     if not os.path.exists(archivo_a_editar):
@@ -70,7 +71,11 @@ else:
                 st.session_state.admin_logueado = True
                 st.rerun()
 
-    st.markdown('<div class="marquee-container"><p class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</p></div>', unsafe_allow_html=True)
+    # RESTAURACIÓN: Logo y Marquee
+    if os.path.exists("logo_institucional.jpg"):
+        st.image("logo_institucional.jpg", use_container_width=True)
+    
+    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
