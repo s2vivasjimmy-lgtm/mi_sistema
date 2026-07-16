@@ -59,7 +59,7 @@ def inicializar_resumen():
         data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
                 "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
                 "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
-                "SISTEMA DE SALUD TARDICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], 
+                "SISTEMA DE SALUD TRADICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], 
                 "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], "CAMP. TRANSITORIOS": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
     else:
@@ -136,7 +136,7 @@ else:
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
         
         st.subheader("📊ATENCIONES")
-        strat_cols = ["SISTEMA DE SALUD TARDICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
+        strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                       "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
         c_strat = st.columns(4)
         for i, campo in enumerate(strat_cols):
