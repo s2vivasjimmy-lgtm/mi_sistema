@@ -135,7 +135,7 @@ else:
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
         
-        st.subheader("📊 INDICADORES ESTRATÉGICOS")
+        st.subheader("📊ATENCIONES")
         strat_cols = ["SISTEMA DE SALUD TARDICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                       "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
         c_strat = st.columns(4)
@@ -143,7 +143,7 @@ else:
             val = df[campo].iloc[0] if campo in df.columns else "0"
             c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_allow_html=True)
         
-        st.subheader("🏥 RESUMEN OPERATIVO")
+        st.subheader("🏥RESUMEN OPERATIVO")
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
         cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
         cols = st.columns(4)
