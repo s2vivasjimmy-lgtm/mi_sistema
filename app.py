@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+from github import Github  # Nueva librería para el respaldo
 
 # --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
@@ -22,6 +23,27 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
+
+# --- FUNCIÓN DE RESPALDO EN GITHUB ---
+def guardar_en_github(archivo_local):
+    try:
+        token = st.secrets["GITHUB_TOKEN"]
+        repo_name = st.secrets["REPO_NAME"]
+        g = Github(token)
+        repo = g.get_repo(repo_name)
+        
+        with open(archivo_local, 'r', encoding='utf-8') as file:
+            contenido = file.read()
+            
+        try:
+            contents = repo.get_contents(archivo_local)
+            repo.update_file(contents.path, "Actualización datos Puesto Comando", contenido, contents.sha)
+        except:
+            repo.create_file(archivo_local, "Creación datos Puesto Comando", contenido)
+        return True
+    except Exception as e:
+        st.error(f"Error al respaldar en GitHub: {e}")
+        return False
 
 # --- INICIALIZACIÓN ---
 if "admin_logueado" not in st.session_state: st.session_state.admin_logueado = False
@@ -55,8 +77,10 @@ if st.session_state.admin_logueado:
     
     if st.button("💾 Guardar Cambios"):
         df_editado.to_csv(archivo_a_editar, index=False)
-        st.success("Guardado exitosamente")
-        st.rerun()
+        if guardar_en_github(archivo_a_editar):
+            st.success("Guardado en servidor y respaldado en GitHub correctamente.")
+            st.rerun()
+            
     if st.button("❌ Cerrar Sesión"):
         st.session_state.admin_logueado = False
         st.rerun()
@@ -71,7 +95,7 @@ else:
                 st.session_state.admin_logueado = True
                 st.rerun()
 
-    # RESTAURACIÓN: Logo y Marquee
+    # Logo y Marquee
     if os.path.exists("logo_institucional.jpg"):
         st.image("logo_institucional.jpg", use_container_width=True)
     
