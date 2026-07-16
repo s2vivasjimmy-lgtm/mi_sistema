@@ -75,6 +75,7 @@ if st.session_state.admin_logueado:
         df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
+        # Limpieza de columnas antiguas al editar
         if seleccion == "Campamentos Transitorios" and "PAIS RESPONSABLE" in df_actual.columns:
             df_actual = df_actual.drop(columns=["PAIS RESPONSABLE"])
         elif seleccion == "Puntos de Inmunización":
@@ -114,7 +115,6 @@ else:
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛏️", "CAMAS DISPONIBLES": "🛌", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
         
-        # SOLO MOSTRAMOS ESTAS COLUMNAS EN EL RESUMEN
         cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
         
         cols = st.columns(4)
@@ -126,7 +126,29 @@ else:
                 idx += 1
 
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
-        # ... (código del mapa)
+        st.components.v1.html("""
+            <div id="map-container" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+                <button onclick="toggleFS()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                    ⛶ Pantalla Completa
+                </button>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+            <script>
+                function toggleFS() { 
+                    var elem = document.getElementById("map-container"); 
+                    if (!document.fullscreenElement) { 
+                        elem.requestFullscreen(); 
+                    } else { 
+                        document.exitFullscreen(); 
+                    } 
+                }
+            </script>
+        """, height=510)
+    
     else:
         st.subheader(f"📊 Detalle: {seleccion}")
-        # ... (lógica de visualización de detalles)
+        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+        if os.path.exists(archivo_detalle):
+            st.dataframe(pd.read_csv(archivo_detalle, dtype=str), use_container_width=True, hide_index=True)
+        else:
+            st.info("Aún no hay registros cargados.")
