@@ -227,6 +227,16 @@ else:
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("")
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            
+            # Integración del nuevo mapa
+            st.markdown("### Mapa de Ruta Epidemiológica")
+            st.components.v1.html("""
+                <div style="width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+                    <iframe src="https://www.google.com/maps/d/embed?mid=1FsOES71LKnKlpmOPerXX8cuc_cAYjaM" 
+                            width="100%" height="100%" frameborder="0" allowfullscreen="true"></iframe>
+                </div>
+            """, height=510)
+            
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         else:
             st.info("Aún no se han cargado datos en esta sección.")
