@@ -159,24 +159,14 @@ else:
         
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
         st.components.v1.html("""
-<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-    <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-        ⛶ Pantalla Completa
-    </button>
-    <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" 
-            width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
-</div>
-<script>
-function toggleFS(id) { 
-    var elem = document.getElementById(id); 
-    if (!document.fullscreenElement) { 
-        elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
-    } else { 
-        document.exitFullscreen(); 
-    } 
-}
-</script>
-""", height=510)
+            <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+                <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                    ⛶ Pantalla Completa
+                </button>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
+                        width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+            </div>
+            <script>
                 function toggleFS(id) { 
                     var elem = document.getElementById(id); 
                     if (!document.fullscreenElement) { 
@@ -189,7 +179,7 @@ function toggleFS(id) {
         """, height=510)
 
     elif seleccion == "Inmunización":
-        st.subheader(f"💉 Detalle: {seleccion}")
+        st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
@@ -210,7 +200,7 @@ function toggleFS(id) {
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     elif seleccion == "Saneamiento Ambiental":
-        st.subheader(f"💨 Detalle: {seleccion}")
+        st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
@@ -232,35 +222,32 @@ function toggleFS(id) {
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     elif seleccion == "Ruta Epidemiológica":
-        st.subheader(f"🛣️ Detalle: {seleccion}")
+        st.subheader(f"📍 Detalle: {seleccion}")
         archivo_detalle = "ruta_epidemiológica.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("")
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
-        st.markdown("### 📍Ubicación En Tiempo Real")
-            st.components.v1.html(
-                dedent("""
-                    <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-                        <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                            ⛶ Pantalla Completa
-                        </button>
-                        <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" 
-                                width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
-                    </div>
-                    <script>
-                        function toggleFS(id) { 
-                            var elem = document.getElementById(id); 
-                            if (!document.fullscreenElement) { 
-                                elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
-                            } else { 
-                                document.exitFullscreen(); 
-                            } 
-                        }
-                    </script>
-                """),
-                height=510,
-            )
+            st.markdown("### Mapa de Ruta Epidemiológica")
+            st.components.v1.html("""
+                <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+                    <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                        ⛶ Pantalla Completa
+                    </button>
+                    <iframe src="https://www.google.com/maps/d/embed?mid=1FsOES71LKnKlpmOPerXX8cuc_cAYjaM" 
+                            width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+                </div>
+                <script>
+                    function toggleFS(id) { 
+                        var elem = document.getElementById(id); 
+                        if (!document.fullscreenElement) { 
+                            elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
+                        } else { 
+                            document.exitFullscreen(); 
+                        } 
+                    }
+                </script>
+            """, height=510)
             
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         else:
