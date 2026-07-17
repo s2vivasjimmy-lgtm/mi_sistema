@@ -159,14 +159,24 @@ else:
         
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
         st.components.v1.html("""
-            <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-                <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                    ⛶ Pantalla Completa
-                </button>
-                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
-                        width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
-            </div>
-            <script>
+<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+    <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+        ⛶ Pantalla Completa
+    </button>
+    <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" 
+            width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+</div>
+<script>
+function toggleFS(id) { 
+    var elem = document.getElementById(id); 
+    if (!document.fullscreenElement) { 
+        elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
+    } else { 
+        document.exitFullscreen(); 
+    } 
+}
+</script>
+""", height=510)
                 function toggleFS(id) { 
                     var elem = document.getElementById(id); 
                     if (!document.fullscreenElement) { 
