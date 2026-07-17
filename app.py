@@ -115,7 +115,7 @@ if st.session_state.admin_logueado:
         st.session_state.admin_logueado = False
         st.rerun()
 
-    else:
+else:
     with st.popover("⚙️"):
         user = st.text_input("Usuario")
         pwd = st.text_input("Contraseña", type="password")
@@ -124,114 +124,47 @@ if st.session_state.admin_logueado:
                 st.session_state.admin_logueado = True
                 st.rerun()
 
-    if os.path.exists("logo_institucional.jpg"):
-        with open("logo_institucional.jpg", "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read()).decode()
-            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
+if os.path.exists("logo_institucional.jpg"):
+    with open("logo_institucional.jpg", "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode()
+        st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
 
-    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
+st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
-    if seleccion == "Resumen General":
-        df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
-        st.subheader("📊ATENCIONES")
-        strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
-                      "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
-        c_strat = st.columns(4)
-        for i, campo in enumerate(strat_cols):
-            val = df[campo].iloc[0] if campo in df.columns else "0"
-            c_strat[i].markdown(f'''
-            <div class="strat-card">
-                <div class="strat-title">{campo}</div>
-                <div class="strat-value">{val}</div>
-            </div>
-            ''', unsafe_allow_html=True)
+if seleccion == "Resumen General":
+    df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
+    st.subheader("📊ATENCIONES")
+    strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
+                  "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
+    c_strat = st.columns(4)
+    for i, campo in enumerate(strat_cols):
+        val = df[campo].iloc[0] if campo in df.columns else "0"
+        c_strat[i].markdown(f'''
+        <div class="strat-card">
+            <div class="strat-title">{campo}</div>
+            <div class="strat-value">{val}</div>
+        </div>
+        ''', unsafe_allow_html=True)
 
-        st.subheader("🏥RESUMEN OPERATIVO")
-        iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
-        cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
-        cols = st.columns(4)
-        idx = 0
-        for col_name in cols_mostrar:
-            if col_name in df.columns:
-                with cols[idx % 4]:
-                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
-                idx += 1
-        
-        st.subheader("📍UBICACIONES EN TIEMPO REAL")
-        st.components.v1.html("""
-            <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-                <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                    ⛶ Pantalla Completa
-                </button>
-                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
-                        width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
-            </div>
-            <script>
-                function toggleFS(id) { 
-                    var elem = document.getElementById(id); 
-                    if (!document.fullscreenElement) { 
-                        elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
-                    } else { 
-                        document.exitFullscreen(); 
-                    } 
-                }
-            </script>
-        """, height=510)
-
-    elif seleccion == "Inmunización":
-        st.subheader(f"📊 Detalle: {seleccion}")
-        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-        if os.path.exists(archivo_detalle):
-            df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-            cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
-            sumas = {}
-            for v in cols_vacunas:
-                sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
-            c_vac = st.columns(4)
-            for i, v in enumerate(cols_vacunas):
-                valor_formateado = f"{int(sumas[v]):,}".replace(",", ".")
-                c_vac[i].markdown(f'''
-                    <div class="strat-card" style="padding: 15px 5px;">
-                        <div class="strat-value" style="font-size: 16px;">{v}: {valor_formateado}</div>
-                    </div>
-                ''', unsafe_allow_html=True)
-            st.write("<br><br>", unsafe_allow_html=True)
-            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-    elif seleccion == "Saneamiento Ambiental":
-        st.subheader(f"📊 Detalle: {seleccion}")
-        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-        if os.path.exists(archivo_detalle):
-            df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-            iconos = {
-                "DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", 
-                "DESINFECCIÓN Y ABATIZACIÓN": "🪣", "DESPARASITACIÓN": "💊", 
-                "PERSONAS PROTEGIDAS": "🛡️"
-            }
-            campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
-            c_sane = st.columns(3)
-            for i, campo in enumerate(campos):
-                val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
-                c_sane[i % 3].markdown(f'''
-                    <div class="strat-card" style="padding: 15px 5px;">
-                        <div class="strat-title" style="font-size: 13px;">{iconos.get(campo, "📊")} {campo}</div>
-                        <div class="strat-value" style="font-size: 22px; margin-top: 5px;">{val}</div>
-                    </div>
-                ''', unsafe_allow_html=True)
-            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-    elif seleccion == "Ruta Epidemiológica":
-        st.subheader(f"📊 Detalle: {seleccion}")
-        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-        
-        # Mapa de Ruta Epidemiológica
-        st.markdown("### 📍Ubicación En Tiempo Real")
-        html_mapa = """<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+    st.subheader("🏥RESUMEN OPERATIVO")
+    iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
+    cols_mostrar = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
+    cols = st.columns(4)
+    idx = 0
+    for col_name in cols_mostrar:
+        if col_name in df.columns:
+            with cols[idx % 4]:
+                st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+            idx += 1
+    
+    st.subheader("📍UBICACIONES EN TIEMPO REAL")
+    st.components.v1.html("""
+        <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                 ⛶ Pantalla Completa
             </button>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
+                    width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
         </div>
         <script>
             function toggleFS(id) { 
@@ -242,41 +175,108 @@ if st.session_state.admin_logueado:
                     document.exitFullscreen(); 
                 } 
             }
-        </script>"""
-        st.components.v1.html(html_mapa, height=510)
-        
-        if os.path.exists(archivo_detalle):
-            df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        else:
-            st.info("Aún no se han cargado datos en esta sección.")
+        </script>
+    """, height=510)
 
+elif seleccion == "Inmunización":
+    st.subheader(f"📊 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
+        cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
+        sumas = {}
+        for v in cols_vacunas:
+            sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
+        c_vac = st.columns(4)
+        for i, v in enumerate(cols_vacunas):
+            valor_formateado = f"{int(sumas[v]):,}".replace(",", ".")
+            c_vac[i].markdown(f'''
+                <div class="strat-card" style="padding: 15px 5px;">
+                    <div class="strat-value" style="font-size: 16px;">{v}: {valor_formateado}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        st.write("<br><br>", unsafe_allow_html=True)
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+elif seleccion == "Saneamiento Ambiental":
+    st.subheader(f"📊 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
+        iconos = {
+            "DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", 
+            "DESINFECCIÓN Y ABATIZACIÓN": "🪣", "DESPARASITACIÓN": "💊", 
+            "PERSONAS PROTEGIDAS": "🛡️"
+        }
+        campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
+        c_sane = st.columns(3)
+        for i, campo in enumerate(campos):
+            val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
+            c_sane[i % 3].markdown(f'''
+                <div class="strat-card" style="padding: 15px 5px;">
+                    <div class="strat-title" style="font-size: 13px;">{iconos.get(campo, "📊")} {campo}</div>
+                    <div class="strat-value" style="font-size: 22px; margin-top: 5px;">{val}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+elif seleccion == "Ruta Epidemiológica":
+    st.subheader(f"📊 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    
+    # Mapa de Ruta Epidemiológica
+    st.markdown("### 📍Ubicación En Tiempo Real")
+    html_mapa = """<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+        <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+            ⛶ Pantalla Completa
+        </button>
+        <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+    </div>
+    <script>
+        function toggleFS(id) { 
+            var elem = document.getElementById(id); 
+            if (!document.fullscreenElement) { 
+                elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
+            } else { 
+                document.exitFullscreen(); 
+            } 
+        }
+    </script>"""
+    st.components.v1.html(html_mapa, height=510)
+    
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     else:
-        st.subheader(f"📊 Detalle: {seleccion}")
-        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-        if os.path.exists(archivo_detalle):
-            df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-            df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
-            if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
-            else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
-            df_detalle = df_detalle.reindex(columns=orden)
-            
-            if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
-                df_stats = df_detalle.copy()
-                df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
-                resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
-                suma_nac = resumen.get('NACIONAL', 0)
-                suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
-                cols = st.columns(2)
-                cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
-                cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
-                st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-                if (suma_nac + suma_ext) > 0:
-                    fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
-                    fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
-                    st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        st.info("Aún no se han cargado datos en esta sección.")
+
+else:
+    st.subheader(f"📊 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
+        if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+        else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
+        df_detalle = df_detalle.reindex(columns=orden)
+        
+        if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
+            df_stats = df_detalle.copy()
+            df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
+            resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
+            suma_nac = resumen.get('NACIONAL', 0)
+            suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
+            cols = st.columns(2)
+            cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
+            cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            if (suma_nac + suma_ext) > 0:
+                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
+                fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
