@@ -225,7 +225,15 @@ elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📊 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     
-    # Mapa de Ruta Epidemiológica
+    # 1. Primero la Tabla
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    else:
+        st.info("Aún no se han cargado datos en esta sección.")
+        
+    # 2. Luego el Mapa
     st.markdown("### 📍Ubicación En Tiempo Real")
     html_mapa = """<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
         <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
@@ -244,13 +252,6 @@ elif seleccion == "Ruta Epidemiológica":
         }
     </script>"""
     st.components.v1.html(html_mapa, height=510)
-    
-    if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    else:
-        st.info("Aún no se han cargado datos en esta sección.")
 
 else:
     st.subheader(f"📊 Detalle: {seleccion}")
