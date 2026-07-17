@@ -80,12 +80,14 @@ if st.session_state.admin_logueado:
                          "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES",
                          "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     elif seleccion == "Campamentos Transitorios":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
-    elif seleccion == "Puntos de Inmunización":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
+        # Ajustado para terminar en ESTATUS
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+    elif seleccion == "Inmunización":
+        # Ajustado para terminar en ESTATUS
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
     else:
+        # Para Hospitales de Campaña y otros, mantenemos las columnas originales
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
-
     if not os.path.exists(archivo_a_editar):
         df_actual = pd.DataFrame(columns=cols_maestras)
     else:
