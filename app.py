@@ -68,7 +68,7 @@ with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Hospitales de Campaña", 
-                          "Campamentos Transitorios", "Inmunización", "Daños de Infraestructura"])
+                          "Campamentos Transitorios", "Puntos de Inmunización", "Daños de Infraestructura"])
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
@@ -174,8 +174,8 @@ else:
             else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
             df_detalle = df_detalle.reindex(columns=orden)
             
-            # 1. MÉTRICAS
-            if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
+            # Condicional para mostrar métricas y dona SOLO en Hospitales de Campaña
+            if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
                 df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                 df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
@@ -185,14 +185,15 @@ else:
                 cols = st.columns(2)
                 cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
                 cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
-            
-            # 2. CUADRO DE DATOS
-            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            
-            # 3. DONA
-            if "NACIONALIAD" in df_detalle.columns and (suma_nac + suma_ext) > 0:
-                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
-                fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
-                st.plotly_chart(fig, use_container_width=True)
+                
+                st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+                
+                if (suma_nac + suma_ext) > 0:
+                    fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
+                    fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+                    st.plotly_chart(fig, use_container_width=True)
+            else:
+                # Si no es Hospitales de Campaña, solo mostrar dataframe y descarga
+                st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
