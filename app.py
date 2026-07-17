@@ -69,7 +69,7 @@ with st.sidebar:
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Hospitales de Campaña", 
                           "Campamentos Transitorios", "Inmunización", 
-                          "Saneamiento Ambiental", "Daños de Infraestructura"])
+                          "Saneamiento Ambiental", "Ruta Epidemiológica", "Daños de Infraestructura"])
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
@@ -86,6 +86,8 @@ if st.session_state.admin_logueado:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
     elif seleccion == "Saneamiento Ambiental":
         cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
+    elif seleccion == "Ruta Epidemiológica":
+        cols_maestras = ["Nº", "DESCRIPCIÓN"] # Estructura inicial
     else:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
@@ -210,7 +212,7 @@ else:
             campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
             c_sane = st.columns(3)
             for i, campo in enumerate(campos):
-                val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
+                val = df_detalle[campo].iloc[0] if campo in df.columns else "0"
                 c_sane[i % 3].markdown(f'''
                     <div class="strat-card" style="padding: 15px 5px;">
                         <div class="strat-title" style="font-size: 13px;">{iconos.get(campo, "📊")} {campo}</div>
@@ -218,6 +220,10 @@ else:
                     </div>
                 ''', unsafe_allow_html=True)
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    elif seleccion == "Ruta Epidemiológica":
+        st.subheader(f"📍 {seleccion}")
+        st.info("Configurando sección de Ruta Epidemiológica...")
 
     else:
         st.subheader(f"📊 Detalle: {seleccion}")
