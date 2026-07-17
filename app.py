@@ -180,14 +180,18 @@ else:
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
             cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
             sumas = {}
+           cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
+            sumas = {}
             for v in cols_vacunas:
                 sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
             
             c_vac = st.columns(4)
             for i, v in enumerate(cols_vacunas):
+                # Aquí está el cambio: formateamos con coma primero y luego reemplazamos por punto
+                valor_formateado = f"{int(sumas[v]):,}".replace(",", ".")
                 c_vac[i].markdown(f'''
                     <div class="strat-card" style="padding: 15px 5px;">
-                        <div class="strat-value" style="font-size: 16px;">{v}: {int(sumas[v]):,}</div>
+                        <div class="strat-value" style="font-size: 16px;">{v}: {valor_formateado}</div>
                     </div>
                 ''', unsafe_allow_html=True)
             
