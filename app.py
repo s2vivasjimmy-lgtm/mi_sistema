@@ -1,586 +1,85 @@
 import streamlit as st
-
-
-
-
-
-
-
 import pandas as pd
-
-
-
-
-
-
-
 import os
-
-
-
-
-
-
-
 import base64
-
-
-
-
-
-
-
 import io
-
-
-
-
-
-
-
 import plotly.graph_objects as go
-
-
-
-
-
-
-
 from github import Github
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # --- FUNCIÓN PARA GENERAR EXCEL ---
-
-
-
-
-
-
-
 def convertir_df_a_excel(df):
-
-
-
-
-
-
-
     output = io.BytesIO()
-
-
-
-
-
-
-
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-
-
-
-
-
-
-
         df.to_excel(writer, index=False, sheet_name='Reporte')
-
-
-
-
-
-
-
     return output.getvalue()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 st.markdown("""
-
-
-
-
-
-
-
     <style>
 
-
-
-
-
-
-
     .block-container { padding-top: 1rem !important; }
-
-
-
-
-
-
-
     .stApp { background-color: #0E1117 !important; }
-
-
-
-
-
-
-
+   
     .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
-
-
-
-
-
-
-
     .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-
-
-
-
-
-
-
     .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
-
-
-
-
-
-
-
     .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
-
-
-
-
-
-
-
     .strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
-
-
-
-
-
-
-
     .strat-value { font-size: 24px; font-weight: 900; color: #ffffff; }
-
-
-
-
-
-
-
+    
     .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
-
-
-
-
-
-
-
     .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
 
-
-
-
-
-
-
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
-
-
-
-
-
-
-
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
-
-
-
-
-
-
-
     </style>
-
-
-
-
-
-
-
 """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def guardar_en_github(archivo_local):
-
-
-
-
-
-
-
     try:
-
-
-
-
-
-
-
         token = st.secrets["GITHUB_TOKEN"]
-
-
-
-
-
-
-
         repo_name = st.secrets["GITHUB_REPO"] 
-
-
-
-
-
-
-
         g = Github(token)
-
-
-
-
-
-
-
         repo = g.get_repo(repo_name)
-
-
-
-
-
-
-
         with open(archivo_local, 'r', encoding='utf-8') as file:
-
-
-
-
-
-
-
-            contenido = file.read()
-
-
-
-
-
-
-
+          contenido = file.read()
         try:
-
-
-
-
-
-
-
             contents = repo.get_contents(archivo_local)
-
-
-
-
-
-
-
             repo.update_file(contents.path, "Actualización datos Puesto Comando", contenido, contents.sha)
-
-
-
-
-
-
-
         except:
-
-
-
-
-
-
-
             repo.create_file(archivo_local, "Creación datos Puesto Comando", contenido)
-
-
-
-
-
-
-
+        
         return True
-
-
-
-
-
-
-
     except Exception as e:
-
-
-
-
-
-
-
+        
         st.error(f"Error al respaldar en GitHub: {e}")
-
-
-
-
-
-
-
         return False
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if "admin_logueado" not in st.session_state: st.session_state.admin_logueado = False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def inicializar_resumen():
-
-
-
-
-
-
-
     if not os.path.exists(ARCHIVO_RESUMEN):
-
-
-
-
-
-
-
+        
         data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
-
-
-
-
-
-
-
                 "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
-
-
-
-
-
-
-
                 "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
-
-
-
-
-
-
-
                 "SISTEMA DE SALUD TRADICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], 
-
-
-
-
-
-
-
                 "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], "CAMP. TRANSITORIOS": ["0"]}
-
-
-
-
-
-
 
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
 
-
-
-
-
-
-
     else:
-
-
-
-
-
-
 
         # MIGRACIÓN AUTOMÁTICA DE NOMBRES
 
-
-
-
-
-
-
         df_mig = pd.read_csv(ARCHIVO_RESUMEN)
-
-
-
-
-
-
 
         mapeo = {
 
-
-
-
-
-
-
             "SALUD PÚBLICA": "SISTEMA DE SALUD TRADICIONAL",
-
-
-
-
-
-
-
             "HOSP. NACIONALES": "HOSP. DE CAMPAÑA NACIONALES",
-
-
-
-
-
-
-
             "HOSP. EXTRANJEROS": "HOSP. DE CAMPAÑA INTERNACIONALES"
-
-
-
-
-
-
-
         }
-
-
-
-
-
-
-
         if any(col in df_mig.columns for col in mapeo.keys()):
-
-
-
-
-
-
 
             df_mig.rename(columns=mapeo, inplace=True)
 
