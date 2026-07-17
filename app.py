@@ -176,18 +176,20 @@ else:
     elif seleccion == "Inmunización":
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+        
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
             cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
             sumas = {}
-           cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
-            sumas = {}
+            
             for v in cols_vacunas:
                 sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
             
             c_vac = st.columns(4)
             for i, v in enumerate(cols_vacunas):
-                f"{int(sumas[v]):,}".replace(",", ".")
+                # Asignamos el valor formateado a una variable antes de usarla
+                valor_formateado = f"{int(sumas[v]):,}".replace(",", ".")
+                
                 c_vac[i].markdown(f'''
                     <div class="strat-card" style="padding: 15px 5px;">
                         <div class="strat-value" style="font-size: 16px;">{v}: {valor_formateado}</div>
