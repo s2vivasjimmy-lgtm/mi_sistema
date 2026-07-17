@@ -87,7 +87,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Saneamiento Ambiental":
         cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
     elif seleccion == "Ruta Epidemiológica":
-        cols_maestras = ["Nº", "DESCRIPCIÓN"]
+        cols_maestras = ["Nº", "POBLACIÓN DE EDAD", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
@@ -212,7 +212,6 @@ else:
             campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
             c_sane = st.columns(3)
             for i, campo in enumerate(campos):
-                # CORRECCIÓN: Usamos df_detalle.columns para evitar el NameError
                 val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
                 c_sane[i % 3].markdown(f'''
                     <div class="strat-card" style="padding: 15px 5px;">
@@ -223,8 +222,14 @@ else:
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     elif seleccion == "Ruta Epidemiológica":
-        st.subheader(f"📍 {seleccion}")
-        st.info("Configurando sección de Ruta Epidemiológica...")
+        st.subheader(f"📍 Detalle: {seleccion}")
+        archivo_detalle = "ruta_epidemiológica.csv"
+        if os.path.exists(archivo_detalle):
+            df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("")
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        else:
+            st.info("Aún no se han cargado datos en esta sección.")
 
     else:
         st.subheader(f"📊 Detalle: {seleccion}")
