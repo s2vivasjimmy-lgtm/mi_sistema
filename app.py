@@ -8,7 +8,6 @@ from github import Github
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
-# --- FUNCIÓN PARA GENERAR EXCEL ---
 def convertir_df_a_excel(df):
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
@@ -62,12 +61,6 @@ def inicializar_resumen():
                 "SISTEMA DE SALUD TRADICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], 
                 "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], "CAMP. TRANSITORIOS": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
-    else:
-        df_mig = pd.read_csv(ARCHIVO_RESUMEN)
-        mapeo = {"SALUD PÚBLICA": "SISTEMA DE SALUD TRADICIONAL", "HOSP. NACIONALES": "HOSP. DE CAMPAÑA NACIONALES", "HOSP. EXTRANJEROS": "HOSP. DE CAMPAÑA INTERNACIONALES"}
-        if any(col in df_mig.columns for col in mapeo.keys()):
-            df_mig.rename(columns=mapeo, inplace=True)
-            df_mig.to_csv(ARCHIVO_RESUMEN, index=False)
 
 inicializar_resumen()
 
@@ -95,14 +88,13 @@ if st.session_state.admin_logueado:
 
     if not os.path.exists(archivo_a_editar):
         df_actual = pd.DataFrame(columns=cols_maestras)
-        df_actual.to_csv(archivo_a_editar, index=False)
     else:
         df_actual = pd.read_csv(archivo_a_editar, dtype=str)
-        for col in cols_maestras:
-            if col not in df_actual.columns: df_actual[col] = "0"
-        df_actual.to_csv(archivo_a_editar, index=False)
+        df_actual = df_actual.loc[:, df_actual.columns.isin(cols_maestras)]
+        df_actual = df_actual.dropna(how='all')
+        df_actual = df_actual[~df_actual.apply(lambda x: x.astype(str).str.contains("None", na=False).any() if x.name in df_actual.columns else False, axis=1)]
 
-    df_editado = st.data_editor(df_actual[cols_maestras], use_container_width=True, num_rows="dynamic")
+    df_editado = st.data_editor(df_actual.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic")
 
     if st.button("💾 Guardar Cambios"):
         df_editado.to_csv(archivo_a_editar, index=False)
@@ -159,7 +151,11 @@ else:
                 <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
             </div>
             <script>
-                function toggleFS() { var elem = document.getElementById("map-container"); if (!document.fullscreenElement) { elem.requestFullscreen(); } else { document.exitFullscreen(); } }
+                function toggleFS() { 
+                    var elem = document.getElementById("map-container"); 
+                    if (!document.fullscreenElement) { elem.requestFullscreen(); } 
+                    else { document.exitFullscreen(); } 
+                }
             </script>
         """, height=510)
     else:
@@ -167,10 +163,14 @@ else:
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+            if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
+            elif seleccion == "Puntos de Inmunización": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
+            else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
+            df_detalle = df_detalle.reindex(columns=orden)
+            
             if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
-                df_stats['ATENCIONES'] = df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False)
-                df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'], errors='coerce').fillna(0)
+                df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                 df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
                 resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
                 suma_nac = resumen.get('NACIONAL', 0)
@@ -178,13 +178,10 @@ else:
                 cols = st.columns(2)
                 cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
                 cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
+                if (suma_nac + suma_ext) > 0:
+                    fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
+                    fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+                    st.plotly_chart(fig, use_container_width=True)
+            
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            
-            # Gráfico de pie si corresponde
-            if total := (suma_nac + suma_ext) > 0:
-                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
-                fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
-                st.plotly_chart(fig, use_container_width=True)
-            
-            excel_data = convertir_df_a_excel(df_detalle)
-            st.download_button("📥 Descargar Reporte en Excel", data=excel_data, file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
