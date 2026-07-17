@@ -120,11 +120,8 @@ else:
                 st.rerun()
 
     if os.path.exists("logo_institucional.jpg"):
-
         with open("logo_institucional.jpg", "rb") as image_file:
-
             encoded_string = base64.b64encode(image_file.read()).decode()
-
             st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
 
     st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
@@ -137,7 +134,12 @@ else:
         c_strat = st.columns(4)
         for i, campo in enumerate(strat_cols):
             val = df[campo].iloc[0] if campo in df.columns else "0"
-            c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_html=True)
+            c_strat[i].markdown(f'''
+            <div class="strat-card">
+                <div class="strat-title">{campo}</div>
+                <div class="strat-value">{val}</div>
+            </div>
+            ''', unsafe_allow_html=True)
 
         st.subheader("🏥RESUMEN OPERATIVO")
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
@@ -147,7 +149,7 @@ else:
         for col_name in cols_mostrar:
             if col_name in df.columns:
                 with cols[idx % 4]:
-                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_html=True)
+                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
                 idx += 1
         
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
@@ -176,8 +178,6 @@ else:
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-            
-            # --- TARJETAS SUPERIORES ---
             cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
             sumas = {}
             for v in cols_vacunas:
@@ -189,11 +189,9 @@ else:
                     <div class="strat-card" style="padding: 15px 5px;">
                         <div class="strat-value" style="font-size: 16px;">{v}: {int(sumas[v]):,}</div>
                     </div>
-                ''', unsafe_html=True)
+                ''', unsafe_allow_html=True)
             
-            st.write("<br><br>", unsafe_html=True) # Espacio para la tabla
-            
-            # --- TABLA ORIGINAL ---
+            st.write("<br><br>", unsafe_allow_html=True)
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
@@ -203,12 +201,9 @@ else:
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
-            
             if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
             else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
-            
             df_detalle = df_detalle.reindex(columns=orden)
-            
             if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
                 df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -226,5 +221,4 @@ else:
                     st.plotly_chart(fig, use_container_width=True)
             else:
                 st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
