@@ -344,9 +344,9 @@ else:
 
             
 
-            if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
+            if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
 
-            elif seleccion == "Puntos de Inmunización": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
+            elif seleccion == "Puntos de Inmunización": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
 
             else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
