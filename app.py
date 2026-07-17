@@ -148,13 +148,17 @@ else:
                 <button onclick="toggleFS()" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                     ⛶ Pantalla Completa
                 </button>
-                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" 
+                        width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
             </div>
             <script>
                 function toggleFS() { 
                     var elem = document.getElementById("map-container"); 
-                    if (!document.fullscreenElement) { elem.requestFullscreen(); } 
-                    else { document.exitFullscreen(); } 
+                    if (!document.fullscreenElement) { 
+                        elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
+                    } else { 
+                        document.exitFullscreen(); 
+                    } 
                 }
             </script>
         """, height=510)
@@ -163,11 +167,14 @@ else:
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+            df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
+            
             if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
             elif seleccion == "Puntos de Inmunización": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
             else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
             df_detalle = df_detalle.reindex(columns=orden)
             
+            # 1. MÉTRICAS
             if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
                 df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -178,10 +185,14 @@ else:
                 cols = st.columns(2)
                 cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
                 cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
-                if (suma_nac + suma_ext) > 0:
-                    fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
-                    fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
-                    st.plotly_chart(fig, use_container_width=True)
             
+            # 2. CUADRO DE DATOS
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            
+            # 3. DONA
+            if "NACIONALIAD" in df_detalle.columns and (suma_nac + suma_ext) > 0:
+                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
+                fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+                st.plotly_chart(fig, use_container_width=True)
+            
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
