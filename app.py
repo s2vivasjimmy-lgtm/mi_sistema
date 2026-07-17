@@ -179,7 +179,7 @@ else:
         """, height=510)
 
     elif seleccion == "Inmunización":
-        st.subheader(f"📊 Detalle: {seleccion}")
+        st.subheader(f"💉 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
@@ -200,7 +200,7 @@ else:
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     elif seleccion == "Saneamiento Ambiental":
-        st.subheader(f"📊 Detalle: {seleccion}")
+        st.subheader(f"💨 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
@@ -222,7 +222,7 @@ else:
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     elif seleccion == "Ruta Epidemiológica":
-        st.subheader(f"📍 Detalle: {seleccion}")
+        st.subheader(f"🛣️ Detalle: {seleccion}")
         archivo_detalle = "ruta_epidemiológica.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("")
