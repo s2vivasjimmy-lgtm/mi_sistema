@@ -115,7 +115,7 @@ if st.session_state.admin_logueado:
         st.session_state.admin_logueado = False
         st.rerun()
 
-else:
+    else:
     with st.popover("⚙️"):
         user = st.text_input("Usuario")
         pwd = st.text_input("Contraseña", type="password")
@@ -244,7 +244,7 @@ st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(
         else:
             st.info("Aún no se han cargado datos en esta sección.")
 
-    else:
+        else:
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
