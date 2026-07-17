@@ -29,7 +29,7 @@ st.markdown("""
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
     </style>
-""", unsafe_html=True)
+""", unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
