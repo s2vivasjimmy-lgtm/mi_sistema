@@ -81,8 +81,8 @@ if st.session_state.admin_logueado:
                          "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     elif seleccion == "Campamentos Transitorios":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
-    elif seleccion == "Puntos de Inmunización":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
+    elif seleccion == "Inmunización":
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
     else:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
@@ -117,9 +117,9 @@ else:
     if os.path.exists("logo_institucional.jpg"):
         with open("logo_institucional.jpg", "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode()
-            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
+            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_html=True)
 
-    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
+    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_html=True)
 
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
@@ -129,7 +129,7 @@ else:
         c_strat = st.columns(4)
         for i, campo in enumerate(strat_cols):
             val = df[campo].iloc[0] if campo in df.columns else "0"
-            c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_allow_html=True)
+            c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_html=True)
 
         st.subheader("🏥RESUMEN OPERATIVO")
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
@@ -139,7 +139,7 @@ else:
         for col_name in cols_mostrar:
             if col_name in df.columns:
                 with cols[idx % 4]:
-                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_html=True)
                 idx += 1
         
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
@@ -169,31 +169,40 @@ else:
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
             
-            if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
-            elif seleccion == "Puntos de Inmunización": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
-            else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
-            df_detalle = df_detalle.reindex(columns=orden)
+            # Bloque Inmunización: Tarjetas dinámicas
+            if seleccion == "Inmunización":
+                cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
+                sumas = {}
+                for v in cols_vacunas:
+                    if v in df_detalle.columns:
+                        sumas[v] = pd.to_numeric(df_detalle[v].str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
+                    else:
+                        sumas[v] = 0
+                cols_cards = st.columns(4)
+                for i, v in enumerate(cols_vacunas):
+                    cols_cards[i].markdown(f'''
+                        <div style="background:#f0f2f6; padding:10px; border-radius:5px; text-align:center; border:1px solid #31333f; margin-bottom: 20px;">
+                            <div style="font-size:12px; color:#31333f; font-weight:bold;">{v}</div>
+                            <div style="font-size:20px; color:#000; font-weight:900;">{int(sumas[v]):,}</div>
+                        </div>
+                    ''', unsafe_allow_html=True)
             
-            # Condicional para mostrar métricas y dona SOLO en Hospitales de Campaña
-            if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
-                df_stats = df_detalle.copy()
-                df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
-                resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
-                suma_nac = resumen.get('NACIONAL', 0)
-                suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
-                cols = st.columns(2)
-                cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
-                cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
-                
-                st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-                
-                if (suma_nac + suma_ext) > 0:
-                    fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
-                    fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
-                    st.plotly_chart(fig, use_container_width=True)
-            else:
-                # Si no es Hospitales de Campaña, solo mostrar dataframe y descarga
-                st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            
+            # Lógica especial para Hospitales de Campaña (métricas y dona)
+            elif seleccion == "Hospitales de Campaña":
+                if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
+                    df_stats = df_detalle.copy()
+                    df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                    df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
+                    resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
+                    suma_nac = resumen.get('NACIONAL', 0)
+                    suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
+                    c1, c2 = st.columns(2)
+                    c1.metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
+                    c2.metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
+                    if (suma_nac + suma_ext) > 0:
+                        fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
+                        fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+                        st.plotly_chart(fig, use_container_width=True)
+
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
