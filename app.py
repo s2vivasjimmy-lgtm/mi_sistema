@@ -168,21 +168,24 @@ else:
             </script>
         """, height=510)
     
-    elif seleccion == "Inmunización":
+  elif seleccion == "Inmunización":
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
         if os.path.exists(archivo_detalle):
             df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
             
-            # Cálculo de totales para tarjetas
+            # NUEVO: Verificamos si las columnas existen antes de sumar
             cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
             sumas = {}
             for v in cols_vacunas:
-                sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
+                if v in df_detalle.columns:
+                    sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
+                else:
+                    sumas[v] = 0 # Si no existe la columna, el valor es 0
             
             c_vac = st.columns(4)
             for i, v in enumerate(cols_vacunas):
-                c_vac[i].markdown(f'''<div class="strat-card"><div class="strat-title">{v}</div><div class="strat-value">{int(sumas[v]):,}</div></div>''', unsafe_allow_html=True)
+                c_vac[i].markdown(f'''<div class="strat-card"><div class="strat-title">{v}</div><div class="strat-value">{int(sumas[v]):,}</div></div>''', unsafe_html=True)
             
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
