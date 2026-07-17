@@ -240,7 +240,7 @@ html_mapa = """<div id="map-container-ruta" style="position: relative; width: 10
 </script>"""
 st.components.v1.html(html_mapa, height=510)
             
-            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         else:
             st.info("Aún no se han cargado datos en esta sección.")
 
