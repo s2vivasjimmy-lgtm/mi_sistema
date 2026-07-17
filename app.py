@@ -133,7 +133,7 @@ st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD �
 
 if seleccion == "Resumen General":
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
-    st.subheader("📊ATENCIONES")
+    st.subheader("🧑‍⚕️ATENCIONES")
     strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                   "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     c_strat = st.columns(4)
@@ -179,7 +179,7 @@ if seleccion == "Resumen General":
     """, height=510)
 
 elif seleccion == "Inmunización":
-    st.subheader(f"📊 Detalle: {seleccion}")
+    st.subheader(f"💉 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
@@ -200,7 +200,7 @@ elif seleccion == "Inmunización":
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 elif seleccion == "Saneamiento Ambiental":
-    st.subheader(f"📊 Detalle: {seleccion}")
+    st.subheader(f"🧴 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
@@ -222,7 +222,7 @@ elif seleccion == "Saneamiento Ambiental":
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 elif seleccion == "Ruta Epidemiológica":
-    st.subheader(f"📊 Detalle: {seleccion}")
+    st.subheader(f"🛣️ Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     
     # 1. Primero la Tabla
@@ -234,7 +234,7 @@ elif seleccion == "Ruta Epidemiológica":
         st.info("Aún no se han cargado datos en esta sección.")
         
     # 2. Luego el Mapa
-    st.markdown("### 📍Ubicación En Tiempo Real")
+    st.markdown("### 📍UBICACIÓN DEL PACIENTE")
     html_mapa = """<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
         <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
             ⛶ Pantalla Completa
@@ -254,7 +254,7 @@ elif seleccion == "Ruta Epidemiológica":
     st.components.v1.html(html_mapa, height=510)
 
 else:
-    st.subheader(f"📊 Detalle: {seleccion}")
+    st.subheader(f"⛺ Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
