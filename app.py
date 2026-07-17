@@ -29,9 +29,15 @@ st.markdown("""
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
     </style>
-""", unsafe_allow_html=True)
+""", unsafe_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
+
+# Pre-cargamos la imagen para evitar errores de referencia
+encoded_string = ""
+if os.path.exists("logo_institucional.jpg"):
+    with open("logo_institucional.jpg", "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode()
 
 def guardar_en_github(archivo_local):
     try:
@@ -114,12 +120,10 @@ else:
                 st.session_state.admin_logueado = True
                 st.rerun()
 
-    if os.path.exists("logo_institucional.jpg"):
-        with open("logo_institucional.jpg", "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read()).decode()
-            st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_html=True)
+    if encoded_string:
+        st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
 
-    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_html=True)
+    st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
     if seleccion == "Resumen General":
         df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
@@ -129,7 +133,7 @@ else:
         c_strat = st.columns(4)
         for i, campo in enumerate(strat_cols):
             val = df[campo].iloc[0] if campo in df.columns else "0"
-            c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_html=True)
+            c_strat[i].markdown(f'<div class="strat-card"><div class="strat-title">{campo}</div><div class="strat-value">{val}</div></div>', unsafe_allow_html=True)
 
         st.subheader("🏥RESUMEN OPERATIVO")
         iconos = {"ATENCIONES": "📋", "ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
@@ -139,7 +143,7 @@ else:
         for col_name in cols_mostrar:
             if col_name in df.columns:
                 with cols[idx % 4]:
-                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_html=True)
+                    st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
                 idx += 1
         
         st.subheader("📍UBICACIONES EN TIEMPO REAL")
@@ -169,7 +173,6 @@ else:
             df_detalle = pd.read_csv(archivo_detalle, dtype=str)
             df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
             
-            # Bloque Inmunización: Tarjetas dinámicas
             if seleccion == "Inmunización":
                 cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
                 sumas = {}
@@ -187,7 +190,6 @@ else:
                         </div>
                     ''', unsafe_allow_html=True)
             
-            # Lógica especial para Hospitales de Campaña (métricas y dona)
             elif seleccion == "Hospitales de Campaña":
                 if "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                     df_stats = df_detalle.copy()
