@@ -15,7 +15,7 @@ def convertir_df_a_excel(df):
     return output.getvalue()
 
 st.markdown("""
-    <style>
+<style>
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0E1117 !important; }
     .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
@@ -28,7 +28,7 @@ st.markdown("""
     .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
-    </style>
+</style>
 """, unsafe_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
