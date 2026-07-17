@@ -85,7 +85,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Inmunización":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
     elif seleccion == "Saneamiento Ambiental":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+        cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
     else:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
@@ -199,7 +199,21 @@ else:
 
     elif seleccion == "Saneamiento Ambiental":
         st.subheader(f"📊 Detalle: {seleccion}")
-        st.info("Sección configurada. Pendiente de cargar la estructura de datos.")
+        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+        if os.path.exists(archivo_detalle):
+            df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
+            campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
+            c_sane = st.columns(3)
+            for i, campo in enumerate(campos):
+                val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
+                c_sane[i % 3].markdown(f'''
+                    <div class="strat-card" style="padding: 15px 5px;">
+                        <div class="strat-title" style="font-size: 12px;">{campo}</div>
+                        <div class="strat-value" style="font-size: 18px;">{val}</div>
+                    </div>
+                ''', unsafe_allow_html=True)
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     else:
         st.subheader(f"📊 Detalle: {seleccion}")
