@@ -80,14 +80,12 @@ if st.session_state.admin_logueado:
                          "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES",
                          "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     elif seleccion == "Campamentos Transitorios":
-        # Ajustado para terminar en ESTATUS
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
     elif seleccion == "Inmunización":
-        # Ajustado para terminar en ESTATUS
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
     else:
-        # Para Hospitales de Campaña y otros, mantenemos las columnas originales
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
+
     if not os.path.exists(archivo_a_editar):
         df_actual = pd.DataFrame(columns=cols_maestras)
     else:
@@ -99,6 +97,11 @@ if st.session_state.admin_logueado:
     df_editado = st.data_editor(df_actual.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic")
 
     if st.button("💾 Guardar Cambios"):
+        if seleccion == "Inmunización":
+            for c in ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P"]:
+                df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_editado["TOTAL"] = df_editado["TOXOIDE"] + df_editado["FIEBRE AMARILLA"] + df_editado["S.R.P"]
+        
         df_editado.to_csv(archivo_a_editar, index=False)
         if guardar_en_github(archivo_a_editar): st.success("Guardado en servidor.")
         st.rerun()
@@ -164,6 +167,26 @@ else:
                 }
             </script>
         """, height=510)
+    
+    elif seleccion == "Inmunización":
+        st.subheader(f"📊 Detalle: {seleccion}")
+        archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+        if os.path.exists(archivo_detalle):
+            df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
+            
+            # Cálculo de totales para tarjetas
+            cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
+            sumas = {}
+            for v in cols_vacunas:
+                sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
+            
+            c_vac = st.columns(4)
+            for i, v in enumerate(cols_vacunas):
+                c_vac[i].markdown(f'''<div class="strat-card"><div class="strat-title">{v}</div><div class="strat-value">{int(sumas[v]):,}</div></div>''', unsafe_allow_html=True)
+            
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    
     else:
         st.subheader(f"📊 Detalle: {seleccion}")
         archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
@@ -172,11 +195,10 @@ else:
             df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
             
             if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "ATENCIONES"]
-            elif seleccion == "Puntos de Inmunización": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOTAL INMUNIZACIONES"]
             else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
+            
             df_detalle = df_detalle.reindex(columns=orden)
             
-            # Condicional para mostrar métricas y dona SOLO en Hospitales de Campaña
             if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
                 df_stats = df_detalle.copy()
                 df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -187,15 +209,12 @@ else:
                 cols = st.columns(2)
                 cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
                 cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
-                
                 st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-                
                 if (suma_nac + suma_ext) > 0:
                     fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
                     fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
                     st.plotly_chart(fig, use_container_width=True)
             else:
-                # Si no es Hospitales de Campaña, solo mostrar dataframe y descarga
                 st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
             st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
