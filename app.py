@@ -87,7 +87,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Saneamiento Ambiental":
         cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
     elif seleccion == "Ruta Epidemiológica":
-        cols_maestras = ["Nº", "DESCRIPCIÓN"] # Estructura inicial
+        cols_maestras = ["Nº", "DESCRIPCIÓN"]
     else:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
@@ -212,7 +212,8 @@ else:
             campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
             c_sane = st.columns(3)
             for i, campo in enumerate(campos):
-                val = df_detalle[campo].iloc[0] if campo in df.columns else "0"
+                # CORRECCIÓN: Usamos df_detalle.columns para evitar el NameError
+                val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
                 c_sane[i % 3].markdown(f'''
                     <div class="strat-card" style="padding: 15px 5px;">
                         <div class="strat-title" style="font-size: 13px;">{iconos.get(campo, "📊")} {campo}</div>
