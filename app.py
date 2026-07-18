@@ -20,6 +20,9 @@ css = """
 .stApp { background-color: #0E1117 !important; }
 .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
+.total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
+.total-title { font-size: 14px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
+.total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
 .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
 .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
 .strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
@@ -185,15 +188,13 @@ elif seleccion == "Inmunización":
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
+        cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]
         
-        sumas = {}
-        for v in cols_vacunas:
-            sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
-        
+        # Tarjetas de vacunas
         c_vac = st.columns(4)
         for i, v in enumerate(cols_vacunas):
-            valor_formateado = f"{int(sumas[v]):,}".replace(",", ".")
+            sum_val = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
+            valor_formateado = f"{int(sum_val):,}".replace(",", ".")
             c_vac[i % 4].markdown(f'''
                 <div class="strat-card" style="padding: 10px 5px;">
                     <div class="strat-title" style="font-size: 11px;">{v}</div>
@@ -201,11 +202,23 @@ elif seleccion == "Inmunización":
                 </div>
             ''', unsafe_allow_html=True)
             
+        # Total General centrado
+        total_general = sum([pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() for v in cols_vacunas if v in df_detalle.columns])
+        
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            st.markdown(f'''
+                <div class="total-card">
+                    <div class="total-title">TOTAL GENERAL</div>
+                    <div class="total-value">{f"{int(total_general):,}".replace(",", ".")}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+            
         st.write("<br>", unsafe_allow_html=True)
         
-        # Formatear tabla con puntos de miles
+        # Formateo tabla
         df_mostrar = df_detalle.copy()
-        for col in cols_vacunas:
+        for col in (cols_vacunas + ["TOTAL"]):
             if col in df_mostrar.columns:
                 df_mostrar[col] = pd.to_numeric(df_mostrar[col].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).astype(int)
                 df_mostrar[col] = df_mostrar[col].apply(lambda x: f"{x:,}".replace(",", "."))
@@ -218,11 +231,7 @@ elif seleccion == "Saneamiento Ambiental":
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        iconos = {
-            "DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", 
-            "DESINFECCIÓN Y ABATIZACIÓN": "🪣", "DESPARASITACIÓN": "💊", 
-            "PERSONAS PROTEGIDAS": "🛡️"
-        }
+        iconos = {"DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", "DESINFECCIÓN Y ABATIZACIÓN": "🪣", "DESPARASITACIÓN": "💊", "PERSONAS PROTEGIDAS": "🛡️"}
         campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
         c_sane = st.columns(3)
         for i, campo in enumerate(campos):
@@ -238,16 +247,13 @@ elif seleccion == "Saneamiento Ambiental":
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-    
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    else:
-        st.info("Aún no se han cargado datos en esta sección.")
-        
+    
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
-    html_mapa = """<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+    st.components.v1.html("""<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
         <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
             ⛶ Pantalla Completa
         </button>
@@ -262,8 +268,7 @@ elif seleccion == "Ruta Epidemiológica":
                 document.exitFullscreen(); 
             } 
         }
-    </script>"""
-    st.components.v1.html(html_mapa, height=510)
+    </script>""", height=510)
 
 else:
     st.subheader(f"📋 Detalle: {seleccion}")
