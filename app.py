@@ -20,10 +20,9 @@ css = """
 .stApp { background-color: #0E1117 !important; }
 .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-/* Mega Card Ajustada */
-.mega-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 15px; border-radius: 10px; border: 2px solid #00d2ff; text-align: center; margin: 10px auto; width: 30%; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-.mega-title { font-size: 14px; text-transform: uppercase; color: #ffffff; font-weight: bold; margin-bottom: 5px; }
-.mega-value { font-size: 32px; font-weight: 900; color: #00d2ff; }
+.mega-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 20px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin: 20px auto; width: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.mega-title { font-size: 18px; text-transform: uppercase; color: #ffffff; font-weight: bold; margin-bottom: 10px; }
+.mega-value { font-size: 45px; font-weight: 900; color: #00d2ff; }
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 14px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
@@ -59,7 +58,8 @@ def guardar_en_github(archivo_local):
         st.error(f"Error al respaldar en GitHub: {e}")
         return False
 
-if "admin_logueado" not in st.session_state: st.session_state.admin_logueado = False
+if "admin_logueado" not in st.session_state: 
+    st.session_state.admin_logueado = False
 
 def inicializar_resumen():
     if not os.path.exists(ARCHIVO_RESUMEN):
@@ -116,13 +116,13 @@ if st.session_state.admin_logueado:
                 df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
         df_editado.to_csv(archivo_a_editar, index=False)
-        if guardar_en_github(archivo_a_editar): st.success("Guardado en servidor.")
+        if guardar_en_github(archivo_a_editar): 
+            st.success("Guardado en servidor.")
         st.rerun()
 
     if st.button("❌ Cerrar Sesión"):
         st.session_state.admin_logueado = False
         st.rerun()
-
 else:
     with st.popover("⚙️"):
         user = st.text_input("Usuario")
@@ -135,14 +135,13 @@ else:
 if os.path.exists("logo_institucional.jpg"):
     with open("logo_institucional.jpg", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
-        st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allowed_html=True)
+        st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
 
 st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
 if seleccion == "Resumen General":
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
     
-    # 1. MEGA CARD ATENCIONES
     val_atenciones = df["ATENCIONES"].iloc[0] if "ATENCIONES" in df.columns else "0"
     st.markdown(f'''
     <div class="mega-card">
@@ -151,7 +150,6 @@ if seleccion == "Resumen General":
     </div>
     ''', unsafe_allow_html=True)
 
-    # 2. SISTEMAS ESTRATÉGICOS (MOVIDO AQUÍ)
     st.subheader("🧑‍⚕️ SISTEMAS ESTRATÉGICOS")
     strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                   "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
@@ -165,7 +163,6 @@ if seleccion == "Resumen General":
         </div>
         ''', unsafe_allow_html=True)
 
-    # 3. RESUMEN OPERATIVO
     st.subheader("🏥 RESUMEN OPERATIVO")
     iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
               "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
@@ -181,7 +178,7 @@ if seleccion == "Resumen General":
             idx += 1
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
-    st.components.v1.html("""...""", height=510)
+    st.components.v1.html("""
         <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
             <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                 ⛶ Pantalla Completa
