@@ -14,22 +14,23 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-st.markdown("""
-    <style>
-    .block-container { padding-top: 1rem !important; }
-    .stApp { background-color: #0E1117 !important; }
-    .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
-    .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-    .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
-    .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
-    .strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
-    .strat-value { font-size: 24px; font-weight: 900; color: #ffffff; }
-    .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
-    .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
-    @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
-    .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
-    </style>
-""", unsafe_html=True)
+css = """
+<style>
+.block-container { padding-top: 1rem !important; }
+.stApp { background-color: #0E1117 !important; }
+.compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
+.strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
+.card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
+.card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
+.strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
+.strat-value { font-size: 24px; font-weight: 900; color: #ffffff; }
+.marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
+.marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
+@keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
+.logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
+</style>
+"""
+st.markdown(css, unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
