@@ -225,7 +225,6 @@ elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     
-    # 1. Primero la Tabla
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
@@ -233,7 +232,6 @@ elif seleccion == "Ruta Epidemiológica":
     else:
         st.info("Aún no se han cargado datos en esta sección.")
         
-    # 2. Luego el Mapa
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
     html_mapa = """<div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
         <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
@@ -264,16 +262,23 @@ else:
         df_detalle = df_detalle.reindex(columns=orden)
         
         if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
+            # CORRECCIÓN DE LIMPIEZA Y SUMA
             df_stats = df_detalle.copy()
+            # Limpiamos puntos de miles antes de convertir a numérico
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            # Aseguramos formato para agrupar correctamente
             df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
+            
             resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
             suma_nac = resumen.get('NACIONAL', 0)
             suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
+            
             cols = st.columns(2)
             cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
             cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
+            
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            
             if (suma_nac + suma_ext) > 0:
                 fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
                 fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
