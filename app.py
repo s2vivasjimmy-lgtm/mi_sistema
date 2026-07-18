@@ -186,6 +186,7 @@ elif seleccion == "Inmunización":
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
         cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
+        
         sumas = {}
         for v in cols_vacunas:
             sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
@@ -202,11 +203,12 @@ elif seleccion == "Inmunización":
             
         st.write("<br>", unsafe_allow_html=True)
         
-        # Limpieza de visualización para que no muestre decimales
+        # Formatear tabla con puntos de miles
         df_mostrar = df_detalle.copy()
         for col in cols_vacunas:
             if col in df_mostrar.columns:
                 df_mostrar[col] = pd.to_numeric(df_mostrar[col].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).astype(int)
+                df_mostrar[col] = df_mostrar[col].apply(lambda x: f"{x:,}".replace(",", "."))
         
         st.dataframe(df_mostrar, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
