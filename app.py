@@ -83,7 +83,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Campamentos Transitorios":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
     elif seleccion == "Inmunización":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
     elif seleccion == "Saneamiento Ambiental":
         cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
     elif seleccion == "Ruta Epidemiológica":
@@ -103,9 +103,9 @@ if st.session_state.admin_logueado:
 
     if st.button("💾 Guardar Cambios"):
         if seleccion == "Inmunización":
-            for c in ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P"]:
+            for c in ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]:
                 df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            df_editado["TOTAL"] = df_editado["TOXOIDE"] + df_editado["FIEBRE AMARILLA"] + df_editado["S.R.P"]
+            df_editado["TOTAL"] = df_editado["TOXOIDE"] + df_editado["FIEBRE AMARILLA"] + df_editado["S.R.P"] + df_editado["BOPB"] + df_editado["BCG"] + df_editado["PENTAVALENTE"] + df_editado["HEP B"] + df_editado["IPV"]
             
         df_editado.to_csv(archivo_a_editar, index=False)
         if guardar_en_github(archivo_a_editar): st.success("Guardado en servidor.")
