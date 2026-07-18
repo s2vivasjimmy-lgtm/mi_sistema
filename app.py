@@ -29,7 +29,7 @@ st.markdown("""
     @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
     .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
     </style>
-""", unsafe_allow_html=True)
+""", unsafe_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
@@ -103,9 +103,10 @@ if st.session_state.admin_logueado:
 
     if st.button("💾 Guardar Cambios"):
         if seleccion == "Inmunización":
-            for c in ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]:
+            cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]
+            for c in cols_vacunas:
                 df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            df_editado["TOTAL"] = df_editado["TOXOIDE"] + df_editado["FIEBRE AMARILLA"] + df_editado["S.R.P"] + df_editado["BOPB"] + df_editado["BCG"] + df_editado["PENTAVALENTE"] + df_editado["HEP B"] + df_editado["IPV"]
+            df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
             
         df_editado.to_csv(archivo_a_editar, index=False)
         if guardar_en_github(archivo_a_editar): st.success("Guardado en servidor.")
@@ -183,19 +184,22 @@ elif seleccion == "Inmunización":
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "TOTAL"]
+        cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
         sumas = {}
         for v in cols_vacunas:
             sumas[v] = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
+        
         c_vac = st.columns(4)
         for i, v in enumerate(cols_vacunas):
             valor_formateado = f"{int(sumas[v]):,}".replace(",", ".")
-            c_vac[i].markdown(f'''
-                <div class="strat-card" style="padding: 15px 5px;">
-                    <div class="strat-value" style="font-size: 16px;">{v}: {valor_formateado}</div>
+            c_vac[i % 4].markdown(f'''
+                <div class="strat-card" style="padding: 10px 5px;">
+                    <div class="strat-title" style="font-size: 11px;">{v}</div>
+                    <div class="strat-value" style="font-size: 18px;">{valor_formateado}</div>
                 </div>
             ''', unsafe_allow_html=True)
-        st.write("<br><br>", unsafe_allow_html=True)
+            
+        st.write("<br>", unsafe_allow_html=True)
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
@@ -262,23 +266,16 @@ else:
         df_detalle = df_detalle.reindex(columns=orden)
         
         if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
-            # CORRECCIÓN DE LIMPIEZA Y SUMA
             df_stats = df_detalle.copy()
-            # Limpiamos puntos de miles antes de convertir a numérico
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            # Aseguramos formato para agrupar correctamente
             df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
-            
             resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
             suma_nac = resumen.get('NACIONAL', 0)
             suma_ext = resumen.get('EXTRANJERO', 0) + resumen.get('ESTRANJERO', 0)
-            
             cols = st.columns(2)
             cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
             cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
-            
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            
             if (suma_nac + suma_ext) > 0:
                 fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
                 fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
