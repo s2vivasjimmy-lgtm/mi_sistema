@@ -89,7 +89,8 @@ if st.session_state.admin_logueado:
     elif seleccion == "Inmunización":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
     elif seleccion == "Saneamiento Ambiental":
-        cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
+        # Se separan en ítems distintos
+        cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "POBLACIÓN DE EDAD", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
@@ -189,8 +190,6 @@ elif seleccion == "Inmunización":
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
         cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]
-        
-        # Tarjetas de vacunas
         c_vac = st.columns(4)
         for i, v in enumerate(cols_vacunas):
             sum_val = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
@@ -201,10 +200,7 @@ elif seleccion == "Inmunización":
                     <div class="strat-value" style="font-size: 18px;">{valor_formateado}</div>
                 </div>
             ''', unsafe_allow_html=True)
-            
-        # Total General centrado
         total_general = sum([pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() for v in cols_vacunas if v in df_detalle.columns])
-        
         col1, col2, col3 = st.columns([1, 1, 1])
         with col2:
             st.markdown(f'''
@@ -213,16 +209,12 @@ elif seleccion == "Inmunización":
                     <div class="total-value">{f"{int(total_general):,}".replace(",", ".")}</div>
                 </div>
             ''', unsafe_allow_html=True)
-            
         st.write("<br>", unsafe_allow_html=True)
-        
-        # Formateo tabla
         df_mostrar = df_detalle.copy()
         for col in (cols_vacunas + ["TOTAL"]):
             if col in df_mostrar.columns:
                 df_mostrar[col] = pd.to_numeric(df_mostrar[col].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).astype(int)
                 df_mostrar[col] = df_mostrar[col].apply(lambda x: f"{x:,}".replace(",", "."))
-        
         st.dataframe(df_mostrar, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
@@ -231,8 +223,8 @@ elif seleccion == "Saneamiento Ambiental":
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        iconos = {"DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", "DESINFECCIÓN Y ABATIZACIÓN": "🪣", "DESPARASITACIÓN": "💊", "PERSONAS PROTEGIDAS": "🛡️"}
-        campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN Y ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
+        iconos = {"DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", "DESINFECCIÓN": "🪣", "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "PERSONAS PROTEGIDAS": "🛡️"}
+        campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
         c_sane = st.columns(3)
         for i, campo in enumerate(campos):
             val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
@@ -297,4 +289,4 @@ else:
                 st.plotly_chart(fig, use_container_width=True)
         else:
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir
