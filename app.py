@@ -241,11 +241,11 @@ elif seleccion == "Saneamiento Ambiental":
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
         
         iconos = {
-            "DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", "DESINFECCIÓN": "🪣", 
-            "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "PERSONAS PROTEGIDAS": "🛡️", 
-            "CLORACIÓN": "🧪"
+            "DESRATIZACIÓN": "🐀", "NEBULIZACIÓN": "💨", "DESINFECCIÓN": "🪣", 
+            "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "CLORACIÓN": "🧪" "PERSONAS PROTEGIDAS": "🛡️", 
+           
         }
-        campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS", "CLORACIÓN"]
+        campos = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS", "CLORACIÓN"]
         
         c_sane = st.columns(3)
         for i, campo in enumerate(campos):
