@@ -55,8 +55,11 @@ def guardar_en_github(archivo_local):
         st.error(f"Error al respaldar en GitHub: {e}")
         return False
 
+# --- ESTADOS DE SESIÓN ---
 if "admin_logueado" not in st.session_state: 
     st.session_state.admin_logueado = False
+if "mostrar_pass" not in st.session_state:
+    st.session_state.mostrar_pass = False
 
 def inicializar_resumen():
     if not os.path.exists(ARCHIVO_RESUMEN):
@@ -122,13 +125,28 @@ if st.session_state.admin_logueado:
         st.rerun()
 else:
     with st.popover("⚙️"):
-        user = st.text_input("Usuario")
-        pwd = st.text_input("Contraseña", type="password")
-        if st.button("Ingresar"):
-            if user == "Admin" and pwd == "diges12..":
-                st.session_state.admin_logueado = True
-                st.rerun()
+        # Se utiliza un form para habilitar la tecla ENTER
+        with st.form("login_form"):
+            user = st.text_input("Usuario")
+            
+            # Contenedor para input de contraseña + botón de alternar visibilidad
+            col_pass, col_btn = st.columns([4, 1])
+            with col_pass:
+                pwd = st.text_input("Contraseña", type="password" if not st.session_state.mostrar_pass else "default")
+            with col_btn:
+                st.markdown("<br>", unsafe_allow_html=True)
+                if st.button("👁️"):
+                    st.session_state.mostrar_pass = not st.session_state.mostrar_pass
+                    st.rerun()
 
+            if st.form_submit_button("Ingresar"):
+                if user == "Admin" and pwd == "diges12..":
+                    st.session_state.admin_logueado = True
+                    st.rerun()
+                else:
+                    st.error("Credenciales incorrectas")
+
+# --- RESTO DEL CONTENIDO ---
 if os.path.exists("logo_institucional.jpg"):
     with open("logo_institucional.jpg", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
