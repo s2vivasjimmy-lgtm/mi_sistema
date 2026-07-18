@@ -152,19 +152,17 @@ if seleccion == "Resumen General":
         </div>
         ''', unsafe_allow_html=True)
 
-    # Lógica de suma para ATENCIONES SISTÉMICAS
     total_sistemicas = 0
     for campo in strat_cols:
         val_str = str(df[campo].iloc[0]) if campo in df.columns else "0"
-        # Quitar puntos de miles para convertir a numérico correctamente
-        val_limpio = val_str.replace('.', '')
+        val_limpio = val_str.replace('.', '').replace(',', '')
         total_sistemicas += pd.to_numeric(val_limpio, errors='coerce')
 
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
             <div class="total-title">TOTAL ATENCIONES SISTÉMICAS</div>
-            <div class="total-value">{int(total_sistemicas):,}</div>
+            <div class="total-value">{f"{int(total_sistemicas):,}".replace(",", ".")}</div>
         </div>
     </div>
     ''', unsafe_allow_html=True)
@@ -203,7 +201,6 @@ if seleccion == "Resumen General":
         </script>
     """, height=510)
 
-# ... (resto de las pestañas sigue igual)
 elif seleccion == "Inmunización":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
