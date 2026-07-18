@@ -201,7 +201,14 @@ elif seleccion == "Inmunización":
             ''', unsafe_allow_html=True)
             
         st.write("<br>", unsafe_allow_html=True)
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        
+        # Limpieza de visualización para que no muestre decimales
+        df_mostrar = df_detalle.copy()
+        for col in cols_vacunas:
+            if col in df_mostrar.columns:
+                df_mostrar[col] = pd.to_numeric(df_mostrar[col].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).astype(int)
+        
+        st.dataframe(df_mostrar, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 elif seleccion == "Saneamiento Ambiental":
