@@ -242,7 +242,7 @@ elif seleccion == "Saneamiento Ambiental":
         
         iconos = {
             "DESRATIZACIÓN": "🐀", "NEBULIZACIÓN": "💨", "DESINFECCIÓN": "🪣", 
-            "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "CLORACIÓN": "🧪" "PERSONAS PROTEGIDAS": "🛡️", 
+            "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "CLORACIÓN": "🧪", "PERSONAS PROTEGIDAS": "🛡️" 
            
         }
         campos = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS", "CLORACIÓN"]
