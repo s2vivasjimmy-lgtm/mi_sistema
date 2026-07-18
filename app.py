@@ -92,7 +92,7 @@ if st.session_state.admin_logueado:
         # Se separan en ítems distintos
         cols_maestras = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
     elif seleccion == "Ruta Epidemiológica":
-        cols_maestras = ["Nº", "POBLACIÓN DE EDAD", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
+        cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
