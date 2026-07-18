@@ -20,9 +20,9 @@ css = """
 .stApp { background-color: #0E1117 !important; }
 .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-.mega-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 15px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin: 0 auto 20px auto; width: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-.mega-title { font-size: 14px; text-transform: uppercase; color: #ffffff; font-weight: bold; margin-bottom: 5px; }
-.mega-value { font-size: 35px; font-weight: 900; color: #00d2ff; }
+.mega-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 20px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin: 20px auto; width: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.mega-title { font-size: 18px; text-transform: uppercase; color: #ffffff; font-weight: bold; margin-bottom: 10px; }
+.mega-value { font-size: 45px; font-weight: 900; color: #00d2ff; }
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 14px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
@@ -63,24 +63,13 @@ if "admin_logueado" not in st.session_state:
 
 def inicializar_resumen():
     if not os.path.exists(ARCHIVO_RESUMEN):
-        data = {
-            "ATENCIONES": ["0"], 
-            "ALTAS MÉDICAS": ["0"], 
-            "FALLECIDOS": ["0"], 
-            "TRASLADOS": ["0"], 
-            "CAMAS OCUPADAS": ["0"], 
-            "CAMAS DISPONIBLES": ["0"],
-            "HOSPITALIZACIONES": ["0"], 
-            "INMUNIZACIONES": ["0"], 
-            "INTERVENCIONES Q.": ["0"], # <--- AQUÍ ESTABA EL ERROR (TENÍA UNA COMA)
-            "SISTEMA DE SALUD TRADICIONAL": ["0"], 
-            "HOSP. DE CAMPAÑA NACIONALES": ["0"], 
-            "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], 
-            "CAMP. TRANSITORIOS": ["0"],
-            "DESINFECCIÓN": ["0"], 
-            "ABATIZACIÓN": ["0"]
-        }
+        data = {"ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
+                "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
+                "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
+                "SISTEMA DE SALUD TRADICIONAL": ["0"], "HOSP. DE CAMPAÑA NACIONALES": ["0"], 
+                "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], "CAMP. TRANSITORIOS": ["0"]}
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
+
 inicializar_resumen()
 
 with st.sidebar:
@@ -98,7 +87,7 @@ if st.session_state.admin_logueado:
         cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
                          "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.",
                          "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES",
-                         "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS", "DESINFECCIÓN", "ABATIZACIÓN"]
+                         "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     elif seleccion == "Campamentos Transitorios":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
     elif seleccion == "Inmunización":
@@ -121,6 +110,11 @@ if st.session_state.admin_logueado:
     df_editado = st.data_editor(df_actual.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic")
 
     if st.button("💾 Guardar Cambios"):
+        if seleccion == "Inmunización":
+            cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]
+            for c in cols_vacunas:
+                df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
         df_editado.to_csv(archivo_a_editar, index=False)
         if guardar_en_github(archivo_a_editar): 
             st.success("Guardado en servidor.")
@@ -156,20 +150,6 @@ if seleccion == "Resumen General":
     </div>
     ''', unsafe_allow_html=True)
 
-    # NUEVA SECCIÓN CENTRADA
-    c1, col_center, c2 = st.columns([1, 2, 1])
-    with col_center:
-        st.subheader("📊 ATENCIONES ESPECIALIZADAS")
-        c_atn = st.columns(2)
-        for i, campo in enumerate(["DESINFECCIÓN", "ABATIZACIÓN"]):
-            val = df[campo].iloc[0] if campo in df.columns else "0"
-            c_atn[i].markdown(f'''
-            <div class="strat-card" style="border-left: 5px solid #FFD700; padding: 8px;">
-                <div class="strat-title" style="font-size: 12px;">{campo}</div>
-                <div class="strat-value" style="font-size: 20px;">{val}</div>
-            </div>
-            ''', unsafe_allow_html=True)
-
     st.subheader("🧑‍⚕️ SISTEMAS ESTRATÉGICOS")
     strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                   "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
@@ -184,7 +164,6 @@ if seleccion == "Resumen General":
         ''', unsafe_allow_html=True)
 
     st.subheader("🏥 RESUMEN OPERATIVO")
-    # ... (Resto del código original sin cambios)
     iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
               "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
     cols_mostrar = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
@@ -199,7 +178,24 @@ if seleccion == "Resumen General":
             idx += 1
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
-    st.components.v1.html("""<div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;"><button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">⛶ Pantalla Completa</button><iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe></div><script>function toggleFS(id) { var elem = document.getElementById(id); if (!document.fullscreenElement) { elem.requestFullscreen().catch(err => alert("Error: " + err.message)); } else { document.exitFullscreen(); } }</script>""", height=510)
+    st.components.v1.html("""
+        <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                ⛶ Pantalla Completa
+            </button>
+            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+        </div>
+        <script>
+            function toggleFS(id) { 
+                var elem = document.getElementById(id); 
+                if (!document.fullscreenElement) { 
+                    elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
+                } else { 
+                    document.exitFullscreen(); 
+                } 
+            }
+        </script>
+    """, height=510)
 
 elif seleccion == "Inmunización":
     st.subheader(f"📋 Detalle: {seleccion}")
