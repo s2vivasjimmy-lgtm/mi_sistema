@@ -25,7 +25,7 @@ css = """
 .total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
 .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
 .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
-.strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
+.strat-title { font-size: 18px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
 .strat-value { font-size: 24px; font-weight: 900; color: #ffffff; }
 .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
 .marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
