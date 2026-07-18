@@ -161,7 +161,7 @@ if seleccion == "Resumen General":
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
-            <div class="total-title">TOTAL ATENCIONES SISTÉMICAS</div>
+            <div class="total-title">TOTAL ATENCIONES</div>
             <div class="total-value">{f"{int(total_sistemicas):,}".replace(",", ".")}</div>
         </div>
     </div>
