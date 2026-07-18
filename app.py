@@ -20,9 +20,6 @@ css = """
 .stApp { background-color: #0E1117 !important; }
 .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-.mega-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 20px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin: 20px auto; width: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-.mega-title { font-size: 18px; text-transform: uppercase; color: #ffffff; font-weight: bold; margin-bottom: 10px; }
-.mega-value { font-size: 45px; font-weight: 900; color: #00d2ff; }
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 14px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
@@ -142,14 +139,6 @@ st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD �
 if seleccion == "Resumen General":
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
     
-    val_atenciones = df["ATENCIONES"].iloc[0] if "ATENCIONES" in df.columns else "0"
-    st.markdown(f'''
-    <div class="mega-card">
-        <div class="mega-title">📋 TOTAL ATENCIONES</div>
-        <div class="mega-value">{val_atenciones}</div>
-    </div>
-    ''', unsafe_allow_html=True)
-
     st.subheader("🧑‍⚕️ SISTEMAS ESTRATÉGICOS")
     strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                   "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
@@ -163,8 +152,14 @@ if seleccion == "Resumen General":
         </div>
         ''', unsafe_allow_html=True)
 
-    # --- NUEVO BLOQUE: TOTAL ATENCIONES SISTÉMICAS ---
-    total_sistemicas = sum([pd.to_numeric(df[col].iloc[0], errors='coerce') if col in df.columns else 0 for col in strat_cols])
+    # Lógica de suma para ATENCIONES SISTÉMICAS
+    total_sistemicas = 0
+    for campo in strat_cols:
+        val_str = str(df[campo].iloc[0]) if campo in df.columns else "0"
+        # Quitar puntos de miles para convertir a numérico correctamente
+        val_limpio = val_str.replace('.', '')
+        total_sistemicas += pd.to_numeric(val_limpio, errors='coerce')
+
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
@@ -208,7 +203,7 @@ if seleccion == "Resumen General":
         </script>
     """, height=510)
 
-# ... (El resto del código se mantiene igual desde elif seleccion == "Inmunización": en adelante)
+# ... (resto de las pestañas sigue igual)
 elif seleccion == "Inmunización":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
