@@ -139,7 +139,7 @@ st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD �
 if seleccion == "Resumen General":
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
     
-    st.subheader("🧑‍⚕️ SISTEMAS ESTRATÉGICOS")
+    st.subheader("🧑‍⚕️ ATENCIONES")
     strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                   "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     c_strat = st.columns(4)
