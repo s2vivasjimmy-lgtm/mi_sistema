@@ -234,14 +234,20 @@ elif seleccion == "Inmunización":
                 df_mostrar[col] = df_mostrar[col].apply(lambda x: f"{x:,}".replace(",", "."))
         st.dataframe(df_mostrar, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
 elif seleccion == "Saneamiento Ambiental":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        iconos = {"DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", "DESINFECCIÓN": "🪣", "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "PERSONAS PROTEGIDAS": "🛡️"}
-        campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS"]
+        
+        # Agregado CLORACIÓN al diccionario y a la lista
+        iconos = {
+            "DESRATIZACIÓN": "🐀", "FUMIGACIÓN": "💨", "DESINFECCIÓN": "🪣", 
+            "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "PERSONAS PROTEGIDAS": "🛡️", 
+            "CLORACIÓN": "🧪"
+        }
+        campos = ["DESRATIZACIÓN", "FUMIGACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS", "CLORACIÓN"]
+        
         c_sane = st.columns(3)
         for i, campo in enumerate(campos):
             val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
@@ -252,6 +258,7 @@ elif seleccion == "Saneamiento Ambiental":
                 </div>
             ''', unsafe_allow_html=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
