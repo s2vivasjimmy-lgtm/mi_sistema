@@ -163,6 +163,17 @@ if seleccion == "Resumen General":
         </div>
         ''', unsafe_allow_html=True)
 
+    # --- NUEVO BLOQUE: TOTAL ATENCIONES SISTÉMICAS ---
+    total_sistemicas = sum([pd.to_numeric(df[col].iloc[0], errors='coerce') if col in df.columns else 0 for col in strat_cols])
+    st.markdown(f'''
+    <div style="text-align: center; margin: 20px 0;">
+        <div class="total-card" style="width: 50%; margin: auto;">
+            <div class="total-title">TOTAL ATENCIONES SISTÉMICAS</div>
+            <div class="total-value">{int(total_sistemicas):,}</div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
+
     st.subheader("🏥 RESUMEN OPERATIVO")
     iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
               "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
@@ -197,6 +208,7 @@ if seleccion == "Resumen General":
         </script>
     """, height=510)
 
+# ... (El resto del código se mantiene igual desde elif seleccion == "Inmunización": en adelante)
 elif seleccion == "Inmunización":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
