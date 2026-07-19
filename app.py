@@ -179,22 +179,31 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     total_general += (hosp_nac + hosp_ext)
 
-    # ORDENAMIENTO ESPECÍFICO DE TARJETAS
+    # ORDENAMIENTO DE TARJETAS EN DOS FILAS
     orden_tarjetas = [
-        "Red Sanitaria Militar",
-        "Inmunización",
-        "Saneamiento Ambiental",
-        "Programas de Salud",
-        "Sistema de Salud Tradicional",
-        "Camp. Transitorios",
-        "HOSP. DE CAMPAÑA NACIONALES",
-        "HOSP. DE CAMPAÑA INTERNACIONALES"
+        "Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud",
+        "Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"
     ]
 
-    cols_atenciones = st.columns(4)
-    for i, cat in enumerate(orden_tarjetas):
+    fila1 = orden_tarjetas[0:4]
+    fila2 = orden_tarjetas[4:8]
+
+    # Renderizado Fila 1
+    cols1 = st.columns(4)
+    for i, cat in enumerate(fila1):
         val = totales.get(cat, 0)
-        cols_atenciones[i % 4].markdown(f'''
+        cols1[i].markdown(f'''
+        <div class="strat-card">
+            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+            <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+
+    # Renderizado Fila 2
+    cols2 = st.columns(4)
+    for i, cat in enumerate(fila2):
+        val = totales.get(cat, 0)
+        cols2[i].markdown(f'''
         <div class="strat-card">
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
             <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
