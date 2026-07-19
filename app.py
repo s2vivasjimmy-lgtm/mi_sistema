@@ -85,7 +85,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Red Sanitaria Militar":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
-        cols_maestras = ["Nº", "NOMBRE", "ATENCIÓNES"]
+        cols_maestras = ["Nº", "NOMBRE", "ATENCIÓN"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
@@ -198,10 +198,11 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        col_atencion = next((c for c in df_detalle.columns if "ATENCIONES" in c.upper()), None)
+        # Búsqueda dinámica de la columna de atención (detecta ATENCIÓN o ATENCIONES)
+        col_atencion = next((c for c in df_detalle.columns if "ATENCION" in c.upper()), None)
         if col_atencion:
             df_sum = df_detalle.copy()
-            df_sum[col_atenciones] = pd.to_numeric(df_sum[col_atenciones].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_sum[col_atencion] = pd.to_numeric(df_sum[col_atencion].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             total_atenciones = df_sum[col_atencion].sum()
             st.markdown(f'''
             <div style="text-align: center; margin-bottom: 20px;">
@@ -211,15 +212,9 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
                 </div>
             </div>
             ''', unsafe_allow_html=True)
-
-        if seleccion == "Red Sanitaria Militar":
-            cols_permitidas = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
-        else:
-            cols_permitidas = ["Nº", "NOMBRE", col_atencion if col_atencion else "ATENCIÓN"]
             
-        df_limpio = df_detalle.reindex(columns=cols_permitidas, fill_value="0")
-        st.dataframe(df_limpio, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_limpio), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
@@ -245,6 +240,7 @@ else:
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        # Búsqueda dinámica de la columna de atención
         col_atencion = next((c for c in df_detalle.columns if "ATENCION" in c.upper()), None)
         if col_atencion:
             df_sum = df_detalle.copy()
