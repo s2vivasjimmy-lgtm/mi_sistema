@@ -186,14 +186,28 @@ if seleccion == "Resumen General":
             hosp_nac = int(resumen.get("NACIONAL", 0))
             hosp_ext = int(resumen.get("EXTRANJERO", 0))
     
+    # Asignación forzada para asegurar claves en totales
+    totales["Red Sanitaria Militar"] = totales.get("Red Sanitaria Militar", 0)
     totales["HOSP. DE CAMPAÑA NACIONALES"] = hosp_nac
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
+    totales["Sistema de Salud Tradicional"] = totales.get("Sistema de Salud Tradicional", 0)
+    totales["Camp. Transitorios"] = totales.get("Camp. Transitorios", 0)
+    totales["Inmunización"] = totales.get("Inmunización", 0)
+    totales["Saneamiento Ambiental"] = totales.get("Saneamiento Ambiental", 0)
+    totales["Programas de Salud"] = totales.get("Programas de Salud", 0)
+    
     total_general += (hosp_nac + hosp_ext)
 
     # --- ORDEN MAESTRO ---
     orden_tarjetas = [
-        "Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud",
-        "Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"
+        "Red Sanitaria Militar", 
+        "HOSP. DE CAMPAÑA NACIONALES", 
+        "HOSP. DE CAMPAÑA INTERNACIONALES", 
+        "Sistema de Salud Tradicional", 
+        "Camp. Transitorios", 
+        "Inmunización", 
+        "Saneamiento Ambiental", 
+        "Programas de Salud"
     ]
 
     fila1 = orden_tarjetas[:4]
