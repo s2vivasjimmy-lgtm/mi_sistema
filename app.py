@@ -85,7 +85,7 @@ if st.session_state.admin_logueado:
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
     if seleccion == "Resumen General":
-        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "RED SANITARIA MILITAR", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS", "INMUNIZACIÓN", "SANEAMIENTO AMBIENTAL", "PROGRAMAS DE SALUD"]
+        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "RED SANITARIA MILITAR", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS", "INMUNIZACIÓN", "SANEAMIENTO AMBIENTAL", "PROGRAMAS DE SALUD"]
     elif seleccion == "Red Sanitaria Militar":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
