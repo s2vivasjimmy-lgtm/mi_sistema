@@ -79,12 +79,10 @@ with st.sidebar:
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
-
+    
+    # Definición de columnas
     if seleccion == "Resumen General":
-        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
-                         "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.",
-                         "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES",
-                         "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
+        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion == "Inmunización":
@@ -111,7 +109,7 @@ if st.session_state.admin_logueado:
             for c in cols_vacunas:
                 df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
-        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
+        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Hospitales de Campaña"]:
             df_editado["ATENCIONES"] = pd.to_numeric(df_editado["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             
         df_editado.to_csv(archivo_a_editar, index=False)
@@ -288,10 +286,7 @@ else:
                 st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES</div><div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
             st.write("<br>", unsafe_allow_html=True)
 
-        # --- Mostrar Tabla ---
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        
-        # --- Lógica especial para Hospitales de Campaña (Dona debajo de la tabla) ---
+        # --- Lógica para Hospitales de Campaña ---
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -300,11 +295,16 @@ else:
             suma_nac = resumen.get('NACIONAL', 0)
             suma_ext = resumen.get('EXTRANJERO', 0)
             
-            st.write("<br>")
-            cols = st.columns(2)
-            cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
-            cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
-            
+            # --- Pestañas para métricas ---
+            tab1, tab2 = st.columns(2)
+            tab1.markdown(f'''<div class="strat-card"><div class="strat-title">Total Atenciones NACIONALES</div><div class="strat-value">{f"{int(suma_nac):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+            tab2.markdown(f'''<div class="strat-card"><div class="strat-title">Total Atenciones EXTRANJEROS</div><div class="strat-value">{f"{int(suma_ext):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+        
+        # --- Mostrar Tabla ---
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        
+        # --- Dona debajo de la tabla para Hospitales de Campaña ---
+        if seleccion == "Hospitales de Campaña":
             if (suma_nac + suma_ext) > 0:
                 fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
                 fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
