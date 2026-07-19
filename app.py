@@ -73,8 +73,8 @@ with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Hospitales de Campaña","Sistema de Salud Tradicional", 
-                          "Campamentos Transitorios", "Inmunización", 
-                          "Saneamiento Ambiental", "Ruta Epidemiológica", "Daños de Infraestructura"])
+                          "Campamentos Transitorios", "Inmunización", "Saneamiento Ambiental", 
+                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura"])
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
@@ -82,8 +82,8 @@ if st.session_state.admin_logueado:
     
     if seleccion == "Resumen General":
         cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
-    elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental"]:
-        cols_maestras = ["Nº", "NOMBRE", "ATENCIONES"]
+    elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
+        cols_maestras = ["Nº", "NOMBRE", "ATENCIÓN"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
@@ -191,12 +191,12 @@ if seleccion == "Resumen General":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion in ["Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional"]:
+elif seleccion in ["Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        cols_permitidas = ["Nº", "NOMBRE", "ATENCIONES"]
+        cols_permitidas = ["Nº", "NOMBRE", "ATENCIÓN"]
         df_limpio = df_detalle.reindex(columns=cols_permitidas, fill_value="0")
         st.dataframe(df_limpio, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_limpio), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
