@@ -87,7 +87,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Inmunización":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
     elif seleccion == "Saneamiento Ambiental":
-        cols_maestras = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "CLORACIÓN"]
+        cols_maestras = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "CLORACIÓN", "ATENCIÓN"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
