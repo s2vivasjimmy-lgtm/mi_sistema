@@ -193,31 +193,9 @@ if seleccion == "Resumen General":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
-    st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-    if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        # Aseguramos que la columna se llame ATENCIONES para la autosuma
-        if "ATENCIONES" in df_detalle.columns:
-            df_sum = df_detalle.copy()
-            df_sum["ATENCIONES"] = pd.to_numeric(df_sum["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_atenciones = df_sum["ATENCIONES"].sum()
-            st.markdown(f'''
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div class="total-card" style="width: 300px; margin: auto;">
-                    <div class="total-title">TOTAL DE ATENCIONES</div>
-                    <div class="total-value">{f"{int(total_atenciones):,}".replace(",", ".")}</div>
-                </div>
-            </div>
-            ''', unsafe_allow_html=True)
-            
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    archivo_detalle = "ruta_epidemiológica.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
@@ -234,7 +212,8 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
-else:
+elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
+    # ... [Tu lógica para estas categorías] ...
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
@@ -251,7 +230,31 @@ else:
                 </div>
             </div>
             ''', unsafe_allow_html=True)
+            
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+else:
+    # Este bloque maneja "Hospitales de Campaña" y "Daños de Infraestructura"
+    st.subheader(f"📋 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        if "ATENCIONES" in df_detalle.columns:
+            # ... (tu lógica de suma) ...
+            df_sum = df_detalle.copy()
+            df_sum["ATENCIONES"] = pd.to_numeric(df_sum["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones = df_sum["ATENCIONES"].sum()
+            st.markdown(f'''
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="total-card" style="width: 300px; margin: auto;">
+                    <div class="total-title">TOTAL DE ATENCIONES</div>
+                    <div class="total-value">{f"{int(total_atenciones):,}".replace(",", ".")}</div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
         
+        # Lógica especial para Hospitales de Campaña
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -262,27 +265,17 @@ else:
             
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown(f'''
-                    <div class="total-card">
-                        <div class="total-title">TOTAL ATENCIONES NACIONALES</div>
-                        <div class="total-value">{f"{int(suma_nac):,}".replace(",", ".")}</div>
-                    </div>
-                ''', unsafe_allow_html=True)
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES NACIONALES</div><div class="total-value">{f"{int(suma_nac):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
             with col2:
-                st.markdown(f'''
-                    <div class="total-card">
-                        <div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div>
-                        <div class="total-value">{f"{int(suma_ext):,}".replace(",", ".")}</div>
-                    </div>
-                ''', unsafe_allow_html=True)
-            st.write("<br>", unsafe_allow_html=True)
-        
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        
-        if seleccion == "Hospitales de Campaña":
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div><div class="total-value">{f"{int(suma_ext):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+            
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            
             if (suma_nac + suma_ext) > 0:
                 fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
                 fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
                 st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
