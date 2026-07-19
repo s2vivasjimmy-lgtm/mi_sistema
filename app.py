@@ -63,7 +63,7 @@ def inicializar_resumen():
         data = {
             "ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
             "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
-            "HOSPITALIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
+            "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
             "SISTEMA DE SALUD TRADICIONAL": ["0"], "RED SANITARIA MILITAR": ["0"], 
             "HOSP. DE CAMPAÑA NACIONALES": ["0"], "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], 
             "CAMP. TRANSITORIOS": ["0"], "INMUNIZACIÓN": ["0"], "SANEAMIENTO AMBIENTAL": ["0"], 
@@ -85,7 +85,7 @@ if st.session_state.admin_logueado:
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
     if seleccion == "Resumen General":
-        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "RED SANITARIA MILITAR", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS", "INMUNIZACIÓN", "SANEAMIENTO AMBIENTAL", "PROGRAMAS DE SALUD"]
+        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "RED SANITARIA MILITAR", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS", "INMUNIZACIÓN", "SANEAMIENTO AMBIENTAL", "PROGRAMAS DE SALUD"]
     elif seleccion == "Red Sanitaria Militar":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
@@ -145,49 +145,42 @@ js_fullscreen = """
 if seleccion == "Resumen General":
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
     
-    # --- SECCIÓN PRIORITARIA SOLICITADA ---
-    st.subheader("📊 GESTIÓN DE SALUD")
-    cats_priori = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
-    cols_priori = st.columns(4)
-    for i, cat in enumerate(cats_priori):
+    # --- SECCIÓN UNIFICADA DE ATENCIONES ---
+    st.subheader("🧑‍⚕️ ATENCIONES")
+    categorias_atenciones = [
+        "Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud",
+        "Sistema de Salud Tradicional", "Hosp. de Campaña Nacionales", 
+        "Hosp. de Campaña Internacionales", "Camp. Transitorios"
+    ]
+    
+    totales = {}
+    total_general = 0
+    
+    for cat in categorias_atenciones:
         archivo_cat = f"{cat.lower().replace(' ', '_')}.csv"
-        total_cat = 0
+        valor_cat = 0
         if os.path.exists(archivo_cat):
             df_cat = pd.read_csv(archivo_cat, dtype=str)
             if "ATENCIONES" in df_cat.columns:
                 vals = pd.to_numeric(df_cat["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                total_cat = int(vals.sum())
-        cols_priori[i].markdown(f'''
+                valor_cat = int(vals.sum())
+        totales[cat] = valor_cat
+        total_general += valor_cat
+
+    cols_atenciones = st.columns(4)
+    for i, (cat, val) in enumerate(totales.items()):
+        cols_atenciones[i % 4].markdown(f'''
         <div class="strat-card">
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
-            <div class="strat-value">{f"{total_cat:,}".replace(",", ".")}</div>
+            <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
         </div>
         ''', unsafe_allow_html=True)
-
-    st.subheader("🧑‍⚕️ATENCIONES")
-    strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
-                  "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
-    c_strat = st.columns(4)
-    for i, campo in enumerate(strat_cols):
-        val = df[campo].iloc[0] if campo in df.columns else "0"
-        c_strat[i].markdown(f'''
-        <div class="strat-card">
-            <div class="strat-title">{campo}</div>
-            <div class="strat-value">{val}</div>
-        </div>
-        ''', unsafe_allow_html=True)
-
-    total_sistemicas = 0
-    for campo in strat_cols:
-        val_str = str(df[campo].iloc[0]) if campo in df.columns else "0"
-        val_limpio = val_str.replace('.', '').replace(',', '')
-        total_sistemicas += pd.to_numeric(val_limpio, errors='coerce')
 
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
             <div class="total-title">TOTAL ATENCIONES</div>
-            <div class="total-value">{f"{int(total_sistemicas):,}".replace(",", ".")}</div>
+            <div class="total-value">{f"{total_general:,}".replace(",", ".")}</div>
         </div>
     </div>
     ''', unsafe_allow_html=True)
