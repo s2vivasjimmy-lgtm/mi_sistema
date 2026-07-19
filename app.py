@@ -14,6 +14,8 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
+# --- CSS ---
+st.markdown("""
 <style>
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
@@ -31,8 +33,7 @@ def convertir_df_a_excel(df):
 @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
 .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
 </style>
-"""
-st.markdown(css, unsafe_html=True)
+""", unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
