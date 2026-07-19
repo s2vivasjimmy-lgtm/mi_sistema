@@ -278,7 +278,20 @@ else:
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         
-        # Lógica especial para Hospitales de Campaña
+        # --- Lógica para categorías con lista de campos (Campamentos y Tradicional) ---
+        if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
+            orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
+            df_detalle = df_detalle.reindex(columns=orden)
+            total_at = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES</div><div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+            st.write("<br>", unsafe_allow_html=True)
+
+        # --- Mostrar Tabla ---
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        
+        # --- Lógica especial para Hospitales de Campaña (Dona debajo de la tabla) ---
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -287,6 +300,7 @@ else:
             suma_nac = resumen.get('NACIONAL', 0)
             suma_ext = resumen.get('EXTRANJERO', 0)
             
+            st.write("<br>")
             cols = st.columns(2)
             cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
             cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
@@ -295,16 +309,5 @@ else:
                 fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
                 fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
                 st.plotly_chart(fig, use_container_width=True)
-
-        # Lógica para otras categorías con lista de campos
-        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
-            orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
-            df_detalle = df_detalle.reindex(columns=orden)
-            total_at = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES</div><div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
-            st.write("<br>", unsafe_allow_html=True)
         
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
