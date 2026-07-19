@@ -179,14 +179,18 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     total_general += (hosp_nac + hosp_ext)
 
-    # DEFINICIÓN Y RENDERIZADO CORREGIDO
     fila1_nombres = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
     fila2_nombres = ["Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"]
 
     cols1 = st.columns(4)
     for i, cat in enumerate(fila1_nombres):
         val = totales.get(cat, 0)
-        cols1[i].markdown(f'''
+        st.markdown(f'''
+        <div class="strat-card">
+            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+            <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
+        </div>
+        ''', unsafe_html=True) if i == 0 else cols1[i].markdown(f'''
         <div class="strat-card">
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
             <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
@@ -196,7 +200,12 @@ if seleccion == "Resumen General":
     cols2 = st.columns(4)
     for i, cat in enumerate(fila2_nombres):
         val = totales.get(cat, 0)
-        cols2[i].markdown(f'''
+        st.markdown(f'''
+        <div class="strat-card">
+            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+            <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
+        </div>
+        ''', unsafe_html=True) if i == 0 else cols2[i].markdown(f'''
         <div class="strat-card">
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
             <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
@@ -224,11 +233,11 @@ if seleccion == "Resumen General":
     for col_name in cols_mostrar:
         if col_name in df.columns:
             with cols[idx % 4]:
-                st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_html=True)
+                st.markdown(f'''<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>''', unsafe_html=True)
             idx += 1
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
-    st.components.v1.html(f"""
+    st.components.v1.html(f'''
         <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
             <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                 ⛶ Pantalla Completa
@@ -236,7 +245,7 @@ if seleccion == "Resumen General":
             <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
         </div>
         {js_fullscreen}
-    """, height=510)
+    ''', height=510)
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
@@ -247,7 +256,7 @@ elif seleccion == "Ruta Epidemiológica":
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
-    st.components.v1.html(f"""
+    st.components.v1.html(f'''
         <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
             <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                 ⛶ Pantalla Completa
@@ -255,7 +264,7 @@ elif seleccion == "Ruta Epidemiológica":
             <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
         </div>
         {js_fullscreen}
-    """, height=510)
+    ''', height=510)
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
     st.subheader(f"📋 Detalle: {seleccion}")
