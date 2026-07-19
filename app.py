@@ -198,10 +198,7 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        
-        # Función auxiliar para detectar columna de atenciones (ATENCIONES o ATENCIÓN)
         col_atencion = next((c for c in df_detalle.columns if "ATENCION" in c.upper()), None)
-        
         if col_atencion:
             df_sum = df_detalle.copy()
             df_sum[col_atencion] = pd.to_numeric(df_sum[col_atencion].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -218,7 +215,7 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
         if seleccion == "Red Sanitaria Militar":
             cols_permitidas = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
         else:
-            cols_permitidas = ["Nº", "NOMBRE", "ATENCIÓN"]
+            cols_permitidas = ["Nº", "NOMBRE", col_atencion if col_atencion else "ATENCIÓN"]
             
         df_limpio = df_detalle.reindex(columns=cols_permitidas, fill_value="0")
         st.dataframe(df_limpio, use_container_width=True, hide_index=True)
@@ -248,8 +245,6 @@ else:
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        
-        # Autosuma dinámica
         col_atencion = next((c for c in df_detalle.columns if "ATENCION" in c.upper()), None)
         if col_atencion:
             df_sum = df_detalle.copy()
