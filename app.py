@@ -190,11 +190,17 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     total_general += (hosp_nac + hosp_ext)
 
-    fila1_nombres = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
-    fila2_nombres = ["Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"]
+    # --- ORDEN MAESTRO ---
+    orden_tarjetas = [
+        "Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud",
+        "Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"
+    ]
+
+    fila1 = orden_tarjetas[:4]
+    fila2 = orden_tarjetas[4:]
 
     cols1 = st.columns(4)
-    for i, cat in enumerate(fila1_nombres):
+    for i, cat in enumerate(fila1):
         with cols1[i]:
             st.markdown(f'''
             <div class="strat-card">
@@ -204,7 +210,7 @@ if seleccion == "Resumen General":
             ''', unsafe_allow_html=True)
 
     cols2 = st.columns(4)
-    for i, cat in enumerate(fila2_nombres):
+    for i, cat in enumerate(fila2):
         with cols2[i]:
             st.markdown(f'''
             <div class="strat-card">
