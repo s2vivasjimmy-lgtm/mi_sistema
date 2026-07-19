@@ -277,7 +277,27 @@ else:
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
+        
+        # Lógica especial para Hospitales de Campaña
+        if seleccion == "Hospitales de Campaña":
+            df_stats = df_detalle.copy()
+            df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
+            resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
+            suma_nac = resumen.get('NACIONAL', 0)
+            suma_ext = resumen.get('EXTRANJERO', 0)
+            
+            cols = st.columns(2)
+            cols[0].metric("Total Atenciones NACIONALES", f"{int(suma_nac):,}".replace(",", "."))
+            cols[1].metric("Total Atenciones EXTRANJEROS", f"{int(suma_ext):,}".replace(",", "."))
+            
+            if (suma_nac + suma_ext) > 0:
+                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
+                fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+                st.plotly_chart(fig, use_container_width=True)
+
+        # Lógica para otras categorías con lista de campos
+        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
             orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
             df_detalle = df_detalle.reindex(columns=orden)
             total_at = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
