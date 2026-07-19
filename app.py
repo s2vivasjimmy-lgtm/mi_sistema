@@ -168,6 +168,26 @@ if seleccion == "Resumen General":
     </div>
     ''', unsafe_allow_html=True)
 
+    # --- NUEVA SECCIÓN DE DESGLOSE ---
+    st.subheader("📊 DESGLOSE DE ATENCIONES")
+    categorias_adicionales = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
+    cols_adicionales = st.columns(4)
+    for i, cat in enumerate(categorias_adicionales):
+        archivo_cat = f"{cat.lower().replace(' ', '_')}.csv"
+        total_cat = 0
+        if os.path.exists(archivo_cat):
+            df_cat = pd.read_csv(archivo_cat, dtype=str)
+            if "ATENCIONES" in df_cat.columns:
+                valores = pd.to_numeric(df_cat["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                total_cat = int(valores.sum())
+        cols_adicionales[i].markdown(f'''
+        <div class="strat-card">
+            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+            <div class="strat-value">{f"{total_cat:,}".replace(",", ".")}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+    # --- FIN NUEVA SECCIÓN ---
+
     st.subheader("🏥 RESUMEN OPERATIVO")
     iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
               "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
@@ -213,7 +233,6 @@ elif seleccion == "Ruta Epidemiológica":
     """, height=510)
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
-    # ... [Tu lógica para estas categorías] ...
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
@@ -235,13 +254,11 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 else:
-    # Este bloque maneja "Hospitales de Campaña" y "Daños de Infraestructura"
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         if "ATENCIONES" in df_detalle.columns:
-            # ... (tu lógica de suma) ...
             df_sum = df_detalle.copy()
             df_sum["ATENCIONES"] = pd.to_numeric(df_sum["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             total_atenciones = df_sum["ATENCIONES"].sum()
@@ -254,7 +271,6 @@ else:
             </div>
             ''', unsafe_allow_html=True)
         
-        # Lógica especial para Hospitales de Campaña
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
