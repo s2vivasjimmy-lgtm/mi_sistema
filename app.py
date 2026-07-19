@@ -276,14 +276,24 @@ else:
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         
-        # --- Lógica para categorías con lista de campos (Campamentos y Tradicional) ---
+        # --- Lógica para categorías con suma automática ---
         if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
             orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
             df_detalle = df_detalle.reindex(columns=orden)
-            total_at = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
+            
+            # Cálculo del total
+            df_detalle['ATENCIONES'] = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_at = df_detalle['ATENCIONES'].sum()
+            
+            # Visualización tipo tarjeta
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES</div><div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+                st.markdown(f'''
+                    <div class="total-card">
+                        <div class="total-title">TOTAL ATENCIONES</div>
+                        <div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div>
+                    </div>
+                ''', unsafe_allow_html=True)
             st.write("<br>", unsafe_allow_html=True)
 
         # --- Lógica para Hospitales de Campaña ---
