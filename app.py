@@ -86,7 +86,7 @@ if st.session_state.admin_logueado:
                          "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES",
                          "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
     elif seleccion == "Campamentos Transitorios":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion == "Inmunización":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
     elif seleccion == "Saneamiento Ambiental":
@@ -291,7 +291,7 @@ else:
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
-        if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS"]
+        if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS" ATENCIONES]
         else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
         df_detalle = df_detalle.reindex(columns=orden)
         
