@@ -199,11 +199,13 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         
-        # Autosuma de ATENCIONES si existe la columna
-        if "ATENCIONES" in df_detalle.columns:
+        # Función auxiliar para detectar columna de atenciones (ATENCIONES o ATENCIÓN)
+        col_atencion = next((c for c in df_detalle.columns if "ATENCION" in c.upper()), None)
+        
+        if col_atencion:
             df_sum = df_detalle.copy()
-            df_sum['ATENCIONES'] = pd.to_numeric(df_sum['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_atenciones = df_sum['ATENCIONES'].sum()
+            df_sum[col_atencion] = pd.to_numeric(df_sum[col_atencion].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones = df_sum[col_atencion].sum()
             st.markdown(f'''
             <div style="text-align: center; margin-bottom: 20px;">
                 <div class="total-card" style="width: 300px; margin: auto;">
@@ -247,11 +249,12 @@ else:
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         
-        # Autosuma de ATENCIONES para Hospitales de Campaña
-        if "ATENCIONES" in df_detalle.columns:
+        # Autosuma dinámica
+        col_atencion = next((c for c in df_detalle.columns if "ATENCION" in c.upper()), None)
+        if col_atencion:
             df_sum = df_detalle.copy()
-            df_sum['ATENCIONES'] = pd.to_numeric(df_sum['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_atenciones = df_sum['ATENCIONES'].sum()
+            df_sum[col_atencion] = pd.to_numeric(df_sum[col_atencion].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones = df_sum[col_atencion].sum()
             st.markdown(f'''
             <div style="text-align: center; margin-bottom: 20px;">
                 <div class="total-card" style="width: 300px; margin: auto;">
