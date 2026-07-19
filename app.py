@@ -85,7 +85,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Red Sanitaria Militar":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
-        cols_maestras = ["Nº", "NOMBRE", "ATENCIÓN"]
+        cols_maestras = ["Nº", "NOMBRE", "ATENCIÓNES"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
@@ -198,10 +198,10 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        col_atencion = next((c for c in df_detalle.columns if "ATENCION" in c.upper()), None)
+        col_atencion = next((c for c in df_detalle.columns if "ATENCIONES" in c.upper()), None)
         if col_atencion:
             df_sum = df_detalle.copy()
-            df_sum[col_atencion] = pd.to_numeric(df_sum[col_atencion].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_sum[col_atenciones] = pd.to_numeric(df_sum[col_atenciones].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             total_atenciones = df_sum[col_atencion].sum()
             st.markdown(f'''
             <div style="text-align: center; margin-bottom: 20px;">
