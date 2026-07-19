@@ -72,7 +72,7 @@ inicializar_resumen()
 with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
-                         ["Resumen General", "Hospitales de Campaña", 
+                         ["Resumen General", "Hospitales de Campaña","Sistema de Salud Tradicional", 
                           "Campamentos Transitorios", "Inmunización", 
                           "Saneamiento Ambiental", "Ruta Epidemiológica", "Daños de Infraestructura"])
 
