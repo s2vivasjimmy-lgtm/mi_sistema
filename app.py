@@ -61,13 +61,9 @@ if "admin_logueado" not in st.session_state:
 def inicializar_resumen():
     if not os.path.exists(ARCHIVO_RESUMEN):
         data = {
-            "ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
-            "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
-            "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
-            "SISTEMA DE SALUD TRADICIONAL": ["0"], "RED SANITARIA MILITAR": ["0"], 
-            "HOSP. DE CAMPAÑA NACIONALES": ["0"], "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], 
-            "CAMP. TRANSITORIOS": ["0"], "INMUNIZACIÓN": ["0"], "SANEAMIENTO AMBIENTAL": ["0"], 
-            "PROGRAMAS DE SALUD": ["0"]
+            "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], "TRASLADOS": ["0"], 
+            "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"], 
+            "HOSPITALIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"]
         }
         pd.DataFrame(data).to_csv(ARCHIVO_RESUMEN, index=False)
 
@@ -85,7 +81,7 @@ if st.session_state.admin_logueado:
     archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_')}.csv"
     
     if seleccion == "Resumen General":
-        cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "RED SANITARIA MILITAR", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS", "INMUNIZACIÓN", "SANEAMIENTO AMBIENTAL", "PROGRAMAS DE SALUD"]
+        cols_maestras = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INTERVENCIONES Q."]
     elif seleccion == "Red Sanitaria Militar":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
@@ -145,7 +141,6 @@ js_fullscreen = """
 if seleccion == "Resumen General":
     st.subheader("🧑‍⚕️ ATENCIONES")
     
-    # 1. Definir lista de categorías y calcular sus totales
     categorias = {
         "Red Sanitaria Militar": "red_sanitaria_militar.csv",
         "Inmunización": "inmunización.csv",
@@ -158,7 +153,6 @@ if seleccion == "Resumen General":
     totales = {}
     total_general = 0
     
-    # Calcular otras categorías
     for cat, archivo in categorias.items():
         val = 0
         if os.path.exists(archivo):
@@ -169,7 +163,6 @@ if seleccion == "Resumen General":
         totales[cat] = val
         total_general += val
         
-    # Calcular Hosp. Campaña especiales
     hosp_nac = 0
     hosp_ext = 0
     archivo_hosp = "hospitales_de_campaña.csv"
@@ -186,7 +179,6 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     total_general += (hosp_nac + hosp_ext)
 
-    # Mostrar tarjetas en columnas de 4
     cols_atenciones = st.columns(4)
     i = 0
     for cat, val in totales.items():
@@ -198,7 +190,6 @@ if seleccion == "Resumen General":
         ''', unsafe_allow_html=True)
         i += 1
 
-    # Total General
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
