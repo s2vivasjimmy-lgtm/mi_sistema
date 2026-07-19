@@ -82,11 +82,7 @@ if st.session_state.admin_logueado:
     
     if seleccion == "Resumen General":
         cols_maestras = ["ATENCIONES", "ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.", "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
-    elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
-    elif seleccion == "Inmunización":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
-    elif seleccion == "Saneamiento Ambiental":
+    elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental"]:
         cols_maestras = ["Nº", "NOMBRE", "ATENCIONES"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
@@ -103,12 +99,7 @@ if st.session_state.admin_logueado:
     df_editado = st.data_editor(df_actual.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic")
 
     if st.button("💾 Guardar Cambios"):
-        if seleccion == "Inmunización":
-            cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]
-            for c in cols_vacunas:
-                df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
-        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Hospitales de Campaña", "Saneamiento Ambiental"]:
+        if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Hospitales de Campaña", "Saneamiento Ambiental", "Inmunización"]:
             df_editado["ATENCIONES"] = pd.to_numeric(df_editado["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             
         df_editado.to_csv(archivo_a_editar, index=False)
@@ -203,41 +194,11 @@ if seleccion == "Resumen General":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion == "Inmunización":
-    st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-    if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        cols_vacunas = ["TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV"]
-        c_vac = st.columns(4)
-        for i, v in enumerate(cols_vacunas):
-            sum_val = pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() if v in df_detalle.columns else 0
-            valor_formateado = f"{int(sum_val):,}".replace(",", ".")
-            c_vac[i % 4].markdown(f'''
-                <div class="strat-card" style="padding: 10px 5px;">
-                    <div class="strat-title" style="font-size: 11px;">{v}</div>
-                    <div class="strat-value" style="font-size: 18px;">{valor_formateado}</div>
-                </div>
-            ''', unsafe_allow_html=True)
-        total_general = sum([pd.to_numeric(df_detalle[v].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum() for v in cols_vacunas if v in df_detalle.columns])
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            st.markdown(f'''
-                <div class="total-card">
-                    <div class="total-title">TOTAL GENERAL</div>
-                    <div class="total-value">{f"{int(total_general):,}".replace(",", ".")}</div>
-                </div>
-            ''', unsafe_allow_html=True)
-        st.write("<br>", unsafe_allow_html=True)
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-elif seleccion == "Saneamiento Ambiental":
+elif seleccion in ["Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional"]:
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        # --- Lógica de autosuma para Saneamiento ---
         df_detalle['ATENCIONES'] = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
         total_at = df_detalle['ATENCIONES'].sum()
         
@@ -279,22 +240,6 @@ else:
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         
-        if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
-            orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
-            df_detalle = df_detalle.reindex(columns=orden)
-            df_detalle['ATENCIONES'] = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_at = df_detalle['ATENCIONES'].sum()
-            
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                st.markdown(f'''
-                    <div class="total-card">
-                        <div class="total-title">TOTAL ATENCIONES</div>
-                        <div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div>
-                    </div>
-                ''', unsafe_allow_html=True)
-            st.write("<br>", unsafe_allow_html=True)
-
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
