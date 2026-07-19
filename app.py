@@ -112,6 +112,9 @@ if st.session_state.admin_logueado:
             for c in cols_vacunas:
                 df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
+        elif seleccion == "Campamentos Transitorios":
+            df_editado["ATENCIONES"] = pd.to_numeric(df_editado["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            
         df_editado.to_csv(archivo_a_editar, index=False)
         if guardar_en_github(archivo_a_editar): 
             st.success("Guardado en servidor.")
@@ -234,16 +237,15 @@ elif seleccion == "Inmunización":
                 df_mostrar[col] = df_mostrar[col].apply(lambda x: f"{x:,}".replace(",", "."))
         st.dataframe(df_mostrar, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 elif seleccion == "Saneamiento Ambiental":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        
         iconos = {
             "DESRATIZACIÓN": "🐀", "NEBULIZACIÓN": "💨", "DESINFECCIÓN": "🪣", 
             "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "CLORACIÓN": "🧪", "PERSONAS PROTEGIDAS": "🛡️" 
-           
         }
         campos = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS", "CLORACIÓN"]
         
@@ -257,7 +259,6 @@ elif seleccion == "Saneamiento Ambiental":
                 </div>
             ''', unsafe_allow_html=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
@@ -291,9 +292,26 @@ else:
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         df_detalle = df_detalle.replace('None', pd.NA).dropna(how='all')
-        if seleccion == "Campamentos Transitorios": orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
-        else: orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
-        df_detalle = df_detalle.reindex(columns=orden)
+        
+        # Lógica especial para mostrar el total de atenciones en Campamentos Transitorios
+        if seleccion == "Campamentos Transitorios":
+            orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
+            df_detalle = df_detalle.reindex(columns=orden)
+            
+            # Cálculo de la suma
+            total_at = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.markdown(f'''
+                    <div class="total-card">
+                        <div class="total-title">TOTAL ATENCIONES</div>
+                        <div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div>
+                    </div>
+                ''', unsafe_allow_html=True)
+            st.write("<br>", unsafe_allow_html=True)
+        else:
+            orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
+            df_detalle = df_detalle.reindex(columns=orden)
         
         if seleccion == "Hospitales de Campaña" and "NACIONALIAD" in df_detalle.columns and "ATENCIONES" in df_detalle.columns:
             df_stats = df_detalle.copy()
