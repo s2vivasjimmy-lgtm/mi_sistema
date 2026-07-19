@@ -143,39 +143,62 @@ js_fullscreen = """
 """
 
 if seleccion == "Resumen General":
-    df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
-    
-    # --- SECCIÓN UNIFICADA DE ATENCIONES ---
     st.subheader("🧑‍⚕️ ATENCIONES")
-    categorias_atenciones = [
-        "Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud",
-        "Sistema de Salud Tradicional", "Hosp. de Campaña Nacionales", 
-        "Hosp. de Campaña Internacionales", "Camp. Transitorios"
-    ]
+    
+    # 1. Definir lista de categorías y calcular sus totales
+    categorias = {
+        "Red Sanitaria Militar": "red_sanitaria_militar.csv",
+        "Inmunización": "inmunización.csv",
+        "Saneamiento Ambiental": "saneamiento_ambiental.csv",
+        "Programas de Salud": "programas_de_salud.csv",
+        "Sistema de Salud Tradicional": "sistema_de_salud_tradicional.csv",
+        "Camp. Transitorios": "campamentos_transitorios.csv"
+    }
     
     totales = {}
     total_general = 0
     
-    for cat in categorias_atenciones:
-        archivo_cat = f"{cat.lower().replace(' ', '_')}.csv"
-        valor_cat = 0
-        if os.path.exists(archivo_cat):
-            df_cat = pd.read_csv(archivo_cat, dtype=str)
+    # Calcular otras categorías
+    for cat, archivo in categorias.items():
+        val = 0
+        if os.path.exists(archivo):
+            df_cat = pd.read_csv(archivo, dtype=str)
             if "ATENCIONES" in df_cat.columns:
                 vals = pd.to_numeric(df_cat["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                valor_cat = int(vals.sum())
-        totales[cat] = valor_cat
-        total_general += valor_cat
+                val = int(vals.sum())
+        totales[cat] = val
+        total_general += val
+        
+    # Calcular Hosp. Campaña especiales
+    hosp_nac = 0
+    hosp_ext = 0
+    archivo_hosp = "hospitales_de_campaña.csv"
+    if os.path.exists(archivo_hosp):
+        df_hosp = pd.read_csv(archivo_hosp, dtype=str)
+        if "ATENCIONES" in df_hosp.columns and "NACIONALIAD" in df_hosp.columns:
+            df_hosp["ATENCIONES"] = pd.to_numeric(df_hosp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_hosp["NACIONALIAD"] = df_hosp["NACIONALIAD"].astype(str).str.upper().str.strip()
+            resumen = df_hosp.groupby("NACIONALIAD")["ATENCIONES"].sum()
+            hosp_nac = int(resumen.get("NACIONAL", 0))
+            hosp_ext = int(resumen.get("EXTRANJERO", 0))
+    
+    totales["HOSP. DE CAMPAÑA NACIONALES"] = hosp_nac
+    totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
+    total_general += (hosp_nac + hosp_ext)
 
+    # Mostrar tarjetas en columnas de 4
     cols_atenciones = st.columns(4)
-    for i, (cat, val) in enumerate(totales.items()):
+    i = 0
+    for cat, val in totales.items():
         cols_atenciones[i % 4].markdown(f'''
         <div class="strat-card">
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
             <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
         </div>
         ''', unsafe_allow_html=True)
+        i += 1
 
+    # Total General
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
@@ -186,6 +209,7 @@ if seleccion == "Resumen General":
     ''', unsafe_allow_html=True)
 
     st.subheader("🏥 RESUMEN OPERATIVO")
+    df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
     iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
               "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INTERVENCIONES Q.": "🔪"}
     cols_mostrar = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
