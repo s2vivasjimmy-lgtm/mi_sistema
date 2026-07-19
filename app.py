@@ -63,7 +63,7 @@ def inicializar_resumen():
         data = {
             "ATENCIONES": ["0"], "ALTAS MÉDICAS": ["0"], "FALLECIDOS": ["0"], 
             "TRASLADOS": ["0"], "CAMAS OCUPADAS": ["0"], "CAMAS DISPONIBLES": ["0"],
-            "HOSPITALIZACIONES": ["0"], "INMUNIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
+            "HOSPITALIZACIONES": ["0"], "INTERVENCIONES Q.": ["0"],
             "SISTEMA DE SALUD TRADICIONAL": ["0"], "RED SANITARIA MILITAR": ["0"], 
             "HOSP. DE CAMPAÑA NACIONALES": ["0"], "HOSP. DE CAMPAÑA INTERNACIONALES": ["0"], 
             "CAMP. TRANSITORIOS": ["0"], "INMUNIZACIÓN": ["0"], "SANEAMIENTO AMBIENTAL": ["0"], 
@@ -194,7 +194,7 @@ if seleccion == "Resumen General":
 
     st.subheader("🏥 RESUMEN OPERATIVO")
     iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
-              "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INMUNIZACIONES": "💉", "INTERVENCIONES Q.": "🔪"}
+              "CAMAS DISPONIBLES": "🛏️", "HOSPITALIZACIONES": "🏥", "INTERVENCIONES Q.": "🔪"}
     cols_mostrar = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
                     "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q."]
     
