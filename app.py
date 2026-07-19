@@ -85,7 +85,7 @@ if st.session_state.admin_logueado:
                          "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INMUNIZACIONES", "INTERVENCIONES Q.",
                          "SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES",
                          "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
-    elif seleccion == "Campamentos Transitorios":
+    elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion == "Inmunización":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
@@ -111,7 +111,7 @@ if st.session_state.admin_logueado:
             for c in cols_vacunas:
                 df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
-        elif seleccion == "Campamentos Transitorios":
+        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
             df_editado["ATENCIONES"] = pd.to_numeric(df_editado["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             
         df_editado.to_csv(archivo_a_editar, index=False)
@@ -138,7 +138,6 @@ if os.path.exists("logo_institucional.jpg"):
 
 st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
-# Lógica JS compartida
 js_fullscreen = """
 <script>
     function toggleFS(id) { 
@@ -154,7 +153,6 @@ js_fullscreen = """
 
 if seleccion == "Resumen General":
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
-    
     st.subheader("🧑‍⚕️ATENCIONES")
     strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                   "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
@@ -279,7 +277,7 @@ else:
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        if seleccion == "Campamentos Transitorios":
+        if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
             orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
             df_detalle = df_detalle.reindex(columns=orden)
             total_at = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum()
