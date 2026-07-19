@@ -140,6 +140,26 @@ js_fullscreen = """
 
 if seleccion == "Resumen General":
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
+    
+    # --- SECCIÓN PRIORITARIA SOLICITADA ---
+    st.subheader("📊 GESTIÓN DE SALUD")
+    cats_priori = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
+    cols_priori = st.columns(4)
+    for i, cat in enumerate(cats_priori):
+        archivo_cat = f"{cat.lower().replace(' ', '_')}.csv"
+        total_cat = 0
+        if os.path.exists(archivo_cat):
+            df_cat = pd.read_csv(archivo_cat, dtype=str)
+            if "ATENCIONES" in df_cat.columns:
+                vals = pd.to_numeric(df_cat["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                total_cat = int(vals.sum())
+        cols_priori[i].markdown(f'''
+        <div class="strat-card">
+            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+            <div class="strat-value">{f"{total_cat:,}".replace(",", ".")}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+
     st.subheader("🧑‍⚕️ATENCIONES")
     strat_cols = ["SISTEMA DE SALUD TRADICIONAL", "HOSP. DE CAMPAÑA NACIONALES", 
                   "HOSP. DE CAMPAÑA INTERNACIONALES", "CAMP. TRANSITORIOS"]
@@ -167,26 +187,6 @@ if seleccion == "Resumen General":
         </div>
     </div>
     ''', unsafe_allow_html=True)
-
-    # --- NUEVA SECCIÓN DE DESGLOSE ---
-    st.subheader("📊 DESGLOSE DE ATENCIONES")
-    categorias_adicionales = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
-    cols_adicionales = st.columns(4)
-    for i, cat in enumerate(categorias_adicionales):
-        archivo_cat = f"{cat.lower().replace(' ', '_')}.csv"
-        total_cat = 0
-        if os.path.exists(archivo_cat):
-            df_cat = pd.read_csv(archivo_cat, dtype=str)
-            if "ATENCIONES" in df_cat.columns:
-                valores = pd.to_numeric(df_cat["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                total_cat = int(valores.sum())
-        cols_adicionales[i].markdown(f'''
-        <div class="strat-card">
-            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
-            <div class="strat-value">{f"{total_cat:,}".replace(",", ".")}</div>
-        </div>
-        ''', unsafe_allow_html=True)
-    # --- FIN NUEVA SECCIÓN ---
 
     st.subheader("🏥 RESUMEN OPERATIVO")
     iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
