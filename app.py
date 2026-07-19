@@ -99,9 +99,6 @@ if st.session_state.admin_logueado:
     df_editado = st.data_editor(df_actual.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic")
 
     if st.button("💾 Guardar Cambios"):
-        if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Hospitales de Campaña", "Saneamiento Ambiental", "Inmunización"]:
-            df_editado["ATENCIONES"] = pd.to_numeric(df_editado["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            
         df_editado.to_csv(archivo_a_editar, index=False)
         if guardar_en_github(archivo_a_editar): 
             st.success("Guardado en servidor.")
@@ -199,21 +196,10 @@ elif seleccion in ["Inmunización", "Saneamiento Ambiental", "Campamentos Transi
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        df_detalle['ATENCIONES'] = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-        total_at = df_detalle['ATENCIONES'].sum()
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.markdown(f'''
-                <div class="total-card">
-                    <div class="total-title">TOTAL ATENCIONES</div>
-                    <div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div>
-                </div>
-            ''', unsafe_allow_html=True)
-        st.write("<br>", unsafe_allow_html=True)
-        
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        cols_permitidas = ["Nº", "NOMBRE", "ATENCIONES"]
+        df_limpio = df_detalle.reindex(columns=cols_permitidas, fill_value="0")
+        st.dataframe(df_limpio, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_limpio), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
