@@ -198,7 +198,21 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        # Ajustamos las columnas permitidas según la categoría
+        
+        # Autosuma de ATENCIONES si existe la columna
+        if "ATENCIONES" in df_detalle.columns:
+            df_sum = df_detalle.copy()
+            df_sum['ATENCIONES'] = pd.to_numeric(df_sum['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones = df_sum['ATENCIONES'].sum()
+            st.markdown(f'''
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="total-card" style="width: 300px; margin: auto;">
+                    <div class="total-title">TOTAL DE ATENCIONES</div>
+                    <div class="total-value">{f"{int(total_atenciones):,}".replace(",", ".")}</div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+
         if seleccion == "Red Sanitaria Militar":
             cols_permitidas = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
         else:
@@ -232,6 +246,20 @@ else:
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        
+        # Autosuma de ATENCIONES para Hospitales de Campaña
+        if "ATENCIONES" in df_detalle.columns:
+            df_sum = df_detalle.copy()
+            df_sum['ATENCIONES'] = pd.to_numeric(df_sum['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones = df_sum['ATENCIONES'].sum()
+            st.markdown(f'''
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="total-card" style="width: 300px; margin: auto;">
+                    <div class="total-title">TOTAL DE ATENCIONES</div>
+                    <div class="total-value">{f"{int(total_atenciones):,}".replace(",", ".")}</div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
         
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
