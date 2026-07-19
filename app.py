@@ -121,7 +121,7 @@ else:
 if os.path.exists("logo_institucional.jpg"):
     with open("logo_institucional.jpg", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
-        st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_html=True)
+        st.markdown(f'''<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">''', unsafe_html=True)
 
 st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_html=True)
 
