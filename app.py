@@ -179,16 +179,27 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     total_general += (hosp_nac + hosp_ext)
 
+    # ORDENAMIENTO ESPECÍFICO DE TARJETAS
+    orden_tarjetas = [
+        "Red Sanitaria Militar",
+        "Inmunización",
+        "Saneamiento Ambiental",
+        "Programas de Salud",
+        "Sistema de Salud Tradicional",
+        "Camp. Transitorios",
+        "HOSP. DE CAMPAÑA NACIONALES",
+        "HOSP. DE CAMPAÑA INTERNACIONALES"
+    ]
+
     cols_atenciones = st.columns(4)
-    i = 0
-    for cat, val in totales.items():
+    for i, cat in enumerate(orden_tarjetas):
+        val = totales.get(cat, 0)
         cols_atenciones[i % 4].markdown(f'''
         <div class="strat-card">
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
             <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
         </div>
         ''', unsafe_allow_html=True)
-        i += 1
 
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
