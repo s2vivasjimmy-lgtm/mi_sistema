@@ -33,7 +33,7 @@ css = """
 .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
 </style>
 """
-st.markdown(css, unsafe_allow_html=True)
+st.markdown(css, unsafe_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
@@ -121,9 +121,9 @@ else:
 if os.path.exists("logo_institucional.jpg"):
     with open("logo_institucional.jpg", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode()
-        st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_allow_html=True)
+        st.markdown(f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">', unsafe_html=True)
 
-st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
+st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_html=True)
 
 js_fullscreen = """
 <script>
@@ -179,13 +179,12 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     total_general += (hosp_nac + hosp_ext)
 
-    # DEFINICIÓN MANUAL DE FILAS Y COLUMNAS
-    fila1 = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
-    fila2 = ["Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"]
+    # DEFINICIÓN Y RENDERIZADO CORREGIDO
+    fila1_nombres = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
+    fila2_nombres = ["Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"]
 
-    c1, c2, c3, c4 = st.columns(4)
-    cols1 = [c1, c2, c3, c4]
-    for i, cat in enumerate(fila1):
+    cols1 = st.columns(4)
+    for i, cat in enumerate(fila1_nombres):
         val = totales.get(cat, 0)
         cols1[i].markdown(f'''
         <div class="strat-card">
@@ -194,9 +193,8 @@ if seleccion == "Resumen General":
         </div>
         ''', unsafe_html=True)
 
-    c5, c6, c7, c8 = st.columns(4)
-    cols2 = [c5, c6, c7, c8]
-    for i, cat in enumerate(fila2):
+    cols2 = st.columns(4)
+    for i, cat in enumerate(fila2_nombres):
         val = totales.get(cat, 0)
         cols2[i].markdown(f'''
         <div class="strat-card">
@@ -275,7 +273,7 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
                     <div class="total-value">{f"{int(total_atenciones):,}".replace(",", ".")}</div>
                 </div>
             </div>
-            ''', unsafe_allow_html=True)
+            ''', unsafe_html=True)
             
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -296,7 +294,7 @@ else:
                     <div class="total-value">{f"{int(total_atenciones):,}".replace(",", ".")}</div>
                 </div>
             </div>
-            ''', unsafe_allow_html=True)
+            ''', unsafe_html=True)
         
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
@@ -308,9 +306,9 @@ else:
             
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES NACIONALES</div><div class="total-value">{f"{int(suma_nac):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES NACIONALES</div><div class="total-value">{f"{int(suma_nac):,}".replace(",", ".")}</div></div>''', unsafe_html=True)
             with col2:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div><div class="total-value">{f"{int(suma_ext):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div><div class="total-value">{f"{int(suma_ext):,}".replace(",", ".")}</div></div>''', unsafe_html=True)
             
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
