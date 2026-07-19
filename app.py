@@ -87,7 +87,7 @@ if st.session_state.admin_logueado:
     elif seleccion == "Inmunización":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "TOXOIDE", "FIEBRE AMARILLA", "S.R.P", "BOPB", "BCG", "PENTAVALENTE", "HEP B", "IPV", "TOTAL"]
     elif seleccion == "Saneamiento Ambiental":
-        cols_maestras = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS", "CLORACIÓN"]
+        cols_maestras = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "CLORACIÓN"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
     else:
@@ -236,18 +236,8 @@ elif seleccion == "Saneamiento Ambiental":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str).fillna("0")
-        iconos = {"DESRATIZACIÓN": "🐀", "NEBULIZACIÓN": "💨", "DESINFECCIÓN": "🪣", "ABATIZACIÓN": "💧", "DESPARASITACIÓN": "💊", "CLORACIÓN": "🧪", "PERSONAS PROTEGIDAS": "🛡️"}
-        campos = ["DESRATIZACIÓN", "NEBULIZACIÓN", "DESINFECCIÓN", "ABATIZACIÓN", "DESPARASITACIÓN", "PERSONAS PROTEGIDAS", "CLORACIÓN"]
-        c_sane = st.columns(3)
-        for i, campo in enumerate(campos):
-            val = df_detalle[campo].iloc[0] if campo in df_detalle.columns else "0"
-            c_sane[i % 3].markdown(f'''
-                <div class="strat-card" style="padding: 15px 5px;">
-                    <div class="strat-title" style="font-size: 13px;">{iconos.get(campo, "📊")} {campo}</div>
-                    <div class="strat-value" style="font-size: 22px; margin-top: 5px;">{val}</div>
-                </div>
-            ''', unsafe_allow_html=True)
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 elif seleccion == "Ruta Epidemiológica":
