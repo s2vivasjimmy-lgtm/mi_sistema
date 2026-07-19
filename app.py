@@ -118,12 +118,18 @@ else:
                 st.session_state.admin_logueado = True
                 st.rerun()
 
+# --- BLOQUE CORREGIDO ---
 if os.path.exists("logo_institucional.jpg"):
-    with open("logo_institucional.jpg", "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode()
-        st.markdown(f'''<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">''', unsafe_html=True)
+    try:
+        with open("logo_institucional.jpg", "rb") as image_file:
+            img_bytes = image_file.read()
+            encoded_string = base64.b64encode(img_bytes).decode('utf-8')
+            html_img = f'<img src="data:image/jpeg;base64,{encoded_string}" class="logo-custom">'
+            st.markdown(html_img, unsafe_allow_html=True)
+    except Exception:
+        pass
 
-st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_html=True)
+st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
 js_fullscreen = """
 <script>
