@@ -304,10 +304,23 @@ else:
             suma_nac = resumen.get('NACIONAL', 0)
             suma_ext = resumen.get('EXTRANJERO', 0)
             
-            # --- Pestañas para métricas ---
-            tab1, tab2 = st.columns(2)
-            tab1.markdown(f'''<div class="strat-card"><div class="strat-title">Total Atenciones NACIONALES</div><div class="strat-value">{f"{int(suma_nac):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
-            tab2.markdown(f'''<div class="strat-card"><div class="strat-title">Total Atenciones EXTRANJEROS</div><div class="strat-value">{f"{int(suma_ext):,}".replace(",", ".")}</div></div>''', unsafe_allow_html=True)
+            # --- Visualización con estilo total-card ---
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f'''
+                    <div class="total-card">
+                        <div class="total-title">TOTAL ATENCIONES NACIONALES</div>
+                        <div class="total-value">{f"{int(suma_nac):,}".replace(",", ".")}</div>
+                    </div>
+                ''', unsafe_allow_html=True)
+            with col2:
+                st.markdown(f'''
+                    <div class="total-card">
+                        <div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div>
+                        <div class="total-value">{f"{int(suma_ext):,}".replace(",", ".")}</div>
+                    </div>
+                ''', unsafe_allow_html=True)
+            st.write("<br>", unsafe_allow_html=True)
         
         # --- Mostrar Tabla ---
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
