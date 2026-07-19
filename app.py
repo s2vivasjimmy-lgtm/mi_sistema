@@ -179,17 +179,12 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     total_general += (hosp_nac + hosp_ext)
 
-    # ORDENAMIENTO DE TARJETAS EN DOS FILAS
-    orden_tarjetas = [
-        "Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud",
-        "Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"
-    ]
+    # DEFINICIÓN MANUAL DE FILAS Y COLUMNAS
+    fila1 = ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]
+    fila2 = ["Sistema de Salud Tradicional", "Camp. Transitorios", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES"]
 
-    fila1 = orden_tarjetas[0:4]
-    fila2 = orden_tarjetas[4:8]
-
-    # Renderizado Fila 1
-    cols1 = st.columns(4)
+    c1, c2, c3, c4 = st.columns(4)
+    cols1 = [c1, c2, c3, c4]
     for i, cat in enumerate(fila1):
         val = totales.get(cat, 0)
         cols1[i].markdown(f'''
@@ -197,10 +192,10 @@ if seleccion == "Resumen General":
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
             <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
         </div>
-        ''', unsafe_allow_html=True)
+        ''', unsafe_html=True)
 
-    # Renderizado Fila 2
-    cols2 = st.columns(4)
+    c5, c6, c7, c8 = st.columns(4)
+    cols2 = [c5, c6, c7, c8]
     for i, cat in enumerate(fila2):
         val = totales.get(cat, 0)
         cols2[i].markdown(f'''
@@ -208,7 +203,7 @@ if seleccion == "Resumen General":
             <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
             <div class="strat-value">{f"{val:,}".replace(",", ".")}</div>
         </div>
-        ''', unsafe_allow_html=True)
+        ''', unsafe_html=True)
 
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
@@ -217,7 +212,7 @@ if seleccion == "Resumen General":
             <div class="total-value">{f"{total_general:,}".replace(",", ".")}</div>
         </div>
     </div>
-    ''', unsafe_allow_html=True)
+    ''', unsafe_html=True)
 
     st.subheader("🏥 RESUMEN OPERATIVO")
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
@@ -231,7 +226,7 @@ if seleccion == "Resumen General":
     for col_name in cols_mostrar:
         if col_name in df.columns:
             with cols[idx % 4]:
-                st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_html=True)
             idx += 1
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
