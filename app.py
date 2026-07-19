@@ -14,7 +14,6 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-css = """
 <style>
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
