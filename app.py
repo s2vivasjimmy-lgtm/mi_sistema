@@ -118,7 +118,6 @@ else:
                 st.session_state.admin_logueado = True
                 st.rerun()
 
-# --- BLOQUE CORREGIDO ---
 if os.path.exists("logo_institucional.jpg"):
     try:
         with open("logo_institucional.jpg", "rb") as image_file:
@@ -196,23 +195,23 @@ if seleccion == "Resumen General":
 
     cols1 = st.columns(4)
     for i, cat in enumerate(fila1_nombres):
-        val = totales.get(cat, 0)
-        cols1[i].markdown(f'''
-        <div class="strat-card">
-            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
-            <div class="strat-value">{formatear_numero(val)}</div>
-        </div>
-        ''', unsafe_html=True)
+        with cols1[i]:
+            st.markdown(f'''
+            <div class="strat-card">
+                <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
+            </div>
+            ''', unsafe_allow_html=True)
 
     cols2 = st.columns(4)
     for i, cat in enumerate(fila2_nombres):
-        val = totales.get(cat, 0)
-        cols2[i].markdown(f'''
-        <div class="strat-card">
-            <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
-            <div class="strat-value">{formatear_numero(val)}</div>
-        </div>
-        ''', unsafe_html=True)
+        with cols2[i]:
+            st.markdown(f'''
+            <div class="strat-card">
+                <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
+            </div>
+            ''', unsafe_allow_html=True)
 
     st.markdown(f'''
     <div style="text-align: center; margin: 20px 0;">
@@ -221,7 +220,7 @@ if seleccion == "Resumen General":
             <div class="total-value">{formatear_numero(total_general)}</div>
         </div>
     </div>
-    ''', unsafe_html=True)
+    ''', unsafe_allow_html=True)
 
     st.subheader("🏥 RESUMEN OPERATIVO")
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
@@ -235,7 +234,7 @@ if seleccion == "Resumen General":
     for col_name in cols_mostrar:
         if col_name in df.columns:
             with cols[idx % 4]:
-                st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_html=True)
+                st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
             idx += 1
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
@@ -284,7 +283,7 @@ elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambien
                     <div class="total-value">{formatear_numero(total_atenciones)}</div>
                 </div>
             </div>
-            ''', unsafe_html=True)
+            ''', unsafe_allow_html=True)
             
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -305,7 +304,7 @@ else:
                     <div class="total-value">{formatear_numero(total_atenciones)}</div>
                 </div>
             </div>
-            ''', unsafe_html=True)
+            ''', unsafe_allow_html=True)
         
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
@@ -317,9 +316,9 @@ else:
             
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES NACIONALES</div><div class="total-value">{formatear_numero(suma_nac)}</div></div>''', unsafe_html=True)
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES NACIONALES</div><div class="total-value">{formatear_numero(suma_nac)}</div></div>''', unsafe_allow_html=True)
             with col2:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div><div class="total-value">{formatear_numero(suma_ext)}</div></div>''', unsafe_html=True)
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div><div class="total-value">{formatear_numero(suma_ext)}</div></div>''', unsafe_allow_html=True)
             
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
