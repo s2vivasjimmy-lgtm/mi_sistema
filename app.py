@@ -108,7 +108,7 @@ if st.session_state.admin_logueado:
             for c in cols_vacunas:
                 df_editado[c] = pd.to_numeric(df_editado[c].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_editado["TOTAL"] = df_editado[cols_vacunas].sum(axis=1)
-        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Hospitales de Campaña"]:
+        elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Hospitales de Campaña", "Saneamiento Ambiental"]:
             df_editado["ATENCIONES"] = pd.to_numeric(df_editado["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             
         df_editado.to_csv(archivo_a_editar, index=False)
@@ -237,6 +237,20 @@ elif seleccion == "Saneamiento Ambiental":
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        # --- Lógica de autosuma para Saneamiento ---
+        df_detalle['ATENCIONES'] = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+        total_at = df_detalle['ATENCIONES'].sum()
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.markdown(f'''
+                <div class="total-card">
+                    <div class="total-title">TOTAL ATENCIONES</div>
+                    <div class="total-value">{f"{int(total_at):,}".replace(",", ".")}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        st.write("<br>", unsafe_allow_html=True)
+        
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
@@ -265,16 +279,12 @@ else:
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         
-        # --- Lógica para categorías con suma automática ---
         if seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional"]:
             orden = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
             df_detalle = df_detalle.reindex(columns=orden)
-            
-            # Cálculo del total
             df_detalle['ATENCIONES'] = pd.to_numeric(df_detalle['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             total_at = df_detalle['ATENCIONES'].sum()
             
-            # Visualización tipo tarjeta
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
                 st.markdown(f'''
@@ -285,7 +295,6 @@ else:
                 ''', unsafe_allow_html=True)
             st.write("<br>", unsafe_allow_html=True)
 
-        # --- Lógica para Hospitales de Campaña ---
         if seleccion == "Hospitales de Campaña":
             df_stats = df_detalle.copy()
             df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -294,7 +303,6 @@ else:
             suma_nac = resumen.get('NACIONAL', 0)
             suma_ext = resumen.get('EXTRANJERO', 0)
             
-            # --- Visualización con estilo total-card ---
             col1, col2 = st.columns(2)
             with col1:
                 st.markdown(f'''
@@ -312,10 +320,8 @@ else:
                 ''', unsafe_allow_html=True)
             st.write("<br>", unsafe_allow_html=True)
         
-        # --- Mostrar Tabla ---
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         
-        # --- Dona debajo de la tabla para Hospitales de Campaña ---
         if seleccion == "Hospitales de Campaña":
             if (suma_nac + suma_ext) > 0:
                 fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
