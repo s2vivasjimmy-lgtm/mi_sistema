@@ -39,7 +39,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- RENDERIZADO DE ATENCIONES (Sin atributos style locales) ---
-    cols1 = st.columns(4)
+cols1 = st.columns(4)
     for i, cat in enumerate(fila1):
         with cols1[i]:
             st.markdown(f'''
