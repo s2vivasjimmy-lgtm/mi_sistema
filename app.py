@@ -58,17 +58,6 @@ st.markdown("""
 }
 
 .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
-
-/* CSS PARA PANTALLA COMPLETA SIMULADA */
-.full-screen-map {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 999999 !important;
-    background: #0E1117 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -275,26 +264,24 @@ if seleccion == "Resumen General":
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
     st.components.v1.html("""
-        <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button id="btn-fs-general" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                ⛶ Expandir
-            </button>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
+        <div id="cont-gen" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden; background:#0E1117;">
+            <button id="btn-gen" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold;">⛶ Expandir</button>
+            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
         </div>
         <script>
-            const btn = document.getElementById('btn-fs-general');
-            const container = document.getElementById('map-container-general');
+            const btn = document.getElementById('btn-gen');
+            const cont = document.getElementById('cont-gen');
             btn.onclick = function() {
-                if (container.classList.contains('full-screen-map')) {
-                    container.classList.remove('full-screen-map');
-                    btn.innerText = '⛶ Expandir';
-                } else {
-                    container.classList.add('full-screen-map');
+                if (!document.fullscreenElement) {
+                    cont.requestFullscreen();
                     btn.innerText = '❌ Cerrar';
+                } else {
+                    document.exitFullscreen();
+                    btn.innerText = '⛶ Expandir';
                 }
             };
         </script>
-    """, height=510)
+    """, height=520)
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
@@ -306,26 +293,24 @@ elif seleccion == "Ruta Epidemiológica":
     
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
     st.components.v1.html("""
-        <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button id="btn-fs-ruta" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                ⛶ Expandir
-            </button>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0"></iframe>
+        <div id="cont-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden; background:#0E1117;">
+            <button id="btn-ruta" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold;">⛶ Expandir</button>
+            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
         </div>
         <script>
-            const btn = document.getElementById('btn-fs-ruta');
-            const container = document.getElementById('map-container-ruta');
+            const btn = document.getElementById('btn-ruta');
+            const cont = document.getElementById('cont-ruta');
             btn.onclick = function() {
-                if (container.classList.contains('full-screen-map')) {
-                    container.classList.remove('full-screen-map');
-                    btn.innerText = '⛶ Expandir';
-                } else {
-                    container.classList.add('full-screen-map');
+                if (!document.fullscreenElement) {
+                    cont.requestFullscreen();
                     btn.innerText = '❌ Cerrar';
+                } else {
+                    document.exitFullscreen();
+                    btn.innerText = '⛶ Expandir';
                 }
             };
         </script>
-    """, height=510)
+    """, height=520)
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
     st.subheader(f"📋 Detalle: {seleccion}")
