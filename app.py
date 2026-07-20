@@ -36,7 +36,7 @@ st.markdown("""
 /* Resumen Operativo */
 .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
-.card-value { font-size: 22px; font-weight: 800; color: #ffffff; }
+.card-value { font-size: 14px; font-weight: 800; color: #ffffff; }
 
 /* Totales */
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
