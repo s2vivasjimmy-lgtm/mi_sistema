@@ -63,40 +63,13 @@ st.markdown("""
 
 # --- FUNCIÓN DE MAPA COMPATIBLE CON IPHONE ---
 def renderizar_mapa_ios(id_mapa, url):
-    st.components.v1.html(f"""
-    <div id="container-{id_mapa}" style="position: relative; width: 100%; height: 500px;">
-        <div id="overlay-{id_mapa}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 1px solid #31333f; border-radius: 12px; overflow: hidden; background:#0E1117;">
-            <iframe src="{url}" width="100%" height="100%" frameborder="0" style="pointer-events: auto;"></iframe>
-        </div>
-        <button id="btn-{id_mapa}" style="position: absolute; top: 10px; right: 10px; z-index: 999999; padding: 10px; cursor: pointer; background: #FFD700; border: none; border-radius: 5px; font-weight: bold; font-size: 14px;">⛶ Pantalla Completa</button>
+    st.markdown(f"""
+    <div style="background-color: #1a1c23; padding: 20px; border-radius: 12px; border: 1px solid #31333f; text-align: center; margin-bottom: 20px;">
+        <a href="{url}" target="_blank" style="display: block; padding: 15px; background: #FFD700; color: #000; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; border: none; cursor: pointer;">
+            ⛶ ABRIR MAPA EN PANTALLA COMPLETA
+        </a>
     </div>
-    <script>
-        const btn = document.getElementById('btn-{id_mapa}');
-        const overlay = document.getElementById('overlay-{id_mapa}');
-        let isFull = false;
-        btn.onclick = function() {{
-            if (isFull) {{
-                overlay.style.position = 'absolute';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100%';
-                overlay.style.height = '100%';
-                overlay.style.zIndex = 'auto';
-                btn.innerText = '⛶ Pantalla Completa';
-                isFull = false;
-            }} else {{
-                overlay.style.position = 'fixed';
-                overlay.style.top = '0';
-                overlay.style.left = '0';
-                overlay.style.width = '100vw';
-                overlay.style.height = '100vh';
-                overlay.style.zIndex = '2147483647';
-                btn.innerText = '❌ Cerrar';
-                isFull = true;
-            }}
-        }};
-    </script>
-    """, height=520)
+    """, unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
