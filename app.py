@@ -36,13 +36,27 @@ st.markdown("""
 /* Resumen Operativo */
 .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
-.card-value { font-size: 14px; font-weight: 800; color: #ffffff; }
+.card-value { font-size: 22px; font-weight: 800; color: #ffffff; }
 
-/* Totales */
+/* Totales y marquesina */
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 18px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 35px; font-weight: 900; color: #ffffff; }
-.marquee-text { font-size: 35px; color: #ffffff !important; font-weight: bold; }
+
+.marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 10px 0; }
+.marquee-text { 
+    display: inline-block; 
+    white-space: nowrap; 
+    animation: marquee 15s linear infinite; 
+    color: #ffffff !important; 
+    font-weight: bold; 
+    font-size: 35px; 
+}
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
 .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
 </style>
 """, unsafe_allow_html=True)
