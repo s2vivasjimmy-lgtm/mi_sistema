@@ -14,26 +14,50 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-# --- CSS ---
+# --- CSS OPTIMIZADO PARA PROYECCIÓN ---
 st.markdown("""
 <style>
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
-.compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
-.strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-.total-card { background-color: #1e2025; padding: 10px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
-.total-title { font-size: 20px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
-.total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
-.card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
-.card-value { font-size: 25px; font-weight: 800; color: #ffffff; }
-.strat-title { font-size: 25px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
-.strat-value { font-size: 30px; font-weight: 900; color: #ffffff; }
-.marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
-.marquee-text { display: inline-block; font-size: 35px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
-@keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
-.logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
+
+/* Tarjetas de Atenciones (Pestañas superiores) - TAMAÑO GRANDE */
+.strat-card { background-color: #2b3a4a; padding: 15px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
+.strat-title { font-size: 20px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 10px; }
+.strat-value { font-size: 45px; font-weight: 900; color: #ffffff; }
+
+/* Resumen Operativo - TAMAÑO REDUCIDO PARA VISIBILIDAD DE LEJOS */
+.compact-card { background-color: #1a1c23; padding: 10px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
+.card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
+.card-value { font-size: 22px; font-weight: 800; color: #ffffff; }
+
+/* Totales y otros */
+.total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
+.total-title { font-size: 18px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
+.total-value { font-size: 35px; font-weight: 900; color: #ffffff; }
+.marquee-text { font-size: 35px; color: #ffffff !important; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
+
+# --- RENDERIZADO DE ATENCIONES (Sin atributos style locales) ---
+    cols1 = st.columns(4)
+    for i, cat in enumerate(fila1):
+        with cols1[i]:
+            st.markdown(f'''
+            <div class="strat-card">
+                <div class="strat-title">{cat.upper()}</div>
+                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
+            </div>
+            ''', unsafe_allow_html=True)
+
+    cols2 = st.columns(4)
+    for i, cat in enumerate(fila2):
+        with cols2[i]:
+            st.markdown(f'''
+            <div class="strat-card">
+                <div class="strat-title">{cat.upper()}</div>
+                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
+            </div>
+            ''', unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
