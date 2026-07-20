@@ -276,33 +276,41 @@ if seleccion == "Resumen General":
             idx += 1
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
-    st.components.v1.html(f"""
-        <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                ⛶ Pantalla Completa
-            </button>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+    # MODIFICACIÓN: Enlace directo en lugar de botón JS para máxima compatibilidad móvil
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 10px;">
+        <a href="https://www.google.com/maps/d/u/0/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" target="_blank" 
+        style="background-color: #00d2ff; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        ⛶ ABRIR MAPA EN PANTALLA COMPLETA
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.components.v1.html("""
+        <div style="width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
         </div>
-        {js_fullscreen}
     """, height=510)
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = "ruta_epidemiológica.csv"
-    if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    # ... (Mantén la parte del dataframe igual)
     
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
-    st.components.v1.html(f"""
-        <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                ⛶ Pantalla Completa
-            </button>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+    # MODIFICACIÓN: Enlace directo para la ruta epidemiológica
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 10px;">
+        <a href="https://www.google.com/maps/d/u/0/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" target="_blank" 
+        style="background-color: #00d2ff; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+        ⛶ ABRIR RUTA EN PANTALLA COMPLETA
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.components.v1.html("""
+        <div style="width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0"></iframe>
         </div>
-        {js_fullscreen}
     """, height=510)
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
