@@ -20,8 +20,8 @@ st.markdown("""
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
 .compact-card { background-color: #1a1c23; padding: 4px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
-.strat-card { background-color: #2b3a4a; padding: 20px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-.total-card { background-color: #1e2025; padding: 20px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
+.strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
+.total-card { background-color: #1e2025; padding: 10px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 14px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
 .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
