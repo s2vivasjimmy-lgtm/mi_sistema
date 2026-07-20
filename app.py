@@ -58,6 +58,17 @@ st.markdown("""
 }
 
 .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
+
+/* CSS PARA PANTALLA COMPLETA SIMULADA */
+.full-screen-map {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important;
+    background: #0E1117 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -155,19 +166,6 @@ if os.path.exists("logo_institucional.jpg"):
         pass
 
 st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
-
-js_fullscreen = """
-<script>
-    function toggleFS(id) { 
-        var elem = document.getElementById(id); 
-        if (!document.fullscreenElement) { 
-            elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
-        } else { 
-            document.exitFullscreen(); 
-        } 
-    }
-</script>
-"""
 
 def formatear_numero(n):
     try:
@@ -276,41 +274,57 @@ if seleccion == "Resumen General":
             idx += 1
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
-    # MODIFICACIÓN: Enlace directo en lugar de botón JS para máxima compatibilidad móvil
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 10px;">
-        <a href="https://www.google.com/maps/d/u/0/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg" target="_blank" 
-        style="background-color: #00d2ff; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-        ⛶ ABRIR MAPA EN PANTALLA COMPLETA
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-    
     st.components.v1.html("""
-        <div style="width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+        <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <button id="btn-fs-general" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                ⛶ Expandir
+            </button>
             <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0"></iframe>
         </div>
+        <script>
+            const btn = document.getElementById('btn-fs-general');
+            const container = document.getElementById('map-container-general');
+            btn.onclick = function() {
+                if (container.classList.contains('full-screen-map')) {
+                    container.classList.remove('full-screen-map');
+                    btn.innerText = '⛶ Expandir';
+                } else {
+                    container.classList.add('full-screen-map');
+                    btn.innerText = '❌ Cerrar';
+                }
+            };
+        </script>
     """, height=510)
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
-    # ... (Mantén la parte del dataframe igual)
+    archivo_detalle = "ruta_epidemiológica.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
-    # MODIFICACIÓN: Enlace directo para la ruta epidemiológica
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 10px;">
-        <a href="https://www.google.com/maps/d/u/0/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" target="_blank" 
-        style="background-color: #00d2ff; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-        ⛶ ABRIR RUTA EN PANTALLA COMPLETA
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
     st.components.v1.html("""
-        <div style="width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+        <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <button id="btn-fs-ruta" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                ⛶ Expandir
+            </button>
             <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0"></iframe>
         </div>
+        <script>
+            const btn = document.getElementById('btn-fs-ruta');
+            const container = document.getElementById('map-container-ruta');
+            btn.onclick = function() {
+                if (container.classList.contains('full-screen-map')) {
+                    container.classList.remove('full-screen-map');
+                    btn.innerText = '⛶ Expandir';
+                } else {
+                    container.classList.add('full-screen-map');
+                    btn.innerText = '❌ Cerrar';
+                }
+            };
+        </script>
     """, height=510)
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
