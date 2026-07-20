@@ -23,7 +23,7 @@ st.markdown("""
 .strat-card { background-color: #2b3a4a; padding: 10px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 14px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
-.total-value { font-size: 28px; font-weight: 900; color: #ffffff; }
+.total-value { font-size: 20px; font-weight: 900; color: #ffffff; }
 .card-title { font-size: 17px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
 .card-value { font-size: 30px; font-weight: 800; color: #ffffff; }
 .strat-title { font-size: 14px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
