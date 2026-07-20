@@ -20,12 +20,12 @@ st.markdown("""
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
 
-/* Tarjetas de Atenciones (Pestañas superiores) - TAMAÑO GRANDE */
+/* Tarjetas de Atenciones (Pestañas superiores) */
 .strat-card { background-color: #2b3a4a; padding: 15px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
 .strat-title { font-size: 20px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 10px; }
 .strat-value { font-size: 45px; font-weight: 900; color: #ffffff; }
 
-/* Resumen Operativo - TAMAÑO REDUCIDO PARA VISIBILIDAD DE LEJOS */
+/* Resumen Operativo */
 .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
 .card-value { font-size: 22px; font-weight: 800; color: #ffffff; }
@@ -35,29 +35,9 @@ st.markdown("""
 .total-title { font-size: 18px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 35px; font-weight: 900; color: #ffffff; }
 .marquee-text { font-size: 35px; color: #ffffff !important; font-weight: bold; }
+.logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
 </style>
 """, unsafe_allow_html=True)
-
-# --- RENDERIZADO DE ATENCIONES (Sin atributos style locales) ---
-cols1 = st.columns(4)
-for i, cat in enumerate(fila1):
-     with cols1[i]:
-            st.markdown(f'''
-            <div class="strat-card">
-                <div class="strat-title">{cat.upper()}</div>
-                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
-            </div>
-            ''', unsafe_allow_html=True)
-
-cols2 = st.columns(4)
-for i, cat in enumerate(fila2):
-     with cols2[i]:
-            st.markdown(f'''
-            <div class="strat-card">
-                <div class="strat-title">{cat.upper()}</div>
-                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
-            </div>
-            ''', unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
@@ -210,7 +190,6 @@ if seleccion == "Resumen General":
             hosp_nac = int(resumen.get("NACIONAL", 0))
             hosp_ext = int(resumen.get("EXTRANJERO", 0))
     
-    # Asignación forzada para asegurar claves en totales
     totales["Red Sanitaria Militar"] = totales.get("Red Sanitaria Militar", 0)
     totales["HOSP. DE CAMPAÑA NACIONALES"] = hosp_nac
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
@@ -222,16 +201,9 @@ if seleccion == "Resumen General":
     
     total_general += (hosp_nac + hosp_ext)
 
-    # --- ORDEN MAESTRO ---
     orden_tarjetas = [
-        "Red Sanitaria Militar", 
-        "HOSP. DE CAMPAÑA NACIONALES", 
-        "HOSP. DE CAMPAÑA INTERNACIONALES", 
-        "Sistema de Salud Tradicional", 
-        "Camp. Transitorios", 
-        "Inmunización", 
-        "Saneamiento Ambiental", 
-        "Programas de Salud"
+        "Red Sanitaria Militar", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "Sistema de Salud Tradicional", 
+        "Camp. Transitorios", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"
     ]
 
     fila1 = orden_tarjetas[:4]
@@ -242,7 +214,7 @@ if seleccion == "Resumen General":
         with cols1[i]:
             st.markdown(f'''
             <div class="strat-card">
-                <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+                <div class="strat-title">{cat.upper()}</div>
                 <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
             </div>
             ''', unsafe_allow_html=True)
@@ -252,7 +224,7 @@ if seleccion == "Resumen General":
         with cols2[i]:
             st.markdown(f'''
             <div class="strat-card">
-                <div class="strat-title" style="font-size: 11px;">{cat.upper()}</div>
+                <div class="strat-title">{cat.upper()}</div>
                 <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
             </div>
             ''', unsafe_allow_html=True)
