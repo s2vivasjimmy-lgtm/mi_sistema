@@ -29,7 +29,7 @@ st.markdown("""
 .strat-title { font-size: 20px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; }
 .strat-value { font-size: 30px; font-weight: 900; color: #ffffff; }
 .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; box-sizing: border-box; margin-bottom: 20px; border-top: 2px solid #31333f; border-bottom: 2px solid #31333f; padding: 0px 0; }
-.marquee-text { display: inline-block; font-size: 20px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
+.marquee-text { display: inline-block; font-size: 35px; animation: marquee 15s linear infinite; margin: 0; color: #ffffff !important; font-weight: bold; }
 @keyframes marquee { 0% { transform: translate(-100%, 0); } 100% { transform: translate(100%, 0); } }
 .logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
 </style>
