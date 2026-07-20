@@ -40,8 +40,8 @@ st.markdown("""
 
 # --- RENDERIZADO DE ATENCIONES (Sin atributos style locales) ---
 cols1 = st.columns(4)
-    for i, cat in enumerate(fila1):
-        with cols1[i]:
+for i, cat in enumerate(fila1):
+     with cols1[i]:
             st.markdown(f'''
             <div class="strat-card">
                 <div class="strat-title">{cat.upper()}</div>
@@ -49,9 +49,9 @@ cols1 = st.columns(4)
             </div>
             ''', unsafe_allow_html=True)
 
-    cols2 = st.columns(4)
-    for i, cat in enumerate(fila2):
-        with cols2[i]:
+cols2 = st.columns(4)
+for i, cat in enumerate(fila2):
+     with cols2[i]:
             st.markdown(f'''
             <div class="strat-card">
                 <div class="strat-title">{cat.upper()}</div>
