@@ -14,11 +14,57 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-# --- CSS OPTIMIZADO PARA PROYECCIÓN ---
+# --- CSS OPTIMIZADO CON CAPA SECUESTRADORA PARA IPHONE ---
 st.markdown("""
 <style>
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
+
+/* Contenedor de Engaño Absoluto para evadir bloqueo de iOS */
+.ios-fullscreen-map {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999999;
+    background-color: #000000;
+    display: none;
+}
+
+.ios-fullscreen-map.open {
+    display: block !important;
+}
+
+.btn-ios-close {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 10000000;
+    padding: 14px 24px;
+    background-color: #FF4B4B;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+.btn-ios-trigger {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    box-shadow: 0px 4px 10px rgba(0,210,255,0.3);
+}
 
 /* Tarjetas de Atenciones - TAMAÑO UNIFICADO */
 .strat-card { 
@@ -156,19 +202,6 @@ if os.path.exists("logo_institucional.jpg"):
 
 st.markdown('<div class="marquee-container"><h2 class="marquee-text">AUTORIDAD ÚNICA DE SALUD MILITAR DEL ESTADO LA GUAIRA</h2></div>', unsafe_allow_html=True)
 
-js_fullscreen = """
-<script>
-    function toggleFS(id) { 
-        var elem = document.getElementById(id); 
-        if (!document.fullscreenElement) { 
-            elem.requestFullscreen().catch(err => alert("Error: " + err.message)); 
-        } else { 
-            document.exitFullscreen(); 
-        } 
-    }
-</script>
-"""
-
 def formatear_numero(n):
     try:
         return f"{int(n):,}".replace(",", ".")
@@ -275,16 +308,21 @@ if seleccion == "Resumen General":
                 st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
             idx += 1
             
-    st.subheader("📍UBICACIONES EN TIEMPO REAL")
-    st.components.v1.html(f"""
-        <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                ⛶ Pantalla Completa
-            </button>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+    st.subheader("📍UBICACIONES EN TIEMPO REAL (VISTA SATELITAL)")
+    
+    # Inyección de HTML/CSS Avanzado que engaña al WebKit del iPhone
+    st.components.v1.html("""
+        <div id="wrapper-gen" class="ios-fullscreen-map">
+            <button class="btn-ios-close" onclick="document.getElementById('wrapper-gen').classList.remove('open')">✖ CERRAR MAPA</button>
+            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F&t=h" width="100%" height="100%" frameborder="0"></iframe>
         </div>
-        {js_fullscreen}
-    """, height=510)
+        <button class="btn-ios-trigger" onclick="document.getElementById('wrapper-gen').classList.add('open')">
+            ⛶ ABRIR MAPA SATELITAL A PANTALLA COMPLETA
+        </button>
+        <div style="width: 100%; height: 400px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F&t=h" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    """, height=470)
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
@@ -294,16 +332,21 @@ elif seleccion == "Ruta Epidemiológica":
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
-    st.markdown("### 📍UBICACIÓN DEL PACIENTE")
-    st.components.v1.html(f"""
-        <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                ⛶ Pantalla Completa
-            </button>
-            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
+    st.markdown("### 📍UBICACIÓN DEL PACIENTE (VISTA SATELITAL)")
+    
+    # Inyección de HTML/CSS Avanzado para Ruta Epidemiológica
+    st.components.v1.html("""
+        <div id="wrapper-ruta" class="ios-fullscreen-map">
+            <button class="btn-ios-close" onclick="document.getElementById('wrapper-ruta').classList.remove('open')">✖ CERRAR MAPA</button>
+            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk&t=h" width="100%" height="100%" frameborder="0"></iframe>
         </div>
-        {js_fullscreen}
-    """, height=510)
+        <button class="btn-ios-trigger" onclick="document.getElementById('wrapper-ruta').classList.add('open')">
+            ⛶ ABRIR MAPA DE RUTA A PANTALLA COMPLETA
+        </button>
+        <div style="width: 100%; height: 400px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk&t=h" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    """, height=470)
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
     st.subheader(f"📋 Detalle: {seleccion}")
