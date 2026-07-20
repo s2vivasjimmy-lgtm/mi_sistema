@@ -20,17 +20,25 @@ st.markdown("""
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
 
-/* Tarjetas de Atenciones (Pestañas superiores) */
-.strat-card { background-color: #2b3a4a; padding: 15px; border-radius: 8px; border-left: 5px solid #00d2ff; text-align: center; margin-bottom: 15px; }
-.strat-title { font-size: 20px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 10px; }
-.strat-value { font-size: 45px; font-weight: 900; color: #ffffff; }
+/* Tarjetas de Atenciones - TAMAÑO UNIFICADO */
+.strat-card { 
+    background-color: #2b3a4a; 
+    padding: 15px; 
+    border-radius: 8px; 
+    border-left: 5px solid #00d2ff; 
+    text-align: center; 
+    margin-bottom: 15px; 
+    height: 120px; 
+}
+.strat-title { font-size: 14px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 10px; }
+.strat-value { font-size: 30px; font-weight: 900; color: #ffffff; }
 
 /* Resumen Operativo */
 .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
 .card-value { font-size: 22px; font-weight: 800; color: #ffffff; }
 
-/* Totales y otros */
+/* Totales */
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 18px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 35px; font-weight: 900; color: #ffffff; }
