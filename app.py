@@ -262,9 +262,9 @@ if seleccion == "Resumen General":
 
     st.subheader("🏥 RESUMEN OPERATIVO")
     df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
-    iconos = {"ALTAS MÉDICAS": "✅", "FALLECIDOS": "⚰️", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
+    iconos = {"ALTAS MÉDICAS": "✅", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
               "CAMAS DISPONIBLES": "🛏️", "INTERVENCIONES Q.": "🔪"}
-    cols_mostrar = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", 
+    cols_mostrar = ["ALTAS MÉDICAS", "TRASLADOS", "CAMAS OCUPADAS", 
                     "CAMAS DISPONIBLES", "INTERVENCIONES Q."]
     
     cols = st.columns(4)
