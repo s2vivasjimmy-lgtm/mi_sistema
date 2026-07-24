@@ -99,7 +99,7 @@ with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña","Sistema de Salud Tradicional", 
-                          "Campamentos Transitorios", "Inmunización", "Saneamiento Ambiental", 
+                          "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", 
                           "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura"])
 
 if st.session_state.admin_logueado:
@@ -110,7 +110,7 @@ if st.session_state.admin_logueado:
         cols_maestras = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INTERVENCIONES Q."]
     elif seleccion == "Red Sanitaria Militar":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
-    elif seleccion in ["Campamentos Transitorios", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
+    elif seleccion in ["Campamentos Transitorios", "Campamentos Itinerantes", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
         cols_maestras = ["Nº", "NOMBRE", "ATENCIONES"]
     elif seleccion == "Ruta Epidemiológica":
         cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
@@ -184,7 +184,8 @@ if seleccion == "Resumen General":
         "Saneamiento Ambiental": "saneamiento_ambiental.csv",
         "Programas de Salud": "programas_de_salud.csv",
         "Sistema de Salud Tradicional": "sistema_de_salud_tradicional.csv",
-        "Camp. Transitorios": "campamentos_transitorios.csv"
+        "Campamentos Transitorios": "campamentos_transitorios.csv",
+        "Campamentos Itinerantes": "campamentos_itinerantes.csv"
     }
     
     totales = {}
@@ -216,7 +217,8 @@ if seleccion == "Resumen General":
     totales["HOSP. DE CAMPAÑA NACIONALES"] = hosp_nac
     totales["HOSP. DE CAMPAÑA INTERNACIONALES"] = hosp_ext
     totales["Sistema de Salud Tradicional"] = totales.get("Sistema de Salud Tradicional", 0)
-    totales["Camp. Transitorios"] = totales.get("Camp. Transitorios", 0)
+    totales["Campamentos Transitorios"] = totales.get("Campamentos Transitorios", 0)
+    totales["Campamentos Itinerantes"] = totales.get("Campamentos Itinerantes", 0)
     totales["Inmunización"] = totales.get("Inmunización", 0)
     totales["Saneamiento Ambiental"] = totales.get("Saneamiento Ambiental", 0)
     totales["Programas de Salud"] = totales.get("Programas de Salud", 0)
@@ -225,7 +227,7 @@ if seleccion == "Resumen General":
 
     orden_tarjetas = [
         "Red Sanitaria Militar", "HOSP. DE CAMPAÑA NACIONALES", "HOSP. DE CAMPAÑA INTERNACIONALES", "Sistema de Salud Tradicional", 
-        "Camp. Transitorios", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"
+        "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"
     ]
 
     fila1 = orden_tarjetas[:4]
@@ -241,7 +243,7 @@ if seleccion == "Resumen General":
             </div>
             ''', unsafe_allow_html=True)
 
-    cols2 = st.columns(4)
+    cols2 = st.columns(len(fila2) if len(fila2) > 0 else 4)
     for i, cat in enumerate(fila2):
         with cols2[i]:
             st.markdown(f'''
@@ -305,7 +307,7 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Sistema de Salud Tradicional", "Programas de Salud"]:
+elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Campamentos Itinerantes", "Sistema de Salud Tradicional", "Programas de Salud"]:
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
     if os.path.exists(archivo_detalle):
