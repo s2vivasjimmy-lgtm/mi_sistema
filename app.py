@@ -668,10 +668,20 @@ else:
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
             
             if (suma_nac + suma_ext) > 0:
-                fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
-.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+                fig = go.Figure(data=[go.Pie(
+                    labels=['NACIONAL', 'EXTRANJERO'], 
+                    values=[suma_nac, suma_ext], 
+                    hole=.6, 
+                    marker_colors=['#FF0000', '#002060'], 
+                    textinfo='none'
+                )])
+                fig.update_layout(
+                    showlegend=True, 
+                    legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), 
+                    margin=dict(t=20, b=80, l=20, r=20)
+                )
                 st.plotly_chart(fig, use_container_width=True)
         else:
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_exact:=df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
