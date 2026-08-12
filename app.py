@@ -98,9 +98,9 @@ inicializar_resumen()
 with st.sidebar:
     st.header("📋 Registros")
     seleccion = st.radio("Seleccionar categoría:", 
-                         ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña","Sistema de Salud Tradicional", 
+                         ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña", "Sistema de Salud Tradicional", 
                           "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", 
-                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura"])
+                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", "II Jornada Médica"])
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
@@ -112,6 +112,8 @@ if st.session_state.admin_logueado:
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
     elif seleccion == "Campamentos Itinerantes":
         cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "RESPONSABLE", "ATENCIONES"]
+    elif seleccion == "II Jornada Médica":
+        cols_maestras = ["Nº", "ESPECIALIDAD", "MÉDICO", "PACIENTES ATENDIDOS"]
     elif seleccion in ["Campamentos Transitorios", "Sistema_de_Salud_Tradicional", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
         cols_maestras = ["Nº", "NOMBRE", "ATENCIONES"]
     elif seleccion == "Ruta Epidemiológica":
@@ -308,6 +310,17 @@ elif seleccion == "Ruta Epidemiológica":
         </div>
         {js_fullscreen}
     """, height=510)
+
+elif seleccion == "II Jornada Médica":
+    st.subheader("🎯 Módulo Independiente: II Jornada Médica")
+    st.write("Interfaz exclusiva y separada del Resumen General.")
+    archivo_detalle = "ii_jornada_médica.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name="ii_jornada_medica.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    else:
+        st.info("Aún no hay registros guardados para esta jornada. Usa el panel de configuración (⚙️) en la barra lateral para agregar los datos.")
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Campamentos Itinerantes", "Sistema de Salud Tradicional", "Programas de Salud"]:
     st.subheader(f"📋 Detalle: {seleccion}")
