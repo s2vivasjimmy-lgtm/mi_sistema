@@ -3,10 +3,39 @@ import pandas as pd
 import os
 import base64
 import io
+import datetime
+import urllib.request
+import json
 import plotly.graph_objects as go
 from github import Github
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
+
+def obtener_hora_red():
+    """Obtiene la fecha y hora actual desde una API pública en la red con respaldo local."""
+    try:
+        # Consulta a una API pública de tiempo basada en la red
+        with urllib.request.urlopen("https://worldtimeapi.org/api/ip", timeout=3) as response:
+            data = json.loads(response.read().decode())
+            datetime_str = data["datetime"] # Formato ISO 8601
+            dt = datetime.datetime.fromisoformat(datetime_str)
+            return dt
+    except Exception:
+        # Respaldo si no hay internet o falla la API
+        return datetime.datetime.now()
+
+def formatear_fecha_venezuela(dt):
+    """Convierte un objeto datetime al formato deseado, ej: 12AGO2026 - 15:30:45"""
+    meses = {
+        1: "ENE", 2: "FEB", 3: "MAR", 4: "ABR", 
+        5: "MAY", 6: "JUN", 7: "JUL", 8: "AGO", 
+        9: "SEP", 10: "OCT", 11: "NOV", 12: "DIC"
+    }
+    dia = f"{dt.day:02d}"
+    mes = meses.get(dt.month, "AGO")
+    anio = dt.year
+    hora = dt.strftime("%H:%M:%S")
+    return f"{dia}{mes}{anio} - {hora}"
 
 def convertir_df_a_excel(df):
     output = io.BytesIO()
@@ -106,12 +135,13 @@ if st.session_state.admin_logueado:
         tab_ed1, tab_ed2, tab_ed3, tab_ed4 = st.tabs(["📅 Info General & Totales", "🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
         
         with tab_ed1:
-            st.markdown("### Fecha y Totales Principales")
+            st.markdown("### Fecha, Hora y Totales Principales")
             archivo_meta = "ii_meta_venezuela_renace.csv"
             if not os.path.exists(archivo_meta):
-                pd.DataFrame({"FECHA_JORNADA": ["08AGO2026"], "TOTAL_ATENCIONES": ["3893"], "PERSONAS_ATENDIDAS": ["1235"]}).to_csv(archivo_meta, index=False)
+                pd.DataFrame({"FECHA_JORNADA": ["12AGO2026 - 15:30:00"], "TOTAL_ATENCIONES": ["3893"], "PERSONAS_ATENDIDAS": ["1235"]}).to_csv(archivo_meta, index=False)
             df_meta = pd.read_csv(archivo_meta, dtype=str)
             df_meta_edit = st.data_editor(df_meta, use_container_width=True, num_rows="fixed", key="meta_renace")
+            
             if st.button("💾 Guardar Totales y Fecha"):
                 df_meta_edit.to_csv(archivo_meta, index=False)
                 guardar_en_github(archivo_meta)
@@ -125,14 +155,11 @@ if st.session_state.admin_logueado:
                 pd.DataFrame(columns=cols_maestras).to_csv(archivo_esp, index=False)
             df_esp = pd.read_csv(archivo_esp, dtype=str)
             
-            # Usar st.data_editor y capturar el resultado devuelto en tiempo real (df_esp_edit)
             df_esp_edit = st.data_editor(df_esp.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic", key="esp_renace")
             
             if st.button("💾 Guardar Especialidades y Autosumar"):
-                # Guardar el editor de especialidades directamente
                 df_esp_edit.to_csv(archivo_esp, index=False)
                 
-                # CÁLCULO AUTOMÁTICO INMEDIATO usando el dataframe editado actual
                 try:
                     vals_esp = pd.to_numeric(df_esp_edit["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                     suma_especialidades = int(vals_esp.sum())
@@ -141,17 +168,21 @@ if st.session_state.admin_logueado:
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
                     else:
-                        df_m = pd.DataFrame({"FECHA_JORNADA": ["08AGO2026"], "TOTAL_ATENCIONES": ["0"], "PERSONAS_ATENDIDAS": ["1235"]})
+                        df_m = pd.DataFrame({"FECHA_JORNADA": [""], "TOTAL_ATENCIONES": ["0"], "PERSONAS_ATENDIDAS": ["1235"]})
+                    
+                    # ACTUALIZAR AUTOMÁTICAMENTE LA FECHA/HORA DE LA RED AL GUARDAR CAMBIOS
+                    dt_red = obtener_hora_red()
+                    fecha_hora_actualizada = formatear_fecha_venezuela(dt_red)
                     
                     df_m.loc[0, "TOTAL_ATENCIONES"] = str(suma_especialidades)
+                    df_m.loc[0, "FECHA_JORNADA"] = fecha_hora_actualizada
                     df_m.to_csv(archivo_meta, index=False)
                     guardar_en_github(archivo_meta)
                 except Exception as e:
-                    st.error(f"Error al autosumar: {e}")
+                    st.error(f"Error al autosumar y actualizar fecha: {e}")
 
                 guardar_en_github(archivo_esp)
-                st.success(f"¡Especialidades guardadas y Total de Atenciones autosumado correctamente a {suma_especialidades}!")
-                # Nota: Ya no ejecutamos st.rerun() aquí para evitar el parpadeo y permitir ver el cambio instantáneamente abajo.
+                st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada con la red!")
 
         with tab_ed3:
             st.markdown("### Tabla: Apoyo Social")
@@ -161,10 +192,24 @@ if st.session_state.admin_logueado:
                 pd.DataFrame(columns=cols_apoyo).to_csv(archivo_apo, index=False)
             df_apo = pd.read_csv(archivo_apo, dtype=str)
             df_apo_edit = st.data_editor(df_apo.reindex(columns=cols_apoyo, fill_value="0"), use_container_width=True, num_rows="dynamic", key="apo_renace")
+            
             if st.button("💾 Guardar Apoyo Social"):
                 df_apo_edit.to_csv(archivo_apo, index=False)
+                
+                # Actualizar también fecha/hora de la red al guardar este cambio opcionalmente o mantener metadatos
+                try:
+                    archivo_meta = "ii_meta_venezuela_renace.csv"
+                    if os.path.exists(archivo_meta):
+                        df_m = pd.read_csv(archivo_meta, dtype=str)
+                        dt_red = obtener_hora_red()
+                        df_m.loc[0, "FECHA_JORNADA"] = formatear_fecha_venezuela(dt_red)
+                        df_m.to_csv(archivo_meta, index=False)
+                        guardar_en_github(archivo_meta)
+                except:
+                    pass
+
                 guardar_en_github(archivo_apo)
-                st.success("Apoyo social guardado.")
+                st.success("Apoyo social guardado y fecha de red actualizada.")
 
         with tab_ed4:
             st.markdown("### Desglose Demográfico (Mujeres, Hombres, Niñas, Niños)")
@@ -173,10 +218,21 @@ if st.session_state.admin_logueado:
                 pd.DataFrame({"MUJERES": ["587"], "HOMBRES": ["431"], "NIÑAS": ["121"], "NIÑOS": ["96"]}).to_csv(archivo_demo, index=False)
             df_demo = pd.read_csv(archivo_demo, dtype=str)
             df_demo_edit = st.data_editor(df_demo, use_container_width=True, num_rows="fixed", key="demo_renace")
+            
             if st.button("💾 Guardar Demografía"):
                 df_demo_edit.to_csv(archivo_demo, index=False)
+                try:
+                    archivo_meta = "ii_meta_venezuela_renace.csv"
+                    if os.path.exists(archivo_meta):
+                        df_m = pd.read_csv(archivo_meta, dtype=str)
+                        dt_red = obtener_hora_red()
+                        df_m.loc[0, "FECHA_JORNADA"] = formatear_fecha_venezuela(dt_red)
+                        df_m.to_csv(archivo_meta, index=False)
+                        guardar_en_github(archivo_meta)
+                except:
+                    pass
                 guardar_en_github(archivo_demo)
-                st.success("Demografía guardada.")
+                st.success("Demografía guardada y fecha de red actualizada.")
 
         if st.button("❌ Cerrar Sesión"):
             st.session_state.admin_logueado = False
@@ -396,24 +452,17 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     </div>
     """, unsafe_allow_html=True)
 
-    # Si hay datos recién editados en el session_state del data_editor, los usamos directamente en tiempo real para la gráfica y el total sin requerir refresh
     df_esp_viz = None
     archivo_esp = "ii_especialidades_venezuela_renace.csv"
     
     if "esp_renace" in st.session_state and st.session_state["esp_renace"] is not None:
-        # st.session_state["esp_renace"] contiene las modificaciones pendientes o recién guardadas en el editor
         edited_data = st.session_state["esp_renace"]
-        if isinstance(edited_data, dict) and "edited_rows" in edited_data:
-            # Reconstruir o aplicar cambios si viene estructurado como diccionario de ediciones de Streamlit
-            pass
-        # O si el state almacena directamente el dataframe modificado según la versión de Streamlit:
         if isinstance(edited_data, pd.DataFrame):
             df_esp_viz = edited_data
 
     if df_esp_viz is None and os.path.exists(archivo_esp):
         df_esp_viz = pd.read_csv(archivo_esp, dtype=str)
 
-    # Cálculo dinámico en tiempo real del total de atenciones basado en lo que está en la tabla de especialidades
     total_atenciones_val = "0"
     if df_esp_viz is not None and not df_esp_viz.empty and "ATENCIONES" in df_esp_viz.columns:
         try:
@@ -428,7 +477,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             if not df_m.empty:
                 total_atenciones_val = formatear_numero(df_m.iloc[0].get("TOTAL_ATENCIONES", "3893"))
 
-    fecha_str = "08AGO2026"
+    fecha_str = "12AGO2026 - 15:30:00"
     archivo_meta = "ii_meta_venezuela_renace.csv"
     if os.path.exists(archivo_meta):
         df_m = pd.read_csv(archivo_meta, dtype=str)
@@ -626,4 +675,4 @@ else:
         else:
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_exact:=df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
