@@ -14,14 +14,12 @@ st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sideba
 def obtener_hora_red():
     """Obtiene la fecha y hora actual desde una API pública en la red con respaldo local."""
     try:
-        # Consulta a una API pública de tiempo basada en la red
         with urllib.request.urlopen("https://worldtimeapi.org/api/ip", timeout=3) as response:
             data = json.loads(response.read().decode())
-            datetime_str = data["datetime"] # Formato ISO 8601
+            datetime_str = data["datetime"]
             dt = datetime.datetime.fromisoformat(datetime_str)
             return dt
     except Exception:
-        # Respaldo si no hay internet o falla la API
         return datetime.datetime.now()
 
 def formatear_fecha_venezuela(dt):
@@ -132,22 +130,9 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     
     if seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
-        tab_ed1, tab_ed2, tab_ed3, tab_ed4 = st.tabs(["📅 Info General & Totales", "🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
+        tab_ed1, tab_ed2, tab_ed3 = st.tabs(["🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
         
         with tab_ed1:
-            st.markdown("### Fecha, Hora y Totales Principales")
-            archivo_meta = "ii_meta_venezuela_renace.csv"
-            if not os.path.exists(archivo_meta):
-                pd.DataFrame({"FECHA_JORNADA": ["12AGO2026 - 15:30:00"], "TOTAL_ATENCIONES": ["3893"], "PERSONAS_ATENDIDAS": ["1235"]}).to_csv(archivo_meta, index=False)
-            df_meta = pd.read_csv(archivo_meta, dtype=str)
-            df_meta_edit = st.data_editor(df_meta, use_container_width=True, num_rows="fixed", key="meta_renace")
-            
-            if st.button("💾 Guardar Totales y Fecha"):
-                df_meta_edit.to_csv(archivo_meta, index=False)
-                guardar_en_github(archivo_meta)
-                st.success("Totales guardados correctamente.")
-
-        with tab_ed2:
             st.markdown("### Tabla: Atenciones por Especialidad")
             cols_maestras = ["Nº", "ESPECIALIDAD", "ATENCIONES"]
             archivo_esp = "ii_especialidades_venezuela_renace.csv"
@@ -170,7 +155,6 @@ if st.session_state.admin_logueado:
                     else:
                         df_m = pd.DataFrame({"FECHA_JORNADA": [""], "TOTAL_ATENCIONES": ["0"], "PERSONAS_ATENDIDAS": ["1235"]})
                     
-                    # ACTUALIZAR AUTOMÁTICAMENTE LA FECHA/HORA DE LA RED AL GUARDAR CAMBIOS
                     dt_red = obtener_hora_red()
                     fecha_hora_actualizada = formatear_fecha_venezuela(dt_red)
                     
@@ -184,7 +168,7 @@ if st.session_state.admin_logueado:
                 guardar_en_github(archivo_esp)
                 st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada con la red!")
 
-        with tab_ed3:
+        with tab_ed2:
             st.markdown("### Tabla: Apoyo Social")
             cols_apoyo = ["Nº", "CATEGORIA_APOYO", "VALOR"]
             archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
@@ -196,7 +180,6 @@ if st.session_state.admin_logueado:
             if st.button("💾 Guardar Apoyo Social"):
                 df_apo_edit.to_csv(archivo_apo, index=False)
                 
-                # Actualizar también fecha/hora de la red al guardar este cambio opcionalmente o mantener metadatos
                 try:
                     archivo_meta = "ii_meta_venezuela_renace.csv"
                     if os.path.exists(archivo_meta):
@@ -211,7 +194,7 @@ if st.session_state.admin_logueado:
                 guardar_en_github(archivo_apo)
                 st.success("Apoyo social guardado y fecha de red actualizada.")
 
-        with tab_ed4:
+        with tab_ed3:
             st.markdown("### Desglose Demográfico (Mujeres, Hombres, Niñas, Niños)")
             archivo_demo = "ii_demografia_venezuela_renace.csv"
             if not os.path.exists(archivo_demo):
