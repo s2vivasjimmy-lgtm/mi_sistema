@@ -42,11 +42,16 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-# --- CSS GENERAL ---
+# --- CSS GENERAL MODIFICADO PARA MAXIMIZAR ESPACIO VERTICAL Y BARRAS GRANDES ---
 st.markdown("""
 <style>
-.block-container { padding-top: 0.5rem !important; padding-bottom: 0rem !important; }
+.block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; padding-left: 1rem !important; padding-right: 1rem !important; max-width: 100% !important; }
+header {visibility: hidden;}
 .stApp { background-color: #0E1117 !important; }
+
+div[data-testid="stMarkdownContainer"] {
+    margin-top: -5px;
+}
 
 .strat-card { 
     background-color: #2b3a4a; 
@@ -429,9 +434,9 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 12px; border-radius: 8px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 10px;">
-        <h4 style="color: #00d2ff; letter-spacing: 1px; margin: 0; font-size: 11px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 5px 0; font-size: 20px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 15px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 10px;">
+        <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 13px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 8px 0; font-size: 26px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
     </div>
     """, unsafe_allow_html=True)
 
@@ -486,28 +491,32 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         if not df_m.empty:
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
 
-    # Cabecera de métricas compacta en una sola línea
+    # Cabecera de métricas superior
     st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; flex-wrap: wrap;">
-        <div style="background: #1e2025; padding: 6px 15px; border-radius: 6px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 14px;">
+    <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; margin-top: -5px;">
+        <div style="background: #1e2025; padding: 8px 20px; border-radius: 6px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 15px;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 6px 15px; border-radius: 6px; text-align: center;">
-            <span style="color: #ffffff; font-size: 11px; font-weight: bold;">ATENCIONES:</span> <span style="color: #ffffff; font-size: 18px; font-weight: 900;">{total_atenciones_val}</span>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 8px 20px; border-radius: 6px; text-align: center;">
+            <span style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">ATENCIONES:</span> 
+            <span style="color: #ffffff; font-size: 24px; font-weight: 900;">{total_atenciones_val}</span>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 6px 15px; border-radius: 6px; text-align: center;">
-            <span style="color: #ffffff; font-size: 11px; font-weight: bold;">APOYO SOCIAL:</span> <span style="color: #ffffff; font-size: 18px; font-weight: 900;">{total_apoyo_val}</span>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 8px 20px; border-radius: 6px; text-align: center;">
+            <span style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">APOYO SOCIAL:</span> 
+            <span style="color: #ffffff; font-size: 24px; font-weight: 900;">{total_apoyo_val}</span>
         </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 6px 15px; border-radius: 6px; text-align: center;">
-            <span style="color: #ffffff; font-size: 11px; font-weight: bold;">TOTAL GENERAL:</span> <span style="color: #ffffff; font-size: 18px; font-weight: 900;">{suma_total_ambos}</span>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 8px 20px; border-radius: 6px; text-align: center;">
+            <span style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</span> 
+            <span style="color: #ffffff; font-size: 24px; font-weight: 900;">{suma_total_ambos}</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    col_izq, col_der = st.columns([1.1, 0.9])
+    col_izq, col_der = st.columns([1, 1])
+    ALTO_GRAFICAS = 750
 
     with col_izq:
-        st.markdown("<div style='text-align: center; color: #00d2ff; font-weight: bold; font-size: 14px; margin-bottom: 5px;'>🩺 ATENCIONES POR ESPECIALIDAD</div>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: #00d2ff; font-size: 16px; margin: 0;'>🩺 ATENCIONES POR ESPECIALIDAD</h3>", unsafe_allow_html=True)
         
         if df_esp_viz is not None and not df_esp_viz.empty and "ESPECIALIDAD" in df_esp_viz.columns and "ATENCIONES" in df_esp_viz.columns:
             df_esp_viz["ATENCIONES_NUM"] = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -523,10 +532,10 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=10),
-                margin=dict(t=5, b=5, l=5, r=20),
-                height=300,  # Reducido para evitar scroll
-                xaxis=dict(showgrid=True, gridcolor='#30363d'),
+                font=dict(color='white', size=12),
+                margin=dict(t=10, b=0, l=0, r=30),
+                height=ALTO_GRAFICAS,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', range=[0, df_esp_viz["ATENCIONES_NUM"].max() * 1.1]),
                 yaxis=dict(autorange="reversed")
             )
             st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico")
@@ -534,7 +543,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             st.info("Sin registros de especialidades cargados.")
 
     with col_der:
-        st.markdown("<div style='text-align: center; color: #ffd700; font-weight: bold; font-size: 14px; margin-bottom: 5px;'>🤝 APOYO SOCIAL</div>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: #ffd700; font-size: 16px; margin: 0;'>🤝 APOYO SOCIAL</h3>", unsafe_allow_html=True)
 
         archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
         if os.path.exists(archivo_apo):
@@ -553,10 +562,10 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 fig_apo.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white', size=10),
-                    margin=dict(t=5, b=5, l=5, r=20),
-                    height=300,  # Reducido para evitar scroll
-                    xaxis=dict(showgrid=True, gridcolor='#30363d'),
+                    font=dict(color='white', size=12),
+                    margin=dict(t=10, b=0, l=0, r=30),
+                    height=ALTO_GRAFICAS,
+                    xaxis=dict(showgrid=True, gridcolor='#30363d', range=[0, df_apo["VALOR_NUM"].max() * 1.1]),
                     yaxis=dict(autorange="reversed")
                 )
                 st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico")
@@ -581,14 +590,13 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             except:
                 pass
 
-    # Demografía ultra compacta en una sola barra horizontal
     st.markdown(f"""
-    <div style="background: #161b22; padding: 8px 15px; border-radius: 8px; border: 1px solid #30363d; margin-top: 5px; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; text-align: center;">
-        <div style="font-size: 13px; font-weight: bold; color: #00d2ff;">👥 DEMOGRAFÍA:</div>
+    <div style="background: #161b22; padding: 10px 20px; border-radius: 8px; border: 1px solid #30363d; margin-top: 5px; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; text-align: center; font-size: 14px;">
+        <div style="color: #00d2ff; font-weight: bold;">👥 DEMOGRAFÍA:</div>
         <div>👩 Mujeres: <b style="color: #ff4b4b;">{mujeres}</b></div>
         <div>👨 Hombres: <b style="color: #00d2ff;">{hombres}</b></div>
         <div>👧 Niñas: <b style="color: #ff79c6;">{ninas}</b></div>
         <div>👦 Niños: <b style="color: #50fa7b;">{ninos}</b></div>
-        <div><b>TOTAL: <span style="color: #ffd700;">{total_personas}</span></b></div>
+        <div style="border-left: 1px solid #444; padding-left: 20px;"><b>TOTAL: <span style="color: #ffd700;">{total_personas}</span></b></div>
     </div>
     """, unsafe_allow_html=True)
