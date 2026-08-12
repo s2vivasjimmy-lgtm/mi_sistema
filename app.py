@@ -12,15 +12,19 @@ from github import Github
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
 def obtener_hora_red():
-    """Obtiene la fecha y hora actual desde una API pública en la red con respaldo local."""
+    """Obtiene la hora oficial de Venezuela (America/Caracas) desde worldtimeapi, con respaldo en UTC-4."""
     try:
-        with urllib.request.urlopen("https://worldtimeapi.org/api/ip", timeout=3) as response:
+        with urllib.request.urlopen("https://worldtimeapi.org/api/timezone/America/Caracas", timeout=3) as response:
             data = json.loads(response.read().decode())
             datetime_str = data["datetime"]
             dt = datetime.datetime.fromisoformat(datetime_str)
+            # Asegurar que no tenga timezone offset fantasma si viene con zona horaria integrada
+            if dt.tzinfo is not None:
+                dt = dt.astimezone(datetime.timezone(datetime.timedelta(hours=-4))).replace(tzinfo=None)
             return dt
     except Exception:
-        return datetime.datetime.now()
+        # Respaldo directo usando UTC-4 fijo para Venezuela
+        return datetime.datetime.utcnow() - datetime.timedelta(hours=4)
 
 def formatear_fecha_venezuela(dt):
     """Convierte un objeto datetime al formato deseado, ej: 12AGO2026 - 15:30:45"""
@@ -153,7 +157,7 @@ if st.session_state.admin_logueado:
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
                     else:
-                        df_m = pd.DataFrame({"FECHA_JORNADA": [""], "TOTAL_ATENCIONES": ["0"], "PERSONAS_ATENDIDAS": ["1235"]})
+                        df_m = pd.DataFrame({"FECHA_JORNADA": [""], "TOTAL_ATENCIONES": ["0"]})
                     
                     dt_red = obtener_hora_red()
                     fecha_hora_actualizada = formatear_fecha_venezuela(dt_red)
@@ -166,7 +170,7 @@ if st.session_state.admin_logueado:
                     st.error(f"Error al autosumar y actualizar fecha: {e}")
 
                 guardar_en_github(archivo_esp)
-                st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada con la red!")
+                st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada con la hora de Caracas!")
 
         with tab_ed2:
             st.markdown("### Tabla: Apoyo Social")
@@ -192,7 +196,7 @@ if st.session_state.admin_logueado:
                     pass
 
                 guardar_en_github(archivo_apo)
-                st.success("Apoyo social guardado y fecha de red actualizada.")
+                st.success("Apoyo social guardado y hora de Caracas actualizada.")
 
         with tab_ed3:
             st.markdown("### Desglose Demográfico (Mujeres, Hombres, Niñas, Niños)")
@@ -215,7 +219,7 @@ if st.session_state.admin_logueado:
                 except:
                     pass
                 guardar_en_github(archivo_demo)
-                st.success("Demografía guardada y fecha de red actualizada.")
+                st.success("Demografía guardada y hora de Caracas actualizada.")
 
         if st.button("❌ Cerrar Sesión"):
             st.session_state.admin_logueado = False
