@@ -14,13 +14,12 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-# --- CSS OPTIMIZADO PARA PROYECCIÓN ---
+# --- CSS GENERAL ---
 st.markdown("""
 <style>
 .block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
 
-/* Tarjetas de Atenciones - TAMAÑO UNIFICADO */
 .strat-card { 
     background-color: #2b3a4a; 
     padding: 15px; 
@@ -33,12 +32,10 @@ st.markdown("""
 .strat-title { font-size: 14px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 10px; }
 .strat-value { font-size: 30px; font-weight: 900; color: #ffffff; }
 
-/* Resumen Operativo */
 .compact-card { background-color: #1a1c23; padding: 10px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
 .card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
 .card-value { font-size: 22px; font-weight: 800; color: #ffffff; }
 
-/* Totales y marquesina */
 .total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
 .total-title { font-size: 18px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 35px; font-weight: 900; color: #ffffff; }
@@ -104,41 +101,104 @@ with st.sidebar:
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
-    archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_').replace('\'', '').replace('“', '').replace('”', '')}.csv"
     
-    if seleccion == "Resumen General":
-        cols_maestras = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INTERVENCIONES Q."]
-    elif seleccion == "Red Sanitaria Militar":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
-    elif seleccion == "Campamentos Itinerantes":
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "RESPONSABLE", "ATENCIONES"]
-    elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
-        cols_maestras = ["Nº", "ESPECIALIDAD", "MÉDICO", "PACIENTES ATENDIDOS"]
-    elif seleccion in ["Campamentos Transitorios", "Sistema_de_Salud_Tradicional", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
-        cols_maestras = ["Nº", "NOMBRE", "ATENCIONES"]
-    elif seleccion == "Ruta Epidemiológica":
-        cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
+    if seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
+        archivo_a_editar = "ii_atencion_medica_especializada_venezuela_renace.csv"
+        # Definimos las pestañas de edición para reflejar con precisión la estructura visual de la infografía
+        tab_ed1, tab_ed2, tab_ed3, tab_ed4 = st.tabs(["📅 Info General & Totales", "🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
+        
+        with tab_ed1:
+            st.markdown("### Fecha y Totales Principales")
+            archivo_meta = "ii_meta_venezuela_renace.csv"
+            if not os.path.exists(archivo_meta):
+                pd.DataFrame({"FECHA_JORNADA": ["08AGO2026"], "TOTAL_ATENCIONES": ["3893"], "PERSONAS_ATENDIDAS": ["1235"]}).to_csv(archivo_meta, index=False)
+            df_meta = pd.read_csv(archivo_meta, dtype=str)
+            df_meta_edit = st.data_editor(df_meta, use_container_width=True, num_rows="fixed", key="meta_renace")
+            if st.button("💾 Guardar Totales y Fecha"):
+                df_meta_edit.to_csv(archivo_meta, index=False)
+                guardar_en_github(archivo_meta)
+                st.success("Totales guardados correctamente.")
+                st.rerun()
+
+        with tab_ed2:
+            st.markdown("### Tabla: Atenciones por Especialidad")
+            cols_maestras = ["Nº", "ESPECIALIDAD", "ATENCIONES"]
+            archivo_esp = "ii_especialidades_venezuela_renace.csv"
+            if not os.path.exists(archivo_esp):
+                pd.DataFrame(columns=cols_maestras).to_csv(archivo_esp, index=False)
+            df_esp = pd.read_csv(archivo_esp, dtype=str)
+            df_esp_edit = st.data_editor(df_esp.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic", key="esp_renace")
+            if st.button("💾 Guardar Especialidades"):
+                df_esp_edit.to_csv(archivo_esp, index=False)
+                guardar_en_github(archivo_esp)
+                st.success("Especialidades guardadas.")
+                st.rerun()
+
+        with tab_ed3:
+            st.markdown("### Tabla: Apoyo Social")
+            cols_apoyo = ["Nº", "CATEGORIA_APOYO", "VALOR"]
+            archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
+            if not os.path.exists(archivo_apo):
+                pd.DataFrame(columns=cols_apoyo).to_csv(archivo_apo, index=False)
+            df_apo = pd.read_csv(archivo_apo, dtype=str)
+            df_apo_edit = st.data_editor(df_apo.reindex(columns=cols_apoyo, fill_value="0"), use_container_width=True, num_rows="dynamic", key="apo_renace")
+            if st.button("💾 Guardar Apoyo Social"):
+                df_apo_edit.to_csv(archivo_apo, index=False)
+                guardar_en_github(archivo_apo)
+                st.success("Apoyo social guardado.")
+                st.rerun()
+
+        with tab_ed4:
+            st.markdown("### Desglose Demográfico (Mujeres, Hombres, Niñas, Niños)")
+            archivo_demo = "ii_demografia_venezuela_renace.csv"
+            if not os.path.exists(archivo_demo):
+                pd.DataFrame({"MUJERES": ["587"], "HOMBRES": ["431"], "NIÑAS": ["121"], "NIÑOS": ["96"]}).to_csv(archivo_demo, index=False)
+            df_demo = pd.read_csv(archivo_demo, dtype=str)
+            df_demo_edit = st.data_editor(df_demo, use_container_width=True, num_rows="fixed", key="demo_renace")
+            if st.button("💾 Guardar Demografía"):
+                df_demo_edit.to_csv(archivo_demo, index=False)
+                guardar_en_github(archivo_demo)
+                st.success("Demografía guardada.")
+                st.rerun()
+
+        if st.button("❌ Cerrar Sesión"):
+            st.session_state.admin_logueado = False
+            st.rerun()
+
     else:
-        cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
+        archivo_a_editar = ARCHIVO_RESUMEN if seleccion == "Resumen General" else f"{seleccion.lower().replace(' ', '_').replace('\'', '').replace('“', '').replace('”', '')}.csv"
+        
+        if seleccion == "Resumen General":
+            cols_maestras = ["ALTAS MÉDICAS", "FALLECIDOS", "TRASLADOS", "CAMAS OCUPADAS", "CAMAS DISPONIBLES", "HOSPITALIZACIONES", "INTERVENCIONES Q."]
+        elif seleccion == "Red Sanitaria Militar":
+            cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "ATENCIONES"]
+        elif seleccion == "Campamentos Itinerantes":
+            cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "RESPONSABLE", "ATENCIONES"]
+        elif seleccion in ["Campamentos Transitorios", "Sistema_de_Salud_Tradicional", "Sistema de Salud Tradicional", "Inmunización", "Saneamiento Ambiental", "Programas de Salud"]:
+            cols_maestras = ["Nº", "NOMBRE", "ATENCIONES"]
+        elif seleccion == "Ruta Epidemiológica":
+            cols_maestras = ["Nº", "GRUPO ETARIO", "SEXO", "PUNTO/RUTA", "DIÁNOSTICO", "ACCIONES", "RESULTADO", "NIVEL DE PRIORIDAD", "DIRECCIÓN DEL PACIENTE", "TELEFONO", "FECHA"]
+        else:
+            cols_maestras = ["Nº", "NOMBRE", "UBICACIÓN", "ESTATUS", "NACIONALIAD", "PAIS RESPONSABLE", "ATENCIONES"]
 
-    if not os.path.exists(archivo_a_editar):
-        df_actual = pd.DataFrame(columns=cols_maestras)
-    else:
-        df_actual = pd.read_csv(archivo_a_editar, dtype=str)
-        df_actual = df_actual.loc[:, df_actual.columns.isin(cols_maestras)]
-        df_actual = df_actual.dropna(how='all')
+        if not os.path.exists(archivo_a_editar):
+            df_actual = pd.DataFrame(columns=cols_maestras)
+        else:
+            df_actual = pd.read_csv(archivo_a_editar, dtype=str)
+            df_actual = df_actual.loc[:, df_actual.columns.isin(cols_maestras)]
+            df_actual = df_actual.dropna(how='all')
 
-    df_editado = st.data_editor(df_actual.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic")
+        df_editado = st.data_editor(df_actual.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic")
 
-    if st.button("💾 Guardar Cambios"):
-        df_editado.to_csv(archivo_a_editar, index=False)
-        if guardar_en_github(archivo_a_editar): 
-            st.success("Guardado en servidor.")
-        st.rerun()
+        if st.button("💾 Guardar Cambios"):
+            df_editado.to_csv(archivo_a_editar, index=False)
+            if guardar_en_github(archivo_a_editar): 
+                st.success("Guardado en servidor.")
+            st.rerun()
 
-    if st.button("❌ Cerrar Sesión"):
-        st.session_state.admin_logueado = False
-        st.rerun()
+        if st.button("❌ Cerrar Sesión"):
+            st.session_state.admin_logueado = False
+            st.rerun()
 else:
     with st.popover("⚙️"):
         user = st.text_input("Usuario")
@@ -311,16 +371,163 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion == "II JORNADA MÉDICA":
-    st.subheader("II Atención Médica Especializada 'Venezuela Renace'")
-    st.write("Interfaz exclusiva y separada del Resumen General.")
-    archivo_detalle = "ii_jornada_medica.csv"
-    if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name="ii_atencion_medica_especializada_venezuela_renace.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    else:
-        st.info("Aún no hay registros guardados para esta jornada. Usa el panel de configuración (⚙️) en la barra lateral para agregar los datos.")
+elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
+    # --- VISTA ESTILO INFOGRAFÍA OFICIAL ---
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 25px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 25px;">
+        <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 14px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 10px 0; font-size: 30px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 18px; background: #1f3044; display: inline-block; padding: 6px 20px; border-radius: 20px;">PARA EL ESTADO LA GUAIRA</h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Cargar datos de fecha y totales
+    fecha_str = "08AGO2026"
+    total_atenciones_val = "3.893"
+    archivo_meta = "ii_meta_venezuela_renace.csv"
+    if os.path.exists(archivo_meta):
+        df_m = pd.read_csv(archivo_meta, dtype=str)
+        if not df_m.empty:
+            fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
+            total_atenciones_val = formatear_numero(df_m.iloc[0].get("TOTAL_ATENCIONES", "3893"))
+
+    st.markdown(f"""
+    <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; flex-wrap: wrap;">
+        <div style="background: #1e2025; padding: 10px 25px; border-radius: 8px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 18px;">
+            📅 {fecha_str}
+        </div>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,210,255,0.4);">
+            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL DE ATENCIONES:</div>
+            <div style="color: #ffffff; font-size: 38px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Layout de 2 columnas principales (Izquierda: Especialidades | Derecha: Apoyo Social y Gráficos de Demografía)
+    col_izq, col_der = st.columns([1.1, 0.9])
+
+    with col_izq:
+        st.markdown("""
+        <div style="background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d;">
+            <h3 style="color: #00d2ff; text-align: center; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #00d2ff; padding-bottom: 8px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        archivo_esp = "ii_especialidades_venezuela_renace.csv"
+        if os.path.exists(archivo_esp):
+            df_esp = pd.read_csv(archivo_esp, dtype=str)
+            if not df_esp.empty and "ESPECIALIDAD" in df_esp.columns and "ATENCIONES" in df_esp.columns:
+                df_esp["ATENCIONES_NUM"] = pd.to_numeric(df_esp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                
+                # Gráfico de barras horizontal estilo infografía con Plotly
+                fig_esp = go.Figure(data=[go.Bar(
+                    y=df_esp["ESPECIALIDAD"],
+                    x=df_esp["ATENCIONES_NUM"],
+                    orientation='h',
+                    marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
+                    text=df_esp["ATENCIONES_NUM"],
+                    textposition='outside'
+                )])
+                fig_esp.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white', size=11),
+                    margin=dict(t=10, b=10, l=10, r=30),
+                    height=550,
+                    xaxis=dict(showgrid=True, gridcolor='#30363d'),
+                    yaxis=dict(autorange="reversed")
+                )
+                st.plotly_chart(fig_esp, use_container_width=True)
+            else:
+                st.info("Agregue los registros de especialidades desde el panel de administración (⚙️).")
+        else:
+            st.info("Sin registros de especialidades cargados.")
+
+    with col_der:
+        st.markdown("""
+        <div style="background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d; margin-bottom: 20px;">
+            <h3 style="color: #ffd700; text-align: center; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #ffd700; padding-bottom: 8px;">🤝 APOYO SOCIAL</h3>
+        </div>
+        """, unsafe_allow_html=True)
+
+        archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
+        if os.path.exists(archivo_apo):
+            df_apo = pd.read_csv(archivo_apo, dtype=str)
+            if not df_apo.empty and "CATEGORIA_APOYO" in df_apo.columns and "VALOR" in df_apo.columns:
+                df_apo["VALOR_NUM"] = pd.to_numeric(df_apo["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                
+                fig_apo = go.Figure(data=[go.Bar(
+                    y=df_apo["CATEGORIA_APOYO"],
+                    x=df_apo["VALOR_NUM"],
+                    orientation='h',
+                    marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
+                    text=df_apo["VALOR_NUM"],
+                    textposition='outside'
+                )])
+                fig_apo.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white', size=11),
+                    margin=dict(t=10, b=10, l=10, r=30),
+                    height=350,
+                    xaxis=dict(showgrid=True, gridcolor='#30363d'),
+                    yaxis=dict(autorange="reversed")
+                )
+                st.plotly_chart(fig_apo, use_container_width=True)
+            else:
+                st.info("Agregue los registros de apoyo social desde el panel (⚙️).")
+        else:
+            st.info("Sin registros de apoyo social cargados.")
+
+    # Sección inferior: Demografía / Personas Atendidas (Mujeres, Hombres, Niñas, Niños y Total Personas)
+    mujeres, hombres, ninas, ninos, total_personas = "587", "431", "121", "96", "1.235"
+    archivo_demo = "ii_demografia_venezuela_renace.csv"
+    if os.path.exists(archivo_demo):
+        df_d = pd.read_csv(archivo_demo, dtype=str)
+        if not df_d.empty:
+            row_d = df_d.iloc[0]
+            mujeres = formatear_numero(row_d.get("MUJERES", "587"))
+            hombres = formatear_numero(row_d.get("HOMBRES", "431"))
+            ninas = formatear_numero(row_d.get("NIÑAS", "121"))
+            ninos = formatear_numero(row_d.get("NIÑOS", "96"))
+            # Calcular total personas automáticamente si es posible o tomarlo de meta
+            try:
+                tot_p = int(row_d.get("MUJERES","587").replace('.','')) + int(row_d.get("HOMBRES","431").replace('.','')) + int(row_d.get("NIÑAS","121").replace('.','')) + int(row_d.get("NIÑOS","96").replace('.',''))
+                total_personas = formatear_numero(tot_p)
+            except:
+                pass
+
+    st.markdown(f"""
+    <div style="background: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d; margin-top: 20px;">
+        <h3 style="color: #00d2ff; text-align: center; font-size: 18px; margin-bottom: 20px; text-transform: uppercase;">👥 Desglose de Personas Atendidas</h3>
+        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px; text-align: center;">
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ff4b4b; min-width: 150px;">
+                <div style="font-size: 24px;">👩</div>
+                <div style="color: #ff4b4b; font-size: 24px; font-weight: 900;">{mujeres}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Mujeres</div>
+            </div>
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #00d2ff; min-width: 150px;">
+                <div style="font-size: 24px;">👨</div>
+                <div style="color: #00d2ff; font-size: 24px; font-weight: 900;">{hombres}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Hombres</div>
+            </div>
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ff79c6; min-width: 150px;">
+                <div style="font-size: 24px;">👧</div>
+                <div style="color: #ff79c6; font-size: 24px; font-weight: 900;">{ninas}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niñas</div>
+            </div>
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #50fa7b; min-width: 150px;">
+                <div style="font-size: 24px;">👦</div>
+                <div style="color: #50fa7b; font-size: 24px; font-weight: 900;">{ninos}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niños</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #2b3a4a 0%, #1f3044 100%); padding: 15px 35px; border-radius: 8px; border: 2px solid #ffd700; min-width: 180px;">
+                <div style="color: #ffd700; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas Atendidas</div>
+                <div style="color: #ffffff; font-size: 28px; font-weight: 900;">{total_personas}</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Campamentos Itinerantes", "Sistema de Salud Tradicional", "Programas de Salud"]:
     st.subheader(f"📋 Detalle: {seleccion}")
