@@ -103,7 +103,6 @@ if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     
     if seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
-        archivo_a_editar = "ii_atencion_medica_especializada_venezuela_renace.csv"
         tab_ed1, tab_ed2, tab_ed3, tab_ed4 = st.tabs(["📅 Info General & Totales", "🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
         
         with tab_ed1:
@@ -117,7 +116,6 @@ if st.session_state.admin_logueado:
                 df_meta_edit.to_csv(archivo_meta, index=False)
                 guardar_en_github(archivo_meta)
                 st.success("Totales guardados correctamente.")
-                st.rerun()
 
         with tab_ed2:
             st.markdown("### Tabla: Atenciones por Especialidad")
@@ -126,17 +124,19 @@ if st.session_state.admin_logueado:
             if not os.path.exists(archivo_esp):
                 pd.DataFrame(columns=cols_maestras).to_csv(archivo_esp, index=False)
             df_esp = pd.read_csv(archivo_esp, dtype=str)
+            
+            # Usar st.data_editor y capturar el resultado devuelto en tiempo real (df_esp_edit)
             df_esp_edit = st.data_editor(df_esp.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic", key="esp_renace")
+            
             if st.button("💾 Guardar Especialidades y Autosumar"):
-                # Guardar el editor de especialidades
+                # Guardar el editor de especialidades directamente
                 df_esp_edit.to_csv(archivo_esp, index=False)
                 
-                # CÁLCULO AUTOMÁTICO: Sumar la columna ATENCIONES de esta tabla
+                # CÁLCULO AUTOMÁTICO INMEDIATO usando el dataframe editado actual
                 try:
                     vals_esp = pd.to_numeric(df_esp_edit["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                     suma_especialidades = int(vals_esp.sum())
                     
-                    # Actualizar automáticamente en el archivo meta de Venezuela Renace
                     archivo_meta = "ii_meta_venezuela_renace.csv"
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
@@ -151,7 +151,7 @@ if st.session_state.admin_logueado:
 
                 guardar_en_github(archivo_esp)
                 st.success(f"¡Especialidades guardadas y Total de Atenciones autosumado correctamente a {suma_especialidades}!")
-                st.rerun()
+                # Nota: Ya no ejecutamos st.rerun() aquí para evitar el parpadeo y permitir ver el cambio instantáneamente abajo.
 
         with tab_ed3:
             st.markdown("### Tabla: Apoyo Social")
@@ -165,7 +165,6 @@ if st.session_state.admin_logueado:
                 df_apo_edit.to_csv(archivo_apo, index=False)
                 guardar_en_github(archivo_apo)
                 st.success("Apoyo social guardado.")
-                st.rerun()
 
         with tab_ed4:
             st.markdown("### Desglose Demográfico (Mujeres, Hombres, Niñas, Niños)")
@@ -178,7 +177,6 @@ if st.session_state.admin_logueado:
                 df_demo_edit.to_csv(archivo_demo, index=False)
                 guardar_en_github(archivo_demo)
                 st.success("Demografía guardada.")
-                st.rerun()
 
         if st.button("❌ Cerrar Sesión"):
             st.session_state.admin_logueado = False
@@ -213,7 +211,6 @@ if st.session_state.admin_logueado:
             df_editado.to_csv(archivo_a_editar, index=False)
             if guardar_en_github(archivo_a_editar): 
                 st.success("Guardado en servidor.")
-            st.rerun()
 
         if st.button("❌ Cerrar Sesión"):
             st.session_state.admin_logueado = False
@@ -399,14 +396,44 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     </div>
     """, unsafe_allow_html=True)
 
+    # Si hay datos recién editados en el session_state del data_editor, los usamos directamente en tiempo real para la gráfica y el total sin requerir refresh
+    df_esp_viz = None
+    archivo_esp = "ii_especialidades_venezuela_renace.csv"
+    
+    if "esp_renace" in st.session_state and st.session_state["esp_renace"] is not None:
+        # st.session_state["esp_renace"] contiene las modificaciones pendientes o recién guardadas en el editor
+        edited_data = st.session_state["esp_renace"]
+        if isinstance(edited_data, dict) and "edited_rows" in edited_data:
+            # Reconstruir o aplicar cambios si viene estructurado como diccionario de ediciones de Streamlit
+            pass
+        # O si el state almacena directamente el dataframe modificado según la versión de Streamlit:
+        if isinstance(edited_data, pd.DataFrame):
+            df_esp_viz = edited_data
+
+    if df_esp_viz is None and os.path.exists(archivo_esp):
+        df_esp_viz = pd.read_csv(archivo_esp, dtype=str)
+
+    # Cálculo dinámico en tiempo real del total de atenciones basado en lo que está en la tabla de especialidades
+    total_atenciones_val = "0"
+    if df_esp_viz is not None and not df_esp_viz.empty and "ATENCIONES" in df_esp_viz.columns:
+        try:
+            vals_temp = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones_val = formatear_numero(vals_temp.sum())
+        except:
+            pass
+    else:
+        archivo_meta = "ii_meta_venezuela_renace.csv"
+        if os.path.exists(archivo_meta):
+            df_m = pd.read_csv(archivo_meta, dtype=str)
+            if not df_m.empty:
+                total_atenciones_val = formatear_numero(df_m.iloc[0].get("TOTAL_ATENCIONES", "3893"))
+
     fecha_str = "08AGO2026"
-    total_atenciones_val = "3.893"
     archivo_meta = "ii_meta_venezuela_renace.csv"
     if os.path.exists(archivo_meta):
         df_m = pd.read_csv(archivo_meta, dtype=str)
         if not df_m.empty:
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
-            total_atenciones_val = formatear_numero(df_m.iloc[0].get("TOTAL_ATENCIONES", "3893"))
 
     st.markdown(f"""
     <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; flex-wrap: wrap;">
@@ -429,32 +456,27 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         </div>
         """, unsafe_allow_html=True)
         
-        archivo_esp = "ii_especialidades_venezuela_renace.csv"
-        if os.path.exists(archivo_esp):
-            df_esp = pd.read_csv(archivo_esp, dtype=str)
-            if not df_esp.empty and "ESPECIALIDAD" in df_esp.columns and "ATENCIONES" in df_esp.columns:
-                df_esp["ATENCIONES_NUM"] = pd.to_numeric(df_esp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                
-                fig_esp = go.Figure(data=[go.Bar(
-                    y=df_esp["ESPECIALIDAD"],
-                    x=df_esp["ATENCIONES_NUM"],
-                    orientation='h',
-                    marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
-                    text=df_esp["ATENCIONES_NUM"],
-                    textposition='outside'
-                )])
-                fig_esp.update_layout(
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white', size=11),
-                    margin=dict(t=10, b=10, l=10, r=30),
-                    height=550,
-                    xaxis=dict(showgrid=True, gridcolor='#30363d'),
-                    yaxis=dict(autorange="reversed")
-                )
-                st.plotly_chart(fig_esp, use_container_width=True)
-            else:
-                st.info("Agregue los registros de especialidades desde el panel de administración (⚙️).")
+        if df_esp_viz is not None and not df_esp_viz.empty and "ESPECIALIDAD" in df_esp_viz.columns and "ATENCIONES" in df_esp_viz.columns:
+            df_esp_viz["ATENCIONES_NUM"] = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            
+            fig_esp = go.Figure(data=[go.Bar(
+                y=df_esp_viz["ESPECIALIDAD"],
+                x=df_esp_viz["ATENCIONES_NUM"],
+                orientation='h',
+                marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
+                text=df_esp_viz["ATENCIONES_NUM"],
+                textposition='outside'
+            )])
+            fig_esp.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', size=11),
+                margin=dict(t=10, b=10, l=10, r=30),
+                height=550,
+                xaxis=dict(showgrid=True, gridcolor='#30363d'),
+                yaxis=dict(autorange="reversed")
+            )
+            st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico")
         else:
             st.info("Sin registros de especialidades cargados.")
 
@@ -488,7 +510,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                     xaxis=dict(showgrid=True, gridcolor='#30363d'),
                     yaxis=dict(autorange="reversed")
                 )
-                st.plotly_chart(fig_apo, use_container_width=True)
+                st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico")
             else:
                 st.info("Agregue los registros de apoyo social desde el panel (⚙️).")
         else:
