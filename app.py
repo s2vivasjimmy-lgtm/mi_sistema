@@ -447,11 +447,11 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     if df_esp_viz is None and os.path.exists(archivo_esp):
         df_esp_viz = pd.read_csv(archivo_esp, dtype=str)
 
-    total_atenciones_val = "0"
+    total_atenciones_num = 0
     if df_esp_viz is not None and not df_esp_viz.empty and "ATENCIONES" in df_esp_viz.columns:
         try:
             vals_temp = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_atenciones_val = formatear_numero(vals_temp.sum())
+            total_atenciones_num = int(vals_temp.sum())
         except:
             pass
     else:
@@ -459,18 +459,26 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         if os.path.exists(archivo_meta):
             df_m = pd.read_csv(archivo_meta, dtype=str)
             if not df_m.empty:
-                total_atenciones_val = formatear_numero(df_m.iloc[0].get("TOTAL_ATENCIONES", "3893"))
+                try:
+                    total_atenciones_num = int(str(df_m.iloc[0].get("TOTAL_ATENCIONES", "0")).replace('.', ''))
+                except:
+                    pass
 
-    total_apoyo_val = "0"
+    total_atenciones_val = formatear_numero(total_atenciones_num)
+
+    total_apoyo_num = 0
     archivo_apo_calc = "ii_apoyo_social_venezuela_renace.csv"
     if os.path.exists(archivo_apo_calc):
         df_apo_calc = pd.read_csv(archivo_apo_calc, dtype=str)
         if not df_apo_calc.empty and "VALOR" in df_apo_calc.columns:
             try:
                 vals_apo = pd.to_numeric(df_apo_calc["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                total_apoyo_val = formatear_numero(vals_apo.sum())
+                total_apoyo_num = int(vals_apo.sum())
             except:
                 pass
+
+    total_apoyo_val = formatear_numero(total_apoyo_num)
+    suma_total_ambos = formatear_numero(total_atenciones_num + total_apoyo_num)
 
     fecha_str = "12AGO2026 - 15:30:00"
     archivo_meta = "ii_meta_venezuela_renace.csv"
@@ -481,16 +489,20 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
 
     st.markdown(f"""
     <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; flex-wrap: wrap;">
-        <div style="background: #1e2025; padding: 10px 25px; border-radius: 8px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 18px;">
+        <div style="background: #1e2025; padding: 10px 25px; border-radius: 8px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 18px; display: flex; align-items: center;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 30px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,210,255,0.4);">
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,210,255,0.4);">
             <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL ATENCIONES ESPECIALIDAD:</div>
-            <div style="color: #ffffff; font-size: 35px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
+            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 12px 30px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(255,170,0,0.4);">
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(255,170,0,0.4);">
             <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL APOYO SOCIAL:</div>
-            <div style="color: #ffffff; font-size: 35px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
+            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
+        </div>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(40,167,69,0.4);">
+            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL GENERAL:</div>
+            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
