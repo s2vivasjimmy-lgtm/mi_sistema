@@ -104,7 +104,6 @@ if st.session_state.admin_logueado:
     
     if seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         archivo_a_editar = "ii_atencion_medica_especializada_venezuela_renace.csv"
-        # Definimos las pestañas de edición para reflejar con precisión la estructura visual de la infografía
         tab_ed1, tab_ed2, tab_ed3, tab_ed4 = st.tabs(["📅 Info General & Totales", "🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
         
         with tab_ed1:
@@ -128,10 +127,30 @@ if st.session_state.admin_logueado:
                 pd.DataFrame(columns=cols_maestras).to_csv(archivo_esp, index=False)
             df_esp = pd.read_csv(archivo_esp, dtype=str)
             df_esp_edit = st.data_editor(df_esp.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic", key="esp_renace")
-            if st.button("💾 Guardar Especialidades"):
+            if st.button("💾 Guardar Especialidades y Autosumar"):
+                # Guardar el editor de especialidades
                 df_esp_edit.to_csv(archivo_esp, index=False)
+                
+                # CÁLCULO AUTOMÁTICO: Sumar la columna ATENCIONES de esta tabla
+                try:
+                    vals_esp = pd.to_numeric(df_esp_edit["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                    suma_especialidades = int(vals_esp.sum())
+                    
+                    # Actualizar automáticamente en el archivo meta de Venezuela Renace
+                    archivo_meta = "ii_meta_venezuela_renace.csv"
+                    if os.path.exists(archivo_meta):
+                        df_m = pd.read_csv(archivo_meta, dtype=str)
+                    else:
+                        df_m = pd.DataFrame({"FECHA_JORNADA": ["08AGO2026"], "TOTAL_ATENCIONES": ["0"], "PERSONAS_ATENDIDAS": ["1235"]})
+                    
+                    df_m.loc[0, "TOTAL_ATENCIONES"] = str(suma_especialidades)
+                    df_m.to_csv(archivo_meta, index=False)
+                    guardar_en_github(archivo_meta)
+                except Exception as e:
+                    st.error(f"Error al autosumar: {e}")
+
                 guardar_en_github(archivo_esp)
-                st.success("Especialidades guardadas.")
+                st.success(f"¡Especialidades guardadas y Total de Atenciones autosumado correctamente a {suma_especialidades}!")
                 st.rerun()
 
         with tab_ed3:
@@ -372,7 +391,6 @@ elif seleccion == "Ruta Epidemiológica":
     """, height=510)
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
-    # --- VISTA ESTILO INFOGRAFÍA OFICIAL ---
     st.markdown("""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 25px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 25px;">
         <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 14px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
@@ -381,7 +399,6 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     </div>
     """, unsafe_allow_html=True)
 
-    # Cargar datos de fecha y totales
     fecha_str = "08AGO2026"
     total_atenciones_val = "3.893"
     archivo_meta = "ii_meta_venezuela_renace.csv"
@@ -403,7 +420,6 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     </div>
     """, unsafe_allow_html=True)
 
-    # Layout de 2 columnas principales (Izquierda: Especialidades | Derecha: Apoyo Social y Gráficos de Demografía)
     col_izq, col_der = st.columns([1.1, 0.9])
 
     with col_izq:
@@ -419,7 +435,6 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             if not df_esp.empty and "ESPECIALIDAD" in df_esp.columns and "ATENCIONES" in df_esp.columns:
                 df_esp["ATENCIONES_NUM"] = pd.to_numeric(df_esp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                 
-                # Gráfico de barras horizontal estilo infografía con Plotly
                 fig_esp = go.Figure(data=[go.Bar(
                     y=df_esp["ESPECIALIDAD"],
                     x=df_esp["ATENCIONES_NUM"],
@@ -479,7 +494,6 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         else:
             st.info("Sin registros de apoyo social cargados.")
 
-    # Sección inferior: Demografía / Personas Atendidas (Mujeres, Hombres, Niñas, Niños y Total Personas)
     mujeres, hombres, ninas, ninos, total_personas = "587", "431", "121", "96", "1.235"
     archivo_demo = "ii_demografia_venezuela_renace.csv"
     if os.path.exists(archivo_demo):
@@ -490,7 +504,6 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             hombres = formatear_numero(row_d.get("HOMBRES", "431"))
             ninas = formatear_numero(row_d.get("NIÑAS", "121"))
             ninos = formatear_numero(row_d.get("NIÑOS", "96"))
-            # Calcular total personas automáticamente si es posible o tomarlo de meta
             try:
                 tot_p = int(row_d.get("MUJERES","587").replace('.','')) + int(row_d.get("HOMBRES","431").replace('.','')) + int(row_d.get("NIÑAS","121").replace('.','')) + int(row_d.get("NIÑOS","96").replace('.',''))
                 total_personas = formatear_numero(tot_p)
