@@ -18,16 +18,13 @@ def obtener_hora_red():
             data = json.loads(response.read().decode())
             datetime_str = data["datetime"]
             dt = datetime.datetime.fromisoformat(datetime_str)
-            # Asegurar que no tenga timezone offset fantasma si viene con zona horaria integrada
             if dt.tzinfo is not None:
                 dt = dt.astimezone(datetime.timezone(datetime.timedelta(hours=-4))).replace(tzinfo=None)
             return dt
     except Exception:
-        # Respaldo directo usando UTC-4 fijo para Venezuela
         return datetime.datetime.utcnow() - datetime.timedelta(hours=4)
 
 def formatear_fecha_venezuela(dt):
-    """Convierte un objeto datetime al formato deseado, ej: 12AGO2026 - 15:30:45"""
     meses = {
         1: "ENE", 2: "FEB", 3: "MAR", 4: "ABR", 
         5: "MAY", 6: "JUN", 7: "JUL", 8: "AGO", 
@@ -464,6 +461,17 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             if not df_m.empty:
                 total_atenciones_val = formatear_numero(df_m.iloc[0].get("TOTAL_ATENCIONES", "3893"))
 
+    total_apoyo_val = "0"
+    archivo_apo_calc = "ii_apoyo_social_venezuela_renace.csv"
+    if os.path.exists(archivo_apo_calc):
+        df_apo_calc = pd.read_csv(archivo_apo_calc, dtype=str)
+        if not df_apo_calc.empty and "VALOR" in df_apo_calc.columns:
+            try:
+                vals_apo = pd.to_numeric(df_apo_calc["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                total_apoyo_val = formatear_numero(vals_apo.sum())
+            except:
+                pass
+
     fecha_str = "12AGO2026 - 15:30:00"
     archivo_meta = "ii_meta_venezuela_renace.csv"
     if os.path.exists(archivo_meta):
@@ -476,9 +484,13 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         <div style="background: #1e2025; padding: 10px 25px; border-radius: 8px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 18px;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 40px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,210,255,0.4);">
-            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL DE ATENCIONES:</div>
-            <div style="color: #ffffff; font-size: 38px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 30px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,210,255,0.4);">
+            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL ATENCIONES ESPECIALIDAD:</div>
+            <div style="color: #ffffff; font-size: 35px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
+        </div>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 12px 30px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(255,170,0,0.4);">
+            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL APOYO SOCIAL:</div>
+            <div style="color: #ffffff; font-size: 35px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -657,7 +669,7 @@ else:
             
             if (suma_nac + suma_ext) > 0:
                 fig = go.Figure(data=[go.Pie(labels=['NACIONAL', 'EXTRANJERO'], values=[suma_nac, suma_ext], hole=.6, marker_colors=['#FF0000', '#002060'], textinfo='none')])
-                fig.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
+.update_layout(showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), margin=dict(t=20, b=80, l=20, r=20))
                 st.plotly_chart(fig, use_container_width=True)
         else:
             st.dataframe(df_detalle, use_container_width=True, hide_index=True)
