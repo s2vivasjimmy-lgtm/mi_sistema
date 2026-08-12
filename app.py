@@ -314,7 +314,7 @@ elif seleccion == "Ruta Epidemiológica":
 elif seleccion == "II JORNADA MÉDICA":
     st.subheader("II Atención Médica Especializada 'Venezuela Renace'")
     st.write("Interfaz exclusiva y separada del Resumen General.")
-    archivo_detalle = "ii_atencion_medica_especializada_venezuela_renace.csv"
+    archivo_detalle = "ii_jornada_medica.csv"
     if os.path.exists(archivo_detalle):
         df_detalle = pd.read_csv(archivo_detalle, dtype=str)
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
