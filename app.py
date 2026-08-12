@@ -12,6 +12,7 @@ from github import Github
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
 def obtener_hora_red():
+    """Obtiene la hora oficial de Venezuela (America/Caracas) desde worldtimeapi, con respaldo en UTC-4."""
     try:
         with urllib.request.urlopen("https://worldtimeapi.org/api/timezone/America/Caracas", timeout=3) as response:
             data = json.loads(response.read().decode())
@@ -41,16 +42,11 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-# --- CSS GENERAL MODIFICADO PARA COMPACTAR Y EVITAR SOLAPAMIENTOS ---
+# --- CSS GENERAL ---
 st.markdown("""
 <style>
-.block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; padding-left: 1rem !important; padding-right: 1rem !important; max-width: 100% !important; }
-header {visibility: hidden;}
+.block-container { padding-top: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
-
-div[data-testid="stMarkdownContainer"] {
-    margin-top: -5px;
-}
 
 .strat-card { 
     background-color: #2b3a4a; 
@@ -72,21 +68,21 @@ div[data-testid="stMarkdownContainer"] {
 .total-title { font-size: 18px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
 .total-value { font-size: 35px; font-weight: 900; color: #ffffff; }
 
-.marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 2px 0; }
+.marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 10px 0; }
 .marquee-text { 
     display: inline-block; 
     white-space: nowrap; 
     animation: marquee 15s linear infinite; 
     color: #ffffff !important; 
     font-weight: bold; 
-    font-size: 24px; 
+    font-size: 35px; 
 }
 @keyframes marquee {
     0% { transform: translateX(100%); }
     100% { transform: translateX(-100%); }
 }
 
-.logo-custom { width: 100%; height: 120px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
+.logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -378,7 +374,7 @@ if seleccion == "Resumen General":
             ''', unsafe_allow_html=True)
 
     st.markdown(f'''
-    <div style="text-align: center; margin: 10px 0;">
+    <div style="text-align: center; margin: 20px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
             <div class="total-title">TOTAL ATENCIONES</div>
             <div class="total-value">{formatear_numero(total_general)}</div>
@@ -403,14 +399,14 @@ if seleccion == "Resumen General":
             
     st.subheader("📍UBICACIONES EN TIEMPO REAL")
     st.components.v1.html(f"""
-        <div id="map-container-general" style="position: relative; width: 100%; height: 400px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 6px 10px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+        <div id="map-container-general" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <button onclick="toggleFS('map-container-general')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                 ⛶ Pantalla Completa
             </button>
             <iframe src="https://www.google.com/maps/d/embed?mid=1mOUOQ2t-N_BrEWYqqySXGBW5MQuZQIg&ehbc=2E312F" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
         </div>
         {js_fullscreen}
-    """, height=410)
+    """, height=510)
 
 elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
@@ -422,20 +418,21 @@ elif seleccion == "Ruta Epidemiológica":
     
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
     st.components.v1.html(f"""
-        <div id="map-container-ruta" style="position: relative; width: 100%; height: 400px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
-            <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 6px 10px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+        <div id="map-container-ruta" style="position: relative; width: 100%; height: 500px; border: 1px solid #31333f; border-radius: 12px; overflow: hidden;">
+            <button onclick="toggleFS('map-container-ruta')" style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px; cursor: pointer; background: #ffffff; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
                 ⛶ Pantalla Completa
             </button>
             <iframe src="https://www.google.com/maps/d/embed?mid=1yl45t_HdDytdAAzsaOcMJzM3ICa5bPk" width="100%" height="100%" frameborder="0" allowfullscreen="true" allow="fullscreen"></iframe>
         </div>
         {js_fullscreen}
-    """, height=410)
+    """, height=510)
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 10px; border-radius: 8px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 5px;">
-        <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 11px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 4px 0; font-size: 20px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA • <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 25px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 25px;">
+        <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 14px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 10px 0; font-size: 30px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 18px; background: #1f3044; display: inline-block; padding: 6px 20px; border-radius: 20px;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -490,32 +487,34 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         if not df_m.empty:
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
 
-    # Cabecera de métricas superior ultra compacta
     st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 5px; margin-top: 0px;">
-        <div style="background: #1e2025; padding: 6px 15px; border-radius: 6px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 13px;">
+    <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; flex-wrap: wrap;">
+        <div style="background: #1e2025; padding: 10px 25px; border-radius: 8px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 18px; display: flex; align-items: center;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 6px 15px; border-radius: 6px; text-align: center;">
-            <span style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">ATENCIONES:</span> 
-            <span style="color: #ffffff; font-size: 18px; font-weight: 900;">{total_atenciones_val}</span>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,210,255,0.4);">
+            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL ATENCIONES ESPECIALIDAD:</div>
+            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 6px 15px; border-radius: 6px; text-align: center;">
-            <span style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">APOYO SOCIAL:</span> 
-            <span style="color: #ffffff; font-size: 18px; font-weight: 900;">{total_apoyo_val}</span>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(255,170,0,0.4);">
+            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL APOYO SOCIAL:</div>
+            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 6px 15px; border-radius: 6px; text-align: center;">
-            <span style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</span> 
-            <span style="color: #ffffff; font-size: 18px; font-weight: 900;">{suma_total_ambos}</span>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(40,167,69,0.4);">
+            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL GENERAL:</div>
+            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    col_izq, col_der = st.columns([1, 1])
-    ALTO_GRAFICAS = 620
+    col_izq, col_der = st.columns([1.1, 0.9])
 
     with col_izq:
-        st.markdown("<h3 style='text-align: center; color: #00d2ff; font-size: 14px; margin: 0;'>🩺 ATENCIONES POR ESPECIALIDAD</h3>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d;">
+            <h3 style="color: #00d2ff; text-align: center; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #00d2ff; padding-bottom: 8px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
+        </div>
+        """, unsafe_allow_html=True)
         
         if df_esp_viz is not None and not df_esp_viz.empty and "ESPECIALIDAD" in df_esp_viz.columns and "ATENCIONES" in df_esp_viz.columns:
             df_esp_viz["ATENCIONES_NUM"] = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -531,10 +530,10 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=10),
-                margin=dict(t=5, b=0, l=0, r=30),
-                height=ALTO_GRAFICAS,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', range=[0, df_esp_viz["ATENCIONES_NUM"].max() * 1.15]),
+                font=dict(color='white', size=11),
+                margin=dict(t=10, b=10, l=10, r=30),
+                height=550,
+                xaxis=dict(showgrid=True, gridcolor='#30363d'),
                 yaxis=dict(autorange="reversed")
             )
             st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico")
@@ -542,7 +541,11 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             st.info("Sin registros de especialidades cargados.")
 
     with col_der:
-        st.markdown("<h3 style='text-align: center; color: #ffd700; font-size: 14px; margin: 0;'>🤝 APOYO SOCIAL</h3>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d; margin-bottom: 20px;">
+            <h3 style="color: #ffd700; text-align: center; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #ffd700; padding-bottom: 8px;">🤝 APOYO SOCIAL</h3>
+        </div>
+        """, unsafe_allow_html=True)
 
         archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
         if os.path.exists(archivo_apo):
@@ -561,10 +564,10 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 fig_apo.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white', size=10),
-                    margin=dict(t=5, b=0, l=0, r=30),
-                    height=ALTO_GRAFICAS,
-                    xaxis=dict(showgrid=True, gridcolor='#30363d', range=[0, df_apo["VALOR_NUM"].max() * 1.15]),
+                    font=dict(color='white', size=11),
+                    margin=dict(t=10, b=10, l=10, r=30),
+                    height=350,
+                    xaxis=dict(showgrid=True, gridcolor='#30363d'),
                     yaxis=dict(autorange="reversed")
                 )
                 st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico")
@@ -590,12 +593,107 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 pass
 
     st.markdown(f"""
-    <div style="background: #161b22; padding: 6px 15px; border-radius: 6px; border: 1px solid #30363d; margin-top: 2px; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; text-align: center; font-size: 13px;">
-        <div style="color: #00d2ff; font-weight: bold;">👥 DEMOGRAFÍA:</div>
-        <div>👩 Mujeres: <b style="color: #ff4b4b;">{mujeres}</b></div>
-        <div>👨 Hombres: <b style="color: #00d2ff;">{hombres}</b></div>
-        <div>👧 Niñas: <b style="color: #ff79c6;">{ninas}</b></div>
-        <div>👦 Niños: <b style="color: #50fa7b;">{ninos}</b></div>
-        <div style="border-left: 1px solid #444; padding-left: 15px;"><b>TOTAL: <span style="color: #ffd700;">{total_personas}</span></b></div>
+    <div style="background: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d; margin-top: 20px;">
+        <h3 style="color: #00d2ff; text-align: center; font-size: 18px; margin-bottom: 20px; text-transform: uppercase;">👥 Desglose de Personas Atendidas</h3>
+        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px; text-align: center;">
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ff4b4b; min-width: 150px;">
+                <div style="font-size: 24px;">👩</div>
+                <div style="color: #ff4b4b; font-size: 24px; font-weight: 900;">{mujeres}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Mujeres</div>
+            </div>
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #00d2ff; min-width: 150px;">
+                <div style="font-size: 24px;">👨</div>
+                <div style="color: #00d2ff; font-size: 24px; font-weight: 900;">{hombres}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Hombres</div>
+            </div>
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ff79c6; min-width: 150px;">
+                <div style="font-size: 24px;">👧</div>
+                <div style="color: #ff79c6; font-size: 24px; font-weight: 900;">{ninas}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niñas</div>
+            </div>
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #50fa7b; min-width: 150px;">
+                <div style="font-size: 24px;">👦</div>
+                <div style="color: #50fa7b; font-size: 24px; font-weight: 900;">{ninos}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niños</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #2b3a4a 0%, #1f3044 100%); padding: 15px 35px; border-radius: 8px; border: 2px solid #ffd700; min-width: 180px;">
+                <div style="color: #ffd700; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas Atendidas</div>
+                <div style="color: #ffffff; font-size: 28px; font-weight: 900;">{total_personas}</div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
+
+elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Campamentos Itinerantes", "Sistema de Salud Tradicional", "Programas de Salud"]:
+    st.subheader(f"📋 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        if "ATENCIONES" in df_detalle.columns:
+            df_sum = df_detalle.copy()
+            df_sum["ATENCIONES"] = pd.to_numeric(df_sum["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones = df_sum["ATENCIONES"].sum()
+            st.markdown(f'''
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="total-card" style="width: 300px; margin: auto;">
+                    <div class="total-title">TOTAL DE ATENCIONES</div>
+                    <div class="total-value">{formatear_numero(total_atenciones)}</div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+            
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+else:
+    st.subheader(f"📋 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        if "ATENCIONES" in df_detalle.columns:
+            df_sum = df_detalle.copy()
+            df_sum["ATENCIONES"] = pd.to_numeric(df_sum["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            total_atenciones = df_sum["ATENCIONES"].sum()
+            st.markdown(f'''
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="total-card" style="width: 300px; margin: auto;">
+                    <div class="total-title">TOTAL DE ATENCIONES</div>
+                    <div class="total-value">{formatear_numero(total_atenciones)}</div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+        
+        if seleccion == "Hospitales de Campaña":
+            df_stats = df_detalle.copy()
+            df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
+            resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
+            suma_nac = resumen.get('NACIONAL', 0)
+            suma_ext = resumen.get('EXTRANJERO', 0)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES NACIONALES</div><div class="total-value">{formatear_numero(suma_nac)}</div></div>''', unsafe_allow_html=True)
+            with col2:
+                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div><div class="total-value">{formatear_numero(suma_ext)}</div></div>''', unsafe_allow_html=True)
+            
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+            
+            if (suma_nac + suma_ext) > 0:
+                fig = go.Figure(data=[go.Pie(
+                    labels=['NACIONAL', 'EXTRANJERO'], 
+                    values=[suma_nac, suma_ext], 
+                    hole=.6, 
+                    marker_colors=['#FF0000', '#002060'], 
+                    textinfo='none'
+                )])
+                fig.update_layout(
+                    showlegend=True, 
+                    legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), 
+                    margin=dict(t=20, b=80, l=20, r=20)
+                )
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
