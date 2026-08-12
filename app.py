@@ -312,7 +312,7 @@ elif seleccion == "Ruta Epidemiológica":
     """, height=510)
 
 elif seleccion == "II Jornada Médica":
-    st.subheader("II ATENCIÓN MÉDICA ESPECIALIZADA "VENEZUELA RENACE"")
+    st.subheader("🎯 Módulo Independiente: II Jornada Médica")
     st.write("Interfaz exclusiva y separada del Resumen General.")
     archivo_detalle = "ii_jornada_médica.csv"
     if os.path.exists(archivo_detalle):
