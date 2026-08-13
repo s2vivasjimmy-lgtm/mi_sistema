@@ -438,6 +438,7 @@ elif seleccion == "Ruta Epidemiológica":
     """, height=510)
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
+    # CONTENEDOR DE TÍTULO MODIFICADO: Menos espacio vertical (padding ajustado), fuente intacta
     st.markdown("""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 1px 2px; border-radius: 2px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
         <h4 style="color: #00d2ff; letter-spacing: 0.2px; margin: 0; font-size: 6px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
@@ -497,22 +498,23 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         if not df_m.empty:
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
 
+    # TOTALES, HORA Y FECHA CON TAMAÑO DE FUENTE AUMENTADO
     st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
-        <div style="background: #1e2025; padding: 4px 8px; border-radius: 4px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 13px; display: flex; align-items: center;">
+    <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 6px; flex-wrap: wrap;">
+        <div style="background: #1e2025; padding: 6px 12px; border-radius: 4px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 16px; display: flex; align-items: center;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 4px 10px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(0,210,255,0.3);">
-            <div style="color: #ffffff; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD:</div>
-            <div style="color: #ffffff; font-size: 16px; font-weight: 900; line-height: 1;">{total_atenciones_val}</div>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 6px 14px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(0,210,255,0.3);">
+            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD:</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 4px 10px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(255,170,0,0.3);">
-            <div style="color: #ffffff; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
-            <div style="color: #ffffff; font-size: 16px; font-weight: 900; line-height: 1;">{total_apoyo_val}</div>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 6px 14px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(255,170,0,0.3);">
+            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 4px 10px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(40,167,69,0.3);">
-            <div style="color: #ffffff; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</div>
-            <div style="color: #ffffff; font-size: 16px; font-weight: 900; line-height: 1;">{suma_total_ambos}</div>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 6px 14px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(40,167,69,0.3);">
+            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -634,7 +636,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             </div>
             <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ff79c6; min-width: 90px;">
                 <div style="font-size: 13px;">👧</div>
-                <div style="color: #ff79c6; font-size: 14px; font-weight: 900;">{ninas}</li>
+                <div style="color: #ff79c6; font-size: 14px; font-weight: 900;">{ninas}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niñas</div>
             </div>
             <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #50fa7b; min-width: 90px;">
@@ -642,7 +644,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #50fa7b; font-size: 14px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ffd700; min-width: 110px;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ffd700; min-width: 90px;">
                 <div style="font-size: 13px;">🌐</div>
                 <div style="color: #ffd700; font-size: 14px; font-weight: 900;">{total_personas}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
