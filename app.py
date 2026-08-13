@@ -8,6 +8,10 @@ import urllib.request
 import json
 import plotly.graph_objects as go
 from github import Github
+from streamlit_autorefresh import st_autorefresh
+
+# Refrescar la aplicación automáticamente cada 5 segundos
+st_autorefresh(interval=5000, key="dataview_autorefresh")
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
@@ -289,6 +293,12 @@ js_fullscreen = """
 </script>
 """
 
+@st.cache_data(ttl=5)
+def cargar_datos_cache(archivo):
+    if os.path.exists(archivo):
+        return pd.read_csv(archivo, dtype=str)
+    return pd.DataFrame()
+
 def formatear_numero(n):
     try:
         return f"{int(n):,}".replace(",", ".")
@@ -314,8 +324,8 @@ if seleccion == "Resumen General":
     for cat, archivo in categorias.items():
         val = 0
         if os.path.exists(archivo):
-            df_cat = pd.read_csv(archivo, dtype=str)
-            if "ATENCIONES" in df_cat.columns:
+            df_cat = cargar_datos_cache(archivo)
+            if not df_cat.empty and "ATENCIONES" in df_cat.columns:
                 vals = pd.to_numeric(df_cat["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                 val = int(vals.sum())
         totales[cat] = val
@@ -325,8 +335,8 @@ if seleccion == "Resumen General":
     hosp_ext = 0
     archivo_hosp = "hospitales_de_campaña.csv"
     if os.path.exists(archivo_hosp):
-        df_hosp = pd.read_csv(archivo_hosp, dtype=str)
-        if "ATENCIONES" in df_hosp.columns and "NACIONALIAD" in df_hosp.columns:
+        df_hosp = cargar_datos_cache(archivo_hosp)
+        if not df_hosp.empty and "ATENCIONES" in df_hosp.columns and "NACIONALIAD" in df_hosp.columns:
             df_hosp["ATENCIONES"] = pd.to_numeric(df_hosp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_hosp["NACIONALIAD"] = df_hosp["NACIONALIAD"].astype(str).str.upper().str.strip()
             resumen = df_hosp.groupby("NACIONALIAD")["ATENCIONES"].sum()
@@ -383,7 +393,7 @@ if seleccion == "Resumen General":
     ''', unsafe_allow_html=True)
 
     st.subheader("🏥 RESUMEN OPERATIVO")
-    df = pd.read_csv(ARCHIVO_RESUMEN, dtype=str)
+    df = cargar_datos_cache(ARCHIVO_RESUMEN)
     iconos = {"ALTAS MÉDICAS": "✅", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
               "CAMAS DISPONIBLES": "🛏️", "INTERVENCIONES Q.": "🔪"}
     cols_mostrar = ["ALTAS MÉDICAS", "TRASLADOS", "CAMAS OCUPADAS", 
@@ -392,7 +402,7 @@ if seleccion == "Resumen General":
     cols = st.columns(4)
     idx = 0
     for col_name in cols_mostrar:
-        if col_name in df.columns:
+        if not df.empty and col_name in df.columns:
             with cols[idx % 4]:
                 st.markdown(f'<div class="compact-card"><div class="card-title">{iconos.get(col_name, "📊")} {col_name}</div><div class="card-value">{df[col_name].iloc[0]}</div></div>', unsafe_allow_html=True)
             idx += 1
@@ -412,7 +422,7 @@ elif seleccion == "Ruta Epidemiológica":
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = "ruta_epidemiológica.csv"
     if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
+        df_detalle = cargar_datos_cache(archivo_detalle)
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
@@ -445,7 +455,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             df_esp_viz = edited_data
 
     if df_esp_viz is None and os.path.exists(archivo_esp):
-        df_esp_viz = pd.read_csv(archivo_esp, dtype=str)
+        df_esp_viz = cargar_datos_cache(archivo_esp)
 
     total_atenciones_num = 0
     if df_esp_viz is not None and not df_esp_viz.empty and "ATENCIONES" in df_esp_viz.columns:
@@ -457,7 +467,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     else:
         archivo_meta = "ii_meta_venezuela_renace.csv"
         if os.path.exists(archivo_meta):
-            df_m = pd.read_csv(archivo_meta, dtype=str)
+            df_m = cargar_datos_cache(archivo_meta)
             if not df_m.empty:
                 try:
                     total_atenciones_num = int(str(df_m.iloc[0].get("TOTAL_ATENCIONES", "0")).replace('.', ''))
@@ -469,7 +479,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     total_apoyo_num = 0
     archivo_apo_calc = "ii_apoyo_social_venezuela_renace.csv"
     if os.path.exists(archivo_apo_calc):
-        df_apo_calc = pd.read_csv(archivo_apo_calc, dtype=str)
+        df_apo_calc = cargar_datos_cache(archivo_apo_calc)
         if not df_apo_calc.empty and "VALOR" in df_apo_calc.columns:
             try:
                 vals_apo = pd.to_numeric(df_apo_calc["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -483,7 +493,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     fecha_str = "12AGO2026 - 15:30:00"
     archivo_meta = "ii_meta_venezuela_renace.csv"
     if os.path.exists(archivo_meta):
-        df_m = pd.read_csv(archivo_meta, dtype=str)
+        df_m = cargar_datos_cache(archivo_meta)
         if not df_m.empty:
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
 
@@ -550,7 +560,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
 
         archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
         if os.path.exists(archivo_apo):
-            df_apo = pd.read_csv(archivo_apo, dtype=str)
+            df_apo = cargar_datos_cache(archivo_apo)
             if not df_apo.empty and "CATEGORIA_APOYO" in df_apo.columns and "VALOR" in df_apo.columns:
                 df_apo["VALOR_NUM"] = pd.to_numeric(df_apo["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                 
@@ -581,7 +591,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     val_mujeres, val_hombres, val_ninas, val_ninos = 587, 431, 121, 96
     archivo_demo = "ii_demografia_venezuela_renace.csv"
     if os.path.exists(archivo_demo):
-        df_d = pd.read_csv(archivo_demo, dtype=str)
+        df_d = cargar_datos_cache(archivo_demo)
         if not df_d.empty:
             row_d = df_d.iloc[0]
             try:
@@ -632,9 +642,9 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #50fa7b; font-size: 17px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: #21262d; padding: 8px 15px; border-radius: 5px; border-bottom: 3px solid #f1fa8c; min-width: 110px;">
-                <div style="font-size: 16px;">👥</div>
-                <div style="color: #f1fa8c; font-size: 17px; font-weight: 900;">{total_personas}</div>
+            <div style="background: #21262d; padding: 8px 15px; border-radius: 5px; border-bottom: 3px solid #ffd700; min-width: 130px;">
+                <div style="font-size: 16px;">🌐</div>
+                <div style="color: #ffd700; font-size: 17px; font-weight: 900;">{total_personas}</div>
                 <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
             </div>
         </div>
