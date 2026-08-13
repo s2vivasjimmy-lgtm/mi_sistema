@@ -429,10 +429,10 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 20px; border-radius: 10px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 25px;">
-        <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 14px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 10px 0; font-size: 30px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
-        <h3 style="color: #e0e0e0; margin: 0; font-size: 18px; background: #1f3044; display: inline-block; padding: 6px 20px; border-radius: 20px;">PARA EL ESTADO LA GUAIRA</h3>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 10px; border-radius: 10px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 15px;">
+        <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 12px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 5px 0; font-size: 26px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 14px; background: #1f3044; display: inline-block; padding: 4px 15px; border-radius: 20px;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -578,7 +578,6 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         else:
             st.info("Sin registros de apoyo social cargados.")
 
-    # Lectura dinámica y segura de los datos demográficos y suma exacta automática
     val_mujeres, val_hombres, val_ninas, val_ninos = 587, 431, 121, 96
     archivo_demo = "ii_demografia_venezuela_renace.csv"
     if os.path.exists(archivo_demo):
@@ -633,9 +632,9 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #50fa7b; font-size: 24px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ffd700; min-width: 180px;">
-                <div style="font-size: 24px;">📊</div>
-                <div style="color: #ffd700; font-size: 24px; font-weight: 900;">{total_personas}</div>
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #f1fa8c; min-width: 150px;">
+                <div style="font-size: 24px;">👥</div>
+                <div style="color: #f1fa8c; font-size: 24px; font-weight: 900;">{total_personas}</div>
                 <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
             </div>
         </div>
