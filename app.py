@@ -429,9 +429,9 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 25px; border-radius: 12px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 25px;">
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 20px; border-radius: 10px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 25px;">
         <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 14px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 10px 0; font-size: 30px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h1 style="color: #ffffff; margin: 10px 0; font-size: 30px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
         <h3 style="color: #e0e0e0; margin: 0; font-size: 18px; background: #1f3044; display: inline-block; padding: 6px 20px; border-radius: 20px;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
