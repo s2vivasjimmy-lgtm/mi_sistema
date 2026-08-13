@@ -525,16 +525,17 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 orientation='h',
                 marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
                 text=df_esp_viz["ATENCIONES_NUM"],
-                textposition='outside'
+                textposition='outside',
+                textfont=dict(size=14, color='white', family="sans-serif")
             )])
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=11),
-                margin=dict(t=10, b=10, l=10, r=30),
-                height=550,
-                xaxis=dict(showgrid=True, gridcolor='#30363d'),
-                yaxis=dict(autorange="reversed")
+                font=dict(color='white', size=14),
+                margin=dict(t=10, b=10, l=10, r=50),
+                height=600,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=13), title_font=dict(size=14)),
+                yaxis=dict(autorange="reversed", tickfont=dict(size=13, color='white'))
             )
             st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico")
         else:
@@ -559,16 +560,17 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                     orientation='h',
                     marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                     text=df_apo["VALOR_NUM"],
-                    textposition='outside'
+                    textposition='outside',
+                    textfont=dict(size=14, color='white', family="sans-serif")
                 )])
                 fig_apo.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white', size=11),
-                    margin=dict(t=10, b=10, l=10, r=30),
-                    height=350,
-                    xaxis=dict(showgrid=True, gridcolor='#30363d'),
-                    yaxis=dict(autorange="reversed")
+                    font=dict(color='white', size=14),
+                    margin=dict(t=10, b=10, l=10, r=50),
+                    height=400,
+                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=13), title_font=dict(size=14)),
+                    yaxis=dict(autorange="reversed", tickfont=dict(size=13, color='white'))
                 )
                 st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico")
             else:
@@ -605,7 +607,6 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     ninas = formatear_numero(val_ninas)
     ninos = formatear_numero(val_ninos)
     
-    # El total se calcula automáticamente de la suma de las partes
     total_personas = formatear_numero(val_mujeres + val_hombres + val_ninas + val_ninos)
 
     st.markdown(f"""
@@ -632,10 +633,10 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #50fa7b; font-size: 24px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: linear-gradient(135deg, #2b3a4a 0%, #1f3044 100%); padding: 15px 35px; border-radius: 8px; border: 2px solid #ffd700; min-width: 200px;">
+            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ffd700; min-width: 180px;">
                 <div style="font-size: 24px;">📊</div>
-                <div style="color: #ffd700; font-size: 28px; font-weight: 900;">{total_personas}</div>
-                <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas Atendidas</div>
+                <div style="color: #ffd700; font-size: 24px; font-weight: 900;">{total_personas}</div>
+                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
             </div>
         </div>
     </div>
