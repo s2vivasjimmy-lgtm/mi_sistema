@@ -1,5 +1,6 @@
 streamlit
 pandas
-xlsxwriter
-PyGithub
 plotly
+PyGithub
+xlsxwriter
+streamlit-autorefresh
