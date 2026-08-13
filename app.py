@@ -50,39 +50,39 @@ st.markdown("""
 
 .strat-card { 
     background-color: #2b3a4a; 
-    padding: 15px; 
-    border-radius: 8px; 
-    border-left: 5px solid #00d2ff; 
+    padding: 12px; 
+    border-radius: 6px; 
+    border-left: 4px solid #00d2ff; 
     text-align: center; 
-    margin-bottom: 15px; 
-    height: 120px; 
+    margin-bottom: 10px; 
+    height: 105px; 
 }
-.strat-title { font-size: 14px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 10px; }
-.strat-value { font-size: 30px; font-weight: 900; color: #ffffff; }
+.strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 6px; }
+.strat-value { font-size: 26px; font-weight: 900; color: #ffffff; }
 
-.compact-card { background-color: #1a1c23; padding: 10px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 10px; }
-.card-title { font-size: 14px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 5px; }
-.card-value { font-size: 22px; font-weight: 800; color: #ffffff; }
+.compact-card { background-color: #1a1c23; padding: 8px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 8px; }
+.card-title { font-size: 12px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 4px; }
+.card-value { font-size: 18px; font-weight: 800; color: #ffffff; }
 
-.total-card { background-color: #1e2025; padding: 15px; border-radius: 8px; border: 2px solid #FFD700; text-align: center; margin-top: 10px; }
-.total-title { font-size: 18px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 5px; }
-.total-value { font-size: 35px; font-weight: 900; color: #ffffff; }
+.total-card { background-color: #1e2025; padding: 12px; border-radius: 6px; border: 2px solid #FFD700; text-align: center; margin-top: 5px; }
+.total-title { font-size: 15px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 4px; }
+.total-value { font-size: 30px; font-weight: 900; color: #ffffff; }
 
-.marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 10px 0; }
+.marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 5px 0; }
 .marquee-text { 
     display: inline-block; 
     white-space: nowrap; 
     animation: marquee 15s linear infinite; 
     color: #ffffff !important; 
     font-weight: bold; 
-    font-size: 35px; 
+    font-size: 25px; 
 }
 @keyframes marquee {
     0% { transform: translateX(100%); }
     100% { transform: translateX(-100%); }
 }
 
-.logo-custom { width: 100%; height: 200px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 10px; }
+.logo-custom { width: 100%; height: 140px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 5px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -374,7 +374,7 @@ if seleccion == "Resumen General":
             ''', unsafe_allow_html=True)
 
     st.markdown(f'''
-    <div style="text-align: center; margin: 20px 0;">
+    <div style="text-align: center; margin: 15px 0;">
         <div class="total-card" style="width: 50%; margin: auto;">
             <div class="total-title">TOTAL ATENCIONES</div>
             <div class="total-value">{formatear_numero(total_general)}</div>
@@ -429,10 +429,10 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 5px; border-radius: 6px; border: 1.5px solid #00d2ff; text-align: center; margin-bottom: 10px;">
-        <h4 style="color: #00d2ff; letter-spacing: 1.5px; margin: 0; font-size: 10px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 2px 0; font-size: 20px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
-        <h3 style="color: #e0e0e0; margin: 0; font-size: 11px; background: #1f3044; display: inline-block; padding: 2px 10px; border-radius: 15px;">PARA EL ESTADO LA GUAIRA</h3>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 4px; border-radius: 5px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 8px;">
+        <h4 style="color: #00d2ff; letter-spacing: 1px; margin: 0; font-size: 9px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 2px 0; font-size: 18px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 10px; background: #1f3044; display: inline-block; padding: 1px 8px; border-radius: 12px;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -488,21 +488,21 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
 
     st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; flex-wrap: wrap;">
-        <div style="background: #1e2025; padding: 8px 18px; border-radius: 6px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 15px; display: flex; align-items: center;">
+    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; flex-wrap: wrap;">
+        <div style="background: #1e2025; padding: 6px 14px; border-radius: 5px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 13px; display: flex; align-items: center;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 8px 18px; border-radius: 8px; text-align: center; box-shadow: 0 3px 10px rgba(0,210,255,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">TOTAL ATENCIONES ESPECIALIDAD:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 6px 14px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(0,210,255,0.3);">
+            <div style="color: #ffffff; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD:</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 8px 18px; border-radius: 8px; text-align: center; box-shadow: 0 3px 10px rgba(255,170,0,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">TOTAL APOYO SOCIAL:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 6px 14px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(255,170,0,0.3);">
+            <div style="color: #ffffff; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 8px 18px; border-radius: 8px; text-align: center; box-shadow: 0 3px 10px rgba(40,167,69,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">TOTAL GENERAL:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 6px 14px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(40,167,69,0.3);">
+            <div style="color: #ffffff; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -511,8 +511,8 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
 
     with col_izq:
         st.markdown("""
-        <div style="background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid #30363d;">
-            <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #00d2ff; padding-bottom: 6px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
+        <div style="background: #161b22; padding: 10px; border-radius: 6px; border: 1px solid #30363d;">
+            <h3 style="color: #00d2ff; text-align: center; font-size: 14px; margin-bottom: 8px; border-bottom: 2px solid #00d2ff; padding-bottom: 4px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
         </div>
         """, unsafe_allow_html=True)
         
@@ -526,16 +526,16 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
                 text=df_esp_viz["ATENCIONES_NUM"],
                 textposition='outside',
-                textfont=dict(size=13, color='white', family="sans-serif")
+                textfont=dict(size=15, color='white', family="sans-serif", weight="bold")
             )])
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=13),
-                margin=dict(t=5, b=5, l=5, r=40),
-                height=500,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=12), title_font=dict(size=13)),
-                yaxis=dict(autorange="reversed", tickfont=dict(size=12, color='white'))
+                font=dict(color='white', size=14),
+                margin=dict(t=5, b=5, l=5, r=50),
+                height=450,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=14, color='white')),
+                yaxis=dict(autorange="reversed", tickfont=dict(size=14, color='white'))
             )
             st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico")
         else:
@@ -543,8 +543,8 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
 
     with col_der:
         st.markdown("""
-        <div style="background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid #30363d; margin-bottom: 15px;">
-            <h3 style="color: #ffd700; text-align: center; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #ffd700; padding-bottom: 6px;">🤝 APOYO SOCIAL</h3>
+        <div style="background: #161b22; padding: 10px; border-radius: 6px; border: 1px solid #30363d; margin-bottom: 10px;">
+            <h3 style="color: #ffd700; text-align: center; font-size: 14px; margin-bottom: 8px; border-bottom: 2px solid #ffd700; padding-bottom: 4px;">🤝 APOYO SOCIAL</h3>
         </div>
         """, unsafe_allow_html=True)
 
@@ -561,16 +561,16 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                     marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                     text=df_apo["VALOR_NUM"],
                     textposition='outside',
-                    textfont=dict(size=13, color='white', family="sans-serif")
+                    textfont=dict(size=15, color='white', family="sans-serif", weight="bold")
                 )])
                 fig_apo.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white', size=13),
-                    margin=dict(t=5, b=5, l=5, r=40),
-                    height=350,
-                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=12), title_font=dict(size=13)),
-                    yaxis=dict(autorange="reversed", tickfont=dict(size=12, color='white'))
+                    font=dict(color='white', size=14),
+                    margin=dict(t=5, b=5, l=5, r=50),
+                    height=320,
+                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=14, color='white')),
+                    yaxis=dict(autorange="reversed", tickfont=dict(size=14, color='white'))
                 )
                 st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico")
             else:
@@ -609,33 +609,33 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     total_personas = formatear_numero(val_mujeres + val_hombres + val_ninas + val_ninos)
 
     st.markdown(f"""
-    <div style="background: #161b22; padding: 15px; border-radius: 8px; border: 1px solid #30363d; margin-top: 15px;">
-        <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 15px; text-transform: uppercase;">👥 Desglose de Personas Atendidas</h3>
-        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 10px; text-align: center;">
-            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #ff4b4b; min-width: 130px;">
-                <div style="font-size: 20px;">👩</div>
-                <div style="color: #ff4b4b; font-size: 20px; font-weight: 900;">{mujeres}</div>
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Mujeres</div>
+    <div style="background: #161b22; padding: 10px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px;">
+        <h3 style="color: #00d2ff; text-align: center; font-size: 14px; margin-bottom: 10px; text-transform: uppercase;">👥 Desglose de Personas Atendidas</h3>
+        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 8px; text-align: center;">
+            <div style="background: #21262d; padding: 8px 15px; border-radius: 5px; border-bottom: 3px solid #ff4b4b; min-width: 110px;">
+                <div style="font-size: 16px;">👩</div>
+                <div style="color: #ff4b4b; font-size: 17px; font-weight: 900;">{mujeres}</div>
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Mujeres</div>
             </div>
-            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #00d2ff; min-width: 130px;">
-                <div style="font-size: 20px;">👨</div>
-                <div style="color: #00d2ff; font-size: 20px; font-weight: 900;">{hombres}</div>
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Hombres</div>
+            <div style="background: #21262d; padding: 8px 15px; border-radius: 5px; border-bottom: 3px solid #00d2ff; min-width: 110px;">
+                <div style="font-size: 16px;">👨</div>
+                <div style="color: #00d2ff; font-size: 17px; font-weight: 900;">{hombres}</div>
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Hombres</div>
             </div>
-            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #ff79c6; min-width: 130px;">
-                <div style="font-size: 20px;">👧</div>
-                <div style="color: #ff79c6; font-size: 20px; font-weight: 900;">{ninas}</div>
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Niñas</div>
+            <div style="background: #21262d; padding: 8px 15px; border-radius: 5px; border-bottom: 3px solid #ff79c6; min-width: 110px;">
+                <div style="font-size: 16px;">👧</div>
+                <div style="color: #ff79c6; font-size: 17px; font-weight: 900;">{ninas}</div>
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niñas</div>
             </div>
-            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #50fa7b; min-width: 130px;">
-                <div style="font-size: 20px;">👦</div>
-                <div style="color: #50fa7b; font-size: 20px; font-weight: 900;">{ninos}</div>
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Niños</div>
+            <div style="background: #21262d; padding: 8px 15px; border-radius: 5px; border-bottom: 3px solid #50fa7b; min-width: 110px;">
+                <div style="font-size: 16px;">👦</div>
+                <div style="color: #50fa7b; font-size: 17px; font-weight: 900;">{ninos}</div>
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #f1fa8c; min-width: 130px;">
-                <div style="font-size: 20px;">👥</div>
-                <div style="color: #f1fa8c; font-size: 20px; font-weight: 900;">{total_personas}</div>
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
+            <div style="background: #21262d; padding: 8px 15px; border-radius: 5px; border-bottom: 3px solid #f1fa8c; min-width: 110px;">
+                <div style="font-size: 16px;">👥</div>
+                <div style="color: #f1fa8c; font-size: 17px; font-weight: 900;">{total_personas}</div>
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
             </div>
         </div>
     </div>
