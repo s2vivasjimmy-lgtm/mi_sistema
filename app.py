@@ -576,21 +576,37 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
         else:
             st.info("Sin registros de apoyo social cargados.")
 
-    mujeres, hombres, ninas, ninos, total_personas = "587", "431", "121", "96", "1.235"
+    # Lectura dinámica y segura de los datos demográficos y suma exacta automática
+    val_mujeres, val_hombres, val_ninas, val_ninos = 587, 431, 121, 96
     archivo_demo = "ii_demografia_venezuela_renace.csv"
     if os.path.exists(archivo_demo):
         df_d = pd.read_csv(archivo_demo, dtype=str)
         if not df_d.empty:
             row_d = df_d.iloc[0]
-            mujeres = formatear_numero(row_d.get("MUJERES", "587"))
-            hombres = formatear_numero(row_d.get("HOMBRES", "431"))
-            ninas = formatear_numero(row_d.get("NIÑAS", "121"))
-            ninos = formatear_numero(row_d.get("NIÑOS", "96"))
             try:
-                tot_p = int(row_d.get("MUJERES","587").replace('.','')) + int(row_d.get("HOMBRES","431").replace('.','')) + int(row_d.get("NIÑAS","121").replace('.','')) + int(row_d.get("NIÑOS","96").replace('.',''))
-                total_personas = formatear_numero(tot_p)
+                val_mujeres = int(str(row_d.get("MUJERES", "587")).replace('.', ''))
             except:
                 pass
+            try:
+                val_hombres = int(str(row_d.get("HOMBRES", "431")).replace('.', ''))
+            except:
+                pass
+            try:
+                val_ninas = int(str(row_d.get("NIÑAS", "121")).replace('.', ''))
+            except:
+                pass
+            try:
+                val_ninos = int(str(row_d.get("NIÑOS", "96")).replace('.', ''))
+            except:
+                pass
+
+    mujeres = formatear_numero(val_mujeres)
+    hombres = formatear_numero(val_hombres)
+    ninas = formatear_numero(val_ninas)
+    ninos = formatear_numero(val_ninos)
+    
+    # El total se calcula automáticamente de la suma de las partes
+    total_personas = formatear_numero(val_mujeres + val_hombres + val_ninas + val_ninos)
 
     st.markdown(f"""
     <div style="background: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d; margin-top: 20px;">
@@ -616,84 +632,11 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #50fa7b; font-size: 24px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: linear-gradient(135deg, #2b3a4a 0%, #1f3044 100%); padding: 15px 35px; border-radius: 8px; border: 2px solid #ffd700; min-width: 180px;">
-                <div style="color: #ffd700; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas Atendidas</div>
-                <div style="color: #ffffff; font-size: 28px; font-weight: 900;">{total_personas}</div>
+            <div style="background: linear-gradient(135deg, #2b3a4a 0%, #1f3044 100%); padding: 15px 35px; border-radius: 8px; border: 2px solid #ffd700; min-width: 200px;">
+                <div style="font-size: 24px;">📊</div>
+                <div style="color: #ffd700; font-size: 28px; font-weight: 900;">{total_personas}</div>
+                <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas Atendidas</div>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-elif seleccion in ["Red Sanitaria Militar", "Inmunización", "Saneamiento Ambiental", "Campamentos Transitorios", "Campamentos Itinerantes", "Sistema de Salud Tradicional", "Programas de Salud"]:
-    st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-    if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        if "ATENCIONES" in df_detalle.columns:
-            df_sum = df_detalle.copy()
-            df_sum["ATENCIONES"] = pd.to_numeric(df_sum["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_atenciones = df_sum["ATENCIONES"].sum()
-            st.markdown(f'''
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div class="total-card" style="width: 300px; margin: auto;">
-                    <div class="total-title">TOTAL DE ATENCIONES</div>
-                    <div class="total-value">{formatear_numero(total_atenciones)}</div>
-                </div>
-            </div>
-            ''', unsafe_allow_html=True)
-            
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
-else:
-    st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = f"{seleccion.lower().replace(' ', '_')}.csv"
-    if os.path.exists(archivo_detalle):
-        df_detalle = pd.read_csv(archivo_detalle, dtype=str)
-        if "ATENCIONES" in df_detalle.columns:
-            df_sum = df_detalle.copy()
-            df_sum["ATENCIONES"] = pd.to_numeric(df_sum["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_atenciones = df_sum["ATENCIONES"].sum()
-            st.markdown(f'''
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div class="total-card" style="width: 300px; margin: auto;">
-                    <div class="total-title">TOTAL DE ATENCIONES</div>
-                    <div class="total-value">{formatear_numero(total_atenciones)}</div>
-                </div>
-            </div>
-            ''', unsafe_allow_html=True)
-        
-        if seleccion == "Hospitales de Campaña":
-            df_stats = df_detalle.copy()
-            df_stats['ATENCIONES'] = pd.to_numeric(df_stats['ATENCIONES'].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            df_stats['NACIONALIAD'] = df_stats['NACIONALIAD'].astype(str).str.upper().str.strip()
-            resumen = df_stats.groupby('NACIONALIAD')['ATENCIONES'].sum()
-            suma_nac = resumen.get('NACIONAL', 0)
-            suma_ext = resumen.get('EXTRANJERO', 0)
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES NACIONALES</div><div class="total-value">{formatear_numero(suma_nac)}</div></div>''', unsafe_allow_html=True)
-            with col2:
-                st.markdown(f'''<div class="total-card"><div class="total-title">TOTAL ATENCIONES EXTRANJEROS</div><div class="total-value">{formatear_numero(suma_ext)}</div></div>''', unsafe_allow_html=True)
-            
-            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-            
-            if (suma_nac + suma_ext) > 0:
-                fig = go.Figure(data=[go.Pie(
-                    labels=['NACIONAL', 'EXTRANJERO'], 
-                    values=[suma_nac, suma_ext], 
-                    hole=.6, 
-                    marker_colors=['#FF0000', '#002060'], 
-                    textinfo='none'
-                )])
-                fig.update_layout(
-                    showlegend=True, 
-                    legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5), 
-                    margin=dict(t=20, b=80, l=20, r=20)
-                )
-                st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
