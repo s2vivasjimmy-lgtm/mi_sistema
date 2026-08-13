@@ -49,7 +49,7 @@ def convertir_df_a_excel(df):
 # --- CSS GENERAL ---
 st.markdown("""
 <style>
-.block-container { padding-top: 1rem !important; }
+.block-container { padding-top: 0.5rem !important; }
 .stApp { background-color: #0E1117 !important; }
 
 .strat-card { 
@@ -439,10 +439,10 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 2px 4px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 6px;">
-        <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; font-size: 8px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 1px 0; font-size: 14px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
-        <h3 style="color: #e0e0e0; margin: 0; font-size: 9px; background: #1f3044; display: inline-block; padding: 0px 6px; border-radius: 10px;">PARA EL ESTADO LA GUAIRA</h3>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 1px 2px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 4px;">
+        <h4 style="color: #00d2ff; letter-spacing: 0.3px; margin: 0; font-size: 7px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 1px 0; font-size: 11px; font-weight: 900; line-height: 1.1;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 8px; background: #1f3044; display: inline-block; padding: 0px 4px; border-radius: 8px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -498,21 +498,21 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
 
     st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
-        <div style="background: #1e2025; padding: 8px 16px; border-radius: 6px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 15px; display: flex; align-items: center;">
+    <div style="display: flex; justify-content: center; gap: 14px; margin-bottom: 8px; flex-wrap: wrap;">
+        <div style="background: #1e2025; padding: 10px 18px; border-radius: 6px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 20px; display: flex; align-items: center;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 8px 16px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(0,210,255,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 10px 18px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(0,210,255,0.3);">
+            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD:</div>
+            <div style="color: #ffffff; font-size: 30px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 8px 16px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(255,170,0,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 10px 18px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(255,170,0,0.3);">
+            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
+            <div style="color: #ffffff; font-size: 30px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 8px 16px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(40,167,69,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 10px 18px; border-radius: 6px; text-align: center; box-shadow: 0 2px 8px rgba(40,167,69,0.3);">
+            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</div>
+            <div style="color: #ffffff; font-size: 30px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
