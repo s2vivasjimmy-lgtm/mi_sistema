@@ -429,10 +429,10 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 10px; border-radius: 10px; border: 2px solid #00d2ff; text-align: center; margin-bottom: 15px;">
-        <h4 style="color: #00d2ff; letter-spacing: 2px; margin: 0; font-size: 12px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 5px 0; font-size: 26px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA<br><span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
-        <h3 style="color: #e0e0e0; margin: 0; font-size: 14px; background: #1f3044; display: inline-block; padding: 4px 15px; border-radius: 20px;">PARA EL ESTADO LA GUAIRA</h3>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 5px; border-radius: 6px; border: 1.5px solid #00d2ff; text-align: center; margin-bottom: 10px;">
+        <h4 style="color: #00d2ff; letter-spacing: 1.5px; margin: 0; font-size: 10px; font-weight: bold;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 2px 0; font-size: 20px; font-weight: 900;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 11px; background: #1f3044; display: inline-block; padding: 2px 10px; border-radius: 15px;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -488,21 +488,21 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
             fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
 
     st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 25px; flex-wrap: wrap;">
-        <div style="background: #1e2025; padding: 10px 25px; border-radius: 8px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 18px; display: flex; align-items: center;">
+    <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; flex-wrap: wrap;">
+        <div style="background: #1e2025; padding: 8px 18px; border-radius: 6px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 15px; display: flex; align-items: center;">
             📅 {fecha_str}
         </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(0,210,255,0.4);">
-            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL ATENCIONES ESPECIALIDAD:</div>
-            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 8px 18px; border-radius: 8px; text-align: center; box-shadow: 0 3px 10px rgba(0,210,255,0.3);">
+            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">TOTAL ATENCIONES ESPECIALIDAD:</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(255,170,0,0.4);">
-            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL APOYO SOCIAL:</div>
-            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 8px 18px; border-radius: 8px; text-align: center; box-shadow: 0 3px 10px rgba(255,170,0,0.3);">
+            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">TOTAL APOYO SOCIAL:</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 12px 25px; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(40,167,69,0.4);">
-            <div style="color: #ffffff; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">TOTAL GENERAL:</div>
-            <div style="color: #ffffff; font-size: 32px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 8px 18px; border-radius: 8px; text-align: center; box-shadow: 0 3px 10px rgba(40,167,69,0.3);">
+            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">TOTAL GENERAL:</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -511,8 +511,8 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
 
     with col_izq:
         st.markdown("""
-        <div style="background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d;">
-            <h3 style="color: #00d2ff; text-align: center; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #00d2ff; padding-bottom: 8px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
+        <div style="background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid #30363d;">
+            <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #00d2ff; padding-bottom: 6px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
         </div>
         """, unsafe_allow_html=True)
         
@@ -526,16 +526,16 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
                 text=df_esp_viz["ATENCIONES_NUM"],
                 textposition='outside',
-                textfont=dict(size=14, color='white', family="sans-serif")
+                textfont=dict(size=13, color='white', family="sans-serif")
             )])
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=14),
-                margin=dict(t=10, b=10, l=10, r=50),
-                height=600,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=13), title_font=dict(size=14)),
-                yaxis=dict(autorange="reversed", tickfont=dict(size=13, color='white'))
+                font=dict(color='white', size=13),
+                margin=dict(t=5, b=5, l=5, r=40),
+                height=500,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=12), title_font=dict(size=13)),
+                yaxis=dict(autorange="reversed", tickfont=dict(size=12, color='white'))
             )
             st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico")
         else:
@@ -543,8 +543,8 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
 
     with col_der:
         st.markdown("""
-        <div style="background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d; margin-bottom: 20px;">
-            <h3 style="color: #ffd700; text-align: center; font-size: 18px; margin-bottom: 15px; border-bottom: 2px solid #ffd700; padding-bottom: 8px;">🤝 APOYO SOCIAL</h3>
+        <div style="background: #161b22; padding: 12px; border-radius: 8px; border: 1px solid #30363d; margin-bottom: 15px;">
+            <h3 style="color: #ffd700; text-align: center; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #ffd700; padding-bottom: 6px;">🤝 APOYO SOCIAL</h3>
         </div>
         """, unsafe_allow_html=True)
 
@@ -561,16 +561,16 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                     marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                     text=df_apo["VALOR_NUM"],
                     textposition='outside',
-                    textfont=dict(size=14, color='white', family="sans-serif")
+                    textfont=dict(size=13, color='white', family="sans-serif")
                 )])
                 fig_apo.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white', size=14),
-                    margin=dict(t=10, b=10, l=10, r=50),
-                    height=400,
-                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=13), title_font=dict(size=14)),
-                    yaxis=dict(autorange="reversed", tickfont=dict(size=13, color='white'))
+                    font=dict(color='white', size=13),
+                    margin=dict(t=5, b=5, l=5, r=40),
+                    height=350,
+                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=12), title_font=dict(size=13)),
+                    yaxis=dict(autorange="reversed", tickfont=dict(size=12, color='white'))
                 )
                 st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico")
             else:
@@ -609,33 +609,33 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     total_personas = formatear_numero(val_mujeres + val_hombres + val_ninas + val_ninos)
 
     st.markdown(f"""
-    <div style="background: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d; margin-top: 20px;">
-        <h3 style="color: #00d2ff; text-align: center; font-size: 18px; margin-bottom: 20px; text-transform: uppercase;">👥 Desglose de Personas Atendidas</h3>
-        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px; text-align: center;">
-            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ff4b4b; min-width: 150px;">
-                <div style="font-size: 24px;">👩</div>
-                <div style="color: #ff4b4b; font-size: 24px; font-weight: 900;">{mujeres}</div>
-                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Mujeres</div>
+    <div style="background: #161b22; padding: 15px; border-radius: 8px; border: 1px solid #30363d; margin-top: 15px;">
+        <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 15px; text-transform: uppercase;">👥 Desglose de Personas Atendidas</h3>
+        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 10px; text-align: center;">
+            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #ff4b4b; min-width: 130px;">
+                <div style="font-size: 20px;">👩</div>
+                <div style="color: #ff4b4b; font-size: 20px; font-weight: 900;">{mujeres}</div>
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Mujeres</div>
             </div>
-            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #00d2ff; min-width: 150px;">
-                <div style="font-size: 24px;">👨</div>
-                <div style="color: #00d2ff; font-size: 24px; font-weight: 900;">{hombres}</div>
-                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Hombres</div>
+            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #00d2ff; min-width: 130px;">
+                <div style="font-size: 20px;">👨</div>
+                <div style="color: #00d2ff; font-size: 20px; font-weight: 900;">{hombres}</div>
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Hombres</div>
             </div>
-            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #ff79c6; min-width: 150px;">
-                <div style="font-size: 24px;">👧</div>
-                <div style="color: #ff79c6; font-size: 24px; font-weight: 900;">{ninas}</div>
-                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niñas</div>
+            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #ff79c6; min-width: 130px;">
+                <div style="font-size: 20px;">👧</div>
+                <div style="color: #ff79c6; font-size: 20px; font-weight: 900;">{ninas}</div>
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Niñas</div>
             </div>
-            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #50fa7b; min-width: 150px;">
-                <div style="font-size: 24px;">👦</div>
-                <div style="color: #50fa7b; font-size: 24px; font-weight: 900;">{ninos}</div>
-                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Niños</div>
+            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #50fa7b; min-width: 130px;">
+                <div style="font-size: 20px;">👦</div>
+                <div style="color: #50fa7b; font-size: 20px; font-weight: 900;">{ninos}</div>
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: #21262d; padding: 15px 25px; border-radius: 8px; border-bottom: 4px solid #f1fa8c; min-width: 150px;">
-                <div style="font-size: 24px;">👥</div>
-                <div style="color: #f1fa8c; font-size: 24px; font-weight: 900;">{total_personas}</div>
-                <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
+            <div style="background: #21262d; padding: 10px 20px; border-radius: 6px; border-bottom: 3px solid #f1fa8c; min-width: 130px;">
+                <div style="font-size: 20px;">👥</div>
+                <div style="color: #f1fa8c; font-size: 20px; font-weight: 900;">{total_personas}</div>
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
             </div>
         </div>
     </div>
