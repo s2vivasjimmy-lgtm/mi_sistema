@@ -534,10 +534,10 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 font=dict(color='white', size=14),
                 margin=dict(t=5, b=5, l=5, r=50),
                 height=450,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=14, color='white')),
-                yaxis=dict(autorange="reversed", tickfont=dict(size=14, color='white'))
+                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=14, color='white'), fixedrange=True),
+                yaxis=dict(autorange="reversed", tickfont=dict(size=14, color='white'), fixedrange=True)
             )
-            st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico")
+            st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico", config={'displayModeBar': False})
         else:
             st.info("Sin registros de especialidades cargados.")
 
@@ -569,10 +569,10 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                     font=dict(color='white', size=14),
                     margin=dict(t=5, b=5, l=5, r=50),
                     height=320,
-                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=14, color='white')),
-                    yaxis=dict(autorange="reversed", tickfont=dict(size=14, color='white'))
+                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=14, color='white'), fixedrange=True),
+                    yaxis=dict(autorange="reversed", tickfont=dict(size=14, color='white'), fixedrange=True)
                 )
-                st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico")
+                st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico", config={'displayModeBar': False})
             else:
                 st.info("Agregue los registros de apoyo social desde el panel (⚙️).")
         else:
