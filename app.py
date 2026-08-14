@@ -376,13 +376,12 @@ if seleccion == "Resumen General":
     cols2 = st.columns(len(fila2) if len(fila2) > 0 else 4)
     for i, cat in enumerate(fila2):
         with cols2[i]:
-            with cols2[i]:
-                st.markdown(f'''
-                <div class="strat-card">
-                    <div class="strat-title">{cat.upper()}</div>
-                    <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
-                </div>
-                ''', unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="strat-card">
+                <div class="strat-title">{cat.upper()}</div>
+                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
+            </div>
+            ''', unsafe_allow_html=True)
 
     st.markdown(f'''
     <div style="text-align: center; margin: 15px 0;">
@@ -632,34 +631,34 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     total_personas = formatear_numero(val_mujeres + val_hombres + val_ninas + val_ninos)
 
     st.markdown(f"""
-<div style="background: #161b22; padding: 4px 8px; border-radius: 6px; border: 1px solid #30363d; margin-top: 4px;">
-    <div style="color: #00d2ff; text-align: center; font-size: 12px; margin-bottom: 2px; text-transform: uppercase; font-weight: bold;">Desglose de Personas Atendidas</div>
-    <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; text-align: center;">
-        <div style="background: #21262d; padding: 2px 8px; border-radius: 4px; border-left: 3px solid #ff4b4b; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 13px;">👩</span>
-            <span style="color: #ff4b4b; font-size: 14px; font-weight: 900;">{mujeres}</span>
-            <span style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Mujeres</span>
-        </div>
-        <div style="background: #21262d; padding: 2px 8px; border-radius: 4px; border-left: 3px solid #00d2ff; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 13px;">👨</span>
-            <span style="color: #00d2ff; font-size: 14px; font-weight: 900;">{hombres}</span>
-            <span style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Hombres</span>
-        </div>
-        <div style="background: #21262d; padding: 2px 8px; border-radius: 4px; border-left: 3px solid #ff69b4; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 13px;">👧</span>
-            <span style="color: #ff69b4; font-size: 14px; font-weight: 900;">{ninas}</span>
-            <span style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niñas</span>
-        </div>
-        <div style="background: #21262d; padding: 2px 8px; border-radius: 4px; border-left: 3px solid #00d2ff; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 13px;">👦</span>
-            <span style="color: #00d2ff; font-size: 14px; font-weight: 900;">{ninos}</span>
-            <span style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niños</span>
-        </div>
-        <div style="background: #21262d; padding: 2px 8px; border-radius: 4px; border-left: 3px solid #ffd700; display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 13px;">👥</span>
-            <span style="color: #ffd700; font-size: 14px; font-weight: 900;">{total_personas}</span>
-            <span style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Total</span>
+    <div style="background: #161b22; padding: 6px 8px; border-radius: 6px; border: 1px solid #30363d; margin-top: 4px;">
+        <div style="color: #00d2ff; text-align: center; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; font-weight: bold;">Desglose de Personas Atendidas</div>
+        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; text-align: center;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #ff4b4b; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 14px;">👩</span>
+                <span style="color: #ff4b4b; font-size: 15px; font-weight: 900;">{mujeres}</span>
+                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Mujeres</span>
+            </div>
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #00d2ff; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 14px;">👨</span>
+                <span style="color: #00d2ff; font-size: 15px; font-weight: 900;">{hombres}</span>
+                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Hombres</span>
+            </div>
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #ff69b4; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 14px;">👧</span>
+                <span style="color: #ff69b4; font-size: 15px; font-weight: 900;">{ninas}</span>
+                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niñas</span>
+            </div>
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #ffa500; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 14px;">👦</span>
+                <span style="color: #ffa500; font-size: 15px; font-weight: 900;">{ninos}</span>
+                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niños</span>
+            </div>
+            <div style="background: #21262d; padding: 4px 12px; border-radius: 4px; border-left: 3px solid #28a745; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 14px;">👥</span>
+                <span style="color: #28a745; font-size: 16px; font-weight: 900;">{total_personas}</span>
+                <span style="color: #ffffff; font-size: 10px; font-weight: bold; text-transform: uppercase;">Total Personas</span>
+            </div>
         </div>
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
