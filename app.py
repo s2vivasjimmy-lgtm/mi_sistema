@@ -634,18 +634,18 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #00d2ff; font-size: 14px; font-weight: 900;">{hombres}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Hombres</div>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ff79c6; min-width: 90px;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ff69b4; min-width: 90px;">
                 <div style="font-size: 13px;">👧</div>
-                <div style="color: #ff79c6; font-size: 14px; font-weight: 900;">{ninas}</div>
+                <div style="color: #ff69b4; font-size: 14px; font-weight: 900;">{ninas}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niñas</div>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #50fa7b; min-width: 90px;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #1e90ff; min-width: 90px;">
                 <div style="font-size: 13px;">👦</div>
-                <div style="color: #50fa7b; font-size: 14px; font-weight: 900;">{ninos}</div>
+                <div style="color: #1e90ff; font-size: 14px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ffd700; min-width: 90px;">
-                <div style="font-size: 13px;">🌐</div>
+            <div style="background: #21262d; padding: 4px 12px; border-radius: 4px; border-bottom: 2px solid #ffd700; min-width: 100px;">
+                <div style="font-size: 13px;">👥</div>
                 <div style="color: #ffd700; font-size: 14px; font-weight: 900;">{total_personas}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
             </div>
