@@ -536,24 +536,24 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
                 text=df_esp_viz["ATENCIONES_NUM"],
                 textposition='outside',
-                textfont=dict(size=10, color='white', family="sans-serif", weight="bold")
+                textfont=dict(size=14, color='white', family="sans-serif", weight="bold")
             )])
             
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=10),
-                margin=dict(t=2, b=2, l=130, r=30),
-                height=max(220, len(df_esp_viz) * 17), 
+                font=dict(color='white', size=14),
+                margin=dict(t=2, b=2, l=180, r=40),
+                height=max(350, len(df_esp_viz) * 28), 
                 xaxis=dict(
                     showgrid=True, 
                     gridcolor='#30363d', 
-                    tickfont=dict(size=10, color='white'), 
+                    tickfont=dict(size=13, color='white'), 
                     fixedrange=True
                 ),
                 yaxis=dict(
                     autorange="reversed", 
-                    tickfont=dict(size=10, color='white'), 
+                    tickfont=dict(size=14, color='white', weight="bold"), 
                     fixedrange=True,
                     dtick=1, 
                     showticklabels=True
