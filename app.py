@@ -523,7 +523,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     with col_izq:
         st.markdown("""
         <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d;">
-            <h3 style="color: #00d2ff; text-align: center; font-size: 12px; margin-bottom: 4px; border-bottom: 2px solid #00d2ff; padding-bottom: 2px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
+            <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #00d2ff; padding-bottom: 2px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
         </div>
         """, unsafe_allow_html=True)
         
@@ -567,7 +567,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     with col_der:
         st.markdown("""
         <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-bottom: 4px;">
-            <h3 style="color: #ffd700; text-align: center; font-size: 12px; margin-bottom: 4px; border-bottom: 2px solid #ffd700; padding-bottom: 2px;">🤝 APOYO SOCIAL</h3>
+            <h3 style="color: #ffd700; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #ffd700; padding-bottom: 2px;">🤝 APOYO SOCIAL</h3>
         </div>
         """, unsafe_allow_html=True)
 
@@ -633,7 +633,7 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
 
     st.markdown(f"""
     <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 4px;">
-        <h3 style="color: #00d2ff; text-align: center; font-size: 11px; margin-bottom: 6px; text-transform: uppercase;">👥 Desglose de Personas Atendidas</h3>
+        <h3 style="color: #00d2ff; text-align: center; font-size: 12px; margin-bottom: 6px; text-transform: uppercase;">Desglose de Personas Atendidas</h3>
         <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 4px; text-align: center;">
             <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ff4b4b; min-width: 90px;">
                 <div style="font-size: 13px;">👩</div>
@@ -650,9 +650,9 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #ff69b4; font-size: 14px; font-weight: 900;">{ninas}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niñas</div>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #00ffcc; min-width: 90px;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #00d2ff; min-width: 90px;">
                 <div style="font-size: 13px;">👦</div>
-                <div style="color: #00ffcc; font-size: 14px; font-weight: 900;">{ninos}</div>
+                <div style="color: #00d2ff; font-size: 14px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
             <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ffd700; min-width: 90px;">
