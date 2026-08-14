@@ -439,10 +439,10 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 1px 2px; border-radius: 2px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
-        <h4 style="color: #00d2ff; letter-spacing: 0.2px; margin: 0; font-size: 6px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 1px 0; font-size: 9px; font-weight: 900; line-height: 1.1;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
-        <h3 style="color: #e0e0e0; margin: 0; font-size: 7px; background: #1f3044; display: inline-block; padding: 0px 3px; border-radius: 6px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 4px 8px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 6px;">
+        <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0 0 2px 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 0 0 2px 0; font-size: 18px; font-weight: 900; line-height: 1.1;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 1px 8px; border-radius: 4px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
@@ -644,18 +644,18 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <div style="color: #00d2ff; font-size: 14px; font-weight: 900;">{hombres}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Hombres</div>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ff79c6; min-width: 90px;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ff69b4; min-width: 90px;">
                 <div style="font-size: 13px;">👧</div>
-                <div style="color: #ff79c6; font-size: 14px; font-weight: 900;">{ninas}</div>
+                <div style="color: #ff69b4; font-size: 14px; font-weight: 900;">{ninas}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niñas</div>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #50fa7b; min-width: 90px;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #00ffcc; min-width: 90px;">
                 <div style="font-size: 13px;">👦</div>
-                <div style="color: #50fa7b; font-size: 14px; font-weight: 900;">{ninos}</div>
+                <div style="color: #00ffcc; font-size: 14px; font-weight: 900;">{ninos}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Niños</div>
             </div>
             <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-bottom: 2px solid #ffd700; min-width: 90px;">
-                <div style="font-size: 13px;">🌐</div>
+                <div style="font-size: 13px;">👥</div>
                 <div style="color: #ffd700; font-size: 14px; font-weight: 900;">{total_personas}</div>
                 <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">Total Personas</div>
             </div>
