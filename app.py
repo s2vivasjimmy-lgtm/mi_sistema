@@ -376,12 +376,13 @@ if seleccion == "Resumen General":
     cols2 = st.columns(len(fila2) if len(fila2) > 0 else 4)
     for i, cat in enumerate(fila2):
         with cols2[i]:
-            st.markdown(f'''
-            <div class="strat-card">
-                <div class="strat-title">{cat.upper()}</div>
-                <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
-            </div>
-            ''', unsafe_allow_html=True)
+            with cols2[i]:
+                st.markdown(f'''
+                <div class="strat-card">
+                    <div class="strat-title">{cat.upper()}</div>
+                    <div class="strat-value">{formatear_numero(totales.get(cat, 0))}</div>
+                </div>
+                ''', unsafe_allow_html=True)
 
     st.markdown(f'''
     <div style="text-align: center; margin: 15px 0;">
@@ -536,24 +537,24 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
                 text=df_esp_viz["ATENCIONES_NUM"],
                 textposition='outside',
-                textfont=dict(size=11, color='white', family="sans-serif", weight="bold")
+                textfont=dict(size=10, color='white', family="sans-serif", weight="bold")
             )])
             
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=11),
-                margin=dict(t=10, b=10, l=140, r=35),
-                height=max(300, len(df_esp_viz) * 28),
+                font=dict(color='white', size=10),
+                margin=dict(t=2, b=2, l=130, r=30),
+                height=max(220, len(df_esp_viz) * 17), 
                 xaxis=dict(
                     showgrid=True, 
                     gridcolor='#30363d', 
-                    tickfont=dict(size=11, color='white'), 
+                    tickfont=dict(size=10, color='white'), 
                     fixedrange=True
                 ),
                 yaxis=dict(
                     autorange="reversed", 
-                    tickfont=dict(size=11, color='white'), 
+                    tickfont=dict(size=10, color='white'), 
                     fixedrange=True,
                     dtick=1, 
                     showticklabels=True
