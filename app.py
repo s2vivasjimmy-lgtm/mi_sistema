@@ -439,10 +439,10 @@ elif seleccion == "Ruta Epidemiológica":
 
 elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 4px 8px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 6px;">
-        <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0 0 2px 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 0 0 2px 0; font-size: 18px; font-weight: 900; line-height: 1.1;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
-        <h3 style="color: #e0e0e0; margin: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 1px 8px; border-radius: 4px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 2px 6px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 4px;">
+        <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0 0 1px 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
+        <h1 style="color: #ffffff; margin: 0 0 1px 0; font-size: 18px; font-weight: 900; line-height: 1.1;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h3 style="color: #e0e0e0; margin: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 1px 6px; border-radius: 3px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
