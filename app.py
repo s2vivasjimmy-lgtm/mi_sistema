@@ -131,32 +131,44 @@ with st.sidebar:
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña", "Sistema de Salud Tradicional", 
                           "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", 
-                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", "III Jornada Médica"])
+                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", 
+                          "I Jornada Médica", "II Jornada Médica", "III Jornada Médica"])
+
+# Mapeo de jornadas para estandarizar sufijos de archivos
+jornadas_map = {
+    "I Jornada Médica": ("i", "I"),
+    "II Jornada Médica": ("ii", "II"),
+    "III Jornada Médica": ("iii", "III")
+}
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     
-    if seleccion == "III Jornada Médica":
+    if seleccion in jornadas_map:
+        suf, num_romano = jornadas_map[seleccion]
         tab_ed1, tab_ed2, tab_ed3 = st.tabs(["🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
         
+        archivo_esp = f"{suf}_especialidades_venezuela_renace.csv"
+        archivo_apo = f"{suf}_apoyo_social_venezuela_renace.csv"
+        archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
+        archivo_meta = f"{suf}_meta_venezuela_renace.csv"
+
         with tab_ed1:
-            st.markdown("### Tabla: Atenciones por Especialidad")
+            st.markdown(f"### Tabla: Atenciones por Especialidad ({seleccion})")
             cols_maestras = ["Nº", "ESPECIALIDAD", "ATENCIONES"]
-            archivo_esp = "ii_especialidades_venezuela_renace.csv"
             if not os.path.exists(archivo_esp):
                 pd.DataFrame(columns=cols_maestras).to_csv(archivo_esp, index=False)
             df_esp = pd.read_csv(archivo_esp, dtype=str)
             
-            df_esp_edit = st.data_editor(df_esp.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic", key="esp_renace")
+            df_esp_edit = st.data_editor(df_esp.reindex(columns=cols_maestras, fill_value="0"), use_container_width=True, num_rows="dynamic", key=f"esp_{suf}")
             
-            if st.button("💾 Guardar Especialidades y Autosumar"):
+            if st.button("💾 Guardar Especialidades y Autosumar", key=f"btn_esp_{suf}"):
                 df_esp_edit.to_csv(archivo_esp, index=False)
                 
                 try:
                     vals_esp = pd.to_numeric(df_esp_edit["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                     suma_especialidades = int(vals_esp.sum())
                     
-                    archivo_meta = "ii_meta_venezuela_renace.csv"
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
                     else:
@@ -176,19 +188,17 @@ if st.session_state.admin_logueado:
                 st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada con la hora de Caracas!")
 
         with tab_ed2:
-            st.markdown("### Tabla: Apoyo Social")
+            st.markdown(f"### Tabla: Apoyo Social ({seleccion})")
             cols_apoyo = ["Nº", "CATEGORIA_APOYO", "VALOR"]
-            archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
             if not os.path.exists(archivo_apo):
                 pd.DataFrame(columns=cols_apoyo).to_csv(archivo_apo, index=False)
             df_apo = pd.read_csv(archivo_apo, dtype=str)
-            df_apo_edit = st.data_editor(df_apo.reindex(columns=cols_apoyo, fill_value="0"), use_container_width=True, num_rows="dynamic", key="apo_renace")
+            df_apo_edit = st.data_editor(df_apo.reindex(columns=cols_apoyo, fill_value="0"), use_container_width=True, num_rows="dynamic", key=f"apo_{suf}")
             
-            if st.button("💾 Guardar Apoyo Social"):
+            if st.button("💾 Guardar Apoyo Social", key=f"btn_apo_{suf}"):
                 df_apo_edit.to_csv(archivo_apo, index=False)
                 
                 try:
-                    archivo_meta = "ii_meta_venezuela_renace.csv"
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
                         dt_red = obtener_hora_red()
@@ -202,17 +212,15 @@ if st.session_state.admin_logueado:
                 st.success("Apoyo social guardado y hora de Caracas actualizada.")
 
         with tab_ed3:
-            st.markdown("### Desglose Demográfico (Mujeres, Hombres, Niñas, Niños)")
-            archivo_demo = "ii_demografia_venezuela_renace.csv"
+            st.markdown(f"### Desglose Demográfico ({seleccion})")
             if not os.path.exists(archivo_demo):
                 pd.DataFrame({"MUJERES": ["587"], "HOMBRES": ["431"], "NIÑAS": ["121"], "NIÑOS": ["96"]}).to_csv(archivo_demo, index=False)
             df_demo = pd.read_csv(archivo_demo, dtype=str)
-            df_demo_edit = st.data_editor(df_demo, use_container_width=True, num_rows="fixed", key="demo_renace")
+            df_demo_edit = st.data_editor(df_demo, use_container_width=True, num_rows="fixed", key=f"demo_{suf}")
             
-            if st.button("💾 Guardar Demografía"):
+            if st.button("💾 Guardar Demografía", key=f"btn_demo_{suf}"):
                 df_demo_edit.to_csv(archivo_demo, index=False)
                 try:
-                    archivo_meta = "ii_meta_venezuela_renace.csv"
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
                         dt_red = obtener_hora_red()
@@ -224,7 +232,7 @@ if st.session_state.admin_logueado:
                 guardar_en_github(archivo_demo)
                 st.success("Demografía guardada y hora de Caracas actualizada.")
 
-        if st.button("❌ Cerrar Sesión"):
+        if st.button("❌ Cerrar Sesión", key=f"logout_{suf}"):
             st.session_state.admin_logueado = False
             st.rerun()
 
@@ -397,7 +405,7 @@ if seleccion == "Resumen General":
     st.subheader("🏥 RESUMEN OPERATIVO")
     df = cargar_datos_cache(ARCHIVO_RESUMEN)
     iconos = {"ALTAS MÉDICAS": "✅", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
-             "CAMAS DISPONIBLES": "🛏️", "INTERVENCIONES Q.": "🔪"}
+               "CAMAS DISPONIBLES": "🛏️", "INTERVENCIONES Q.": "🔪"}
     cols_mostrar = ["ALTAS MÉDICAS", "TRASLADOS", "CAMAS OCUPADAS", 
                     "CAMAS DISPONIBLES", "INTERVENCIONES Q."]
     
@@ -448,20 +456,22 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion == "III Jornada Médica":
-    st.markdown("""
+elif seleccion in jornadas_map:
+    suf, num_romano = jornadas_map[seleccion]
+    
+    st.markdown(f"""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 1px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
         <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900; line-height: 1.1;">III ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900; line-height: 1.1;">{num_romano} ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
         <h3 style="color: #e0e0e0; margin: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 0px 4px; border-radius: 2px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
 
     df_esp_viz = None
-    archivo_esp = "ii_especialidades_venezuela_renace.csv"
+    archivo_esp = f"{suf}_especialidades_venezuela_renace.csv"
     
-    if "esp_renace" in st.session_state and st.session_state["esp_renace"] is not None:
-        edited_data = st.session_state["esp_renace"]
+    if f"esp_{suf}" in st.session_state and st.session_state[f"esp_{suf}"] is not None:
+        edited_data = st.session_state[f"esp_{suf}"]
         if isinstance(edited_data, pd.DataFrame):
             df_esp_viz = edited_data
 
@@ -476,7 +486,7 @@ elif seleccion == "III Jornada Médica":
         except:
             pass
     else:
-        archivo_meta = "ii_meta_venezuela_renace.csv"
+        archivo_meta = f"{suf}_meta_venezuela_renace.csv"
         if os.path.exists(archivo_meta):
             df_m = cargar_datos_cache(archivo_meta)
             if not df_m.empty:
@@ -488,7 +498,7 @@ elif seleccion == "III Jornada Médica":
     total_atenciones_val = formatear_numero(total_atenciones_num)
 
     total_apoyo_num = 0
-    archivo_apo_calc = "ii_apoyo_social_venezuela_renace.csv"
+    archivo_apo_calc = f"{suf}_apoyo_social_venezuela_renace.csv"
     if os.path.exists(archivo_apo_calc):
         df_apo_calc = cargar_datos_cache(archivo_apo_calc)
         if not df_apo_calc.empty and "VALOR" in df_apo_calc.columns:
@@ -502,7 +512,7 @@ elif seleccion == "III Jornada Médica":
     suma_total_ambos = formatear_numero(total_atenciones_num + total_apoyo_num)
 
     fecha_str = "13AGO2026 - 15:03:52"
-    archivo_meta = "ii_meta_venezuela_renace.csv"
+    archivo_meta = f"{suf}_meta_venezuela_renace.csv"
     if os.path.exists(archivo_meta):
         df_m = cargar_datos_cache(archivo_meta)
         if not df_m.empty:
@@ -570,7 +580,7 @@ elif seleccion == "III Jornada Médica":
                     showticklabels=True
                 )
             )
-            st.plotly_chart(fig_esp, use_container_width=True, key="grafico_especialidades_dinamico", config={'displayModeBar': False})
+            st.plotly_chart(fig_esp, use_container_width=True, key=f"grafico_especialidades_dinamico_{suf}", config={'displayModeBar': False})
         else:
             st.info("Sin registros de especialidades cargados.")
 
@@ -581,7 +591,7 @@ elif seleccion == "III Jornada Médica":
         </div>
         """, unsafe_allow_html=True)
 
-        archivo_apo = "ii_apoyo_social_venezuela_renace.csv"
+        archivo_apo = f"{suf}_apoyo_social_venezuela_renace.csv"
         if os.path.exists(archivo_apo):
             df_apo = cargar_datos_cache(archivo_apo)
             if not df_apo.empty and "CATEGORIA_APOYO" in df_apo.columns and "VALOR" in df_apo.columns:
@@ -605,14 +615,14 @@ elif seleccion == "III Jornada Médica":
                     xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=11, color='white'), fixedrange=True),
                     yaxis=dict(autorange="reversed", tickfont=dict(size=11, color='white'), fixedrange=True)
                 )
-                st.plotly_chart(fig_apo, use_container_width=True, key="grafico_apoyo_dinamico", config={'displayModeBar': False})
+                st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_dinamico_{suf}", config={'displayModeBar': False})
             else:
                 st.info("Agregue los registros de apoyo social desde el panel (⚙️).")
         else:
             st.info("Sin registros de apoyo social cargados.")
 
     val_mujeres, val_hombres, val_ninas, val_ninos = 587, 431, 121, 96
-    archivo_demo = "ii_demografia_venezuela_renace.csv"
+    archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
     if os.path.exists(archivo_demo):
         df_d = cargar_datos_cache(archivo_demo)
         if not df_d.empty:
@@ -645,130 +655,11 @@ elif seleccion == "III Jornada Médica":
     <div style="background: #161b22; padding: 6px 8px; border-radius: 6px; border: 1px solid #30363d; margin-top: 4px;">
         <div style="color: #00d2ff; text-align: center; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; font-weight: bold;">Desglose de Personas Atendidas</div>
         <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 6px; text-align: center;">
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #ff4b4b; display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 14px;">👩</span>
-                <span style="color: #ff4b4b; font-size: 15px; font-weight: 900;">{mujeres}</span>
-                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Mujeres</span>
-            </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #00d2ff; display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 14px;">👨</span>
-                <span style="color: #00d2ff; font-size: 15px; font-weight: 900;">{hombres}</span>
-                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Hombres</span>
-            </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #ff79c6; display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 14px;">👧</span>
-                <span style="color: #ff79c6; font-size: 15px; font-weight: 900;">{ninas}</span>
-                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niñas</span>
-            </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #50fa7b; display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 14px;">👦</span>
-                <span style="color: #50fa7b; font-size: 15px; font-weight: 900;">{ninos}</span>
-                <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niños</span>
-            </div>
-            <div style="background: #1f3044; padding: 4px 14px; border-radius: 4px; border: 1px solid #FFD700; display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 14px;">👥</span>
-                <span style="color: #FFD700; font-size: 16px; font-weight: 900;">{total_personas}</span>
-                <span style="color: #ffffff; font-size: 10px; font-weight: bold; text-transform: uppercase;">Total Personas</span>
-            </div>
+            <div><span style="color: #b0b3b8; font-size: 11px;">👩 MUJERES:</span> <strong style="color: #ffffff; font-size: 14px;">{mujeres}</strong></div>
+            <div><span style="color: #b0b3b8; font-size: 11px;">👨 HOMBRES:</span> <strong style="color: #ffffff; font-size: 14px;">{hombres}</strong></div>
+            <div><span style="color: #b0b3b8; font-size: 11px;">👧 NIÑAS:</span> <strong style="color: #ffffff; font-size: 14px;">{ninas}</strong></div>
+            <div><span style="color: #b0b3b8; font-size: 11px;">👦 NIÑOS:</span> <strong style="color: #ffffff; font-size: 14px;">{ninos}</strong></div>
+            <div style="border-left: 1px solid #30363d; padding-left: 12px;"><span style="color: #ffd700; font-size: 11px; font-weight: bold;">👥 TOTAL PERSONAS:</span> <strong style="color: #ffd700; font-size: 15px;">{total_personas}</strong></div>
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-elif seleccion == "Hospitales de Campaña":
-    st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = "hospitales_de_campaña.csv"
-    
-    if os.path.exists(archivo_detalle):
-        df_detalle = cargar_datos_cache(archivo_detalle)
-        
-        if not df_detalle.empty:
-            # Asegurar columnas normalizadas para el filtrado
-            if "NACIONALIAD" in df_detalle.columns:
-                df_detalle["NACIONALIAD_UP"] = df_detalle["NACIONALIAD"].astype(str).str.upper().str.strip()
-            else:
-                df_detalle["NACIONALIAD_UP"] = "NACIONAL"
-            
-            # Crear las 3 pestañas solicitadas
-            tab_nac, tab_ext, tab_tot = st.tabs(["🇻🇪 Nacionales", "🌐 Extranjeros", "📊 Total General"])
-            
-            with tab_nac:
-                df_nac = df_detalle[df_detalle["NACIONALIAD_UP"].isin(["NACIONAL", "NACIONALES"])]
-                df_nac_display = df_nac.drop(columns=["NACIONALIAD_UP"], errors="ignore")
-                
-                suma_nac = 0
-                if "ATENCIONES" in df_nac_display.columns:
-                    vals_nac = pd.to_numeric(df_nac_display["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                    suma_nac = int(vals_nac.sum())
-                
-                st.markdown(f"""
-                <div class="total-tab" style="width: 100%; text-align: center;">
-                    <span style="color: #b0b3b8; font-size: 13px; font-weight: bold; text-transform: uppercase;">TOTAL NACIONALES: </span>
-                    <span style="color: #ffffff; font-size: 22px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_nac)}</span>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                st.dataframe(df_nac_display, use_container_width=True, hide_index=True)
-                st.download_button("📥 Descargar Reporte Nacionales en Excel", data=convertir_df_a_excel(df_nac_display), file_name="hospitales_campaña_nacionales.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_nac")
-
-            with tab_ext:
-                df_ext = df_detalle[df_detalle["NACIONALIAD_UP"].isin(["EXTRANJERO", "EXTRANJEROS"])]
-                df_ext_display = df_ext.drop(columns=["NACIONALIAD_UP"], errors="ignore")
-                
-                suma_ext = 0
-                if "ATENCIONES" in df_ext_display.columns:
-                    vals_ext = pd.to_numeric(df_ext_display["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                    suma_ext = int(vals_ext.sum())
-                
-                st.markdown(f"""
-                <div class="total-tab" style="width: 100%; text-align: center;">
-                    <span style="color: #b0b3b8; font-size: 13px; font-weight: bold; text-transform: uppercase;">TOTAL EXTRANJEROS: </span>
-                    <span style="color: #ffffff; font-size: 22px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_ext)}</span>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                st.dataframe(df_ext_display, use_container_width=True, hide_index=True)
-                st.download_button("📥 Descargar Reporte Extranjeros en Excel", data=convertir_df_a_excel(df_ext_display), file_name="hospitales_campaña_extranjeros.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_ext")
-
-            with tab_tot:
-                df_tot_display = df_detalle.drop(columns=["NACIONALIAD_UP"], errors="ignore")
-                
-                suma_tot = 0
-                if "ATENCIONES" in df_tot_display.columns:
-                    vals_tot = pd.to_numeric(df_tot_display["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                    suma_tot = int(vals_tot.sum())
-                
-                st.markdown(f"""
-                <div class="total-tab" style="width: 100%; text-align: center;">
-                    <span style="color: #b0b3b8; font-size: 13px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL HOSPITALES DE CAMPAÑA: </span>
-                    <span style="color: #ffffff; font-size: 22px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_tot)}</span>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                st.dataframe(df_tot_display, use_container_width=True, hide_index=True)
-                st.download_button("📥 Descargar Reporte Total en Excel", data=convertir_df_a_excel(df_tot_display), file_name="hospitales_campaña_total.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_tot")
-        else:
-            st.info("No hay registros disponibles para Hospitales de Campaña.")
-    else:
-        st.info("No hay registros disponibles para Hospitales de Campaña.")
-
-else:
-    st.subheader(f"📋 Detalle: {seleccion}")
-    archivo_detalle = f"{seleccion.lower().replace(' ', '_').replace('\'', '').replace('“', '').replace('”', '')}.csv"
-    
-    if os.path.exists(archivo_detalle):
-        df_detalle = cargar_datos_cache(archivo_detalle)
-        
-        if "ATENCIONES" in df_detalle.columns:
-            vals = pd.to_numeric(df_detalle["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_seccion = int(vals.sum())
-            st.markdown(f"""
-            <div class="total-tab">
-                <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL {seleccion.upper()}: </span>
-                <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(total_seccion)}</span>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    else:
-        st.info("No hay registros disponibles para esta sección.")
