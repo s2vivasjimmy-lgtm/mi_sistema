@@ -131,12 +131,12 @@ with st.sidebar:
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña", "Sistema de Salud Tradicional", 
                           "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", 
-                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", "III Jornada Médica 'Venezuela Renace'"])
+                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", "III Jornada Médica"])
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     
-    if seleccion == "III Jornada Médica 'Venezuela Renace'":
+    if seleccion == "III Jornada Médica":
         tab_ed1, tab_ed2, tab_ed3 = st.tabs(["🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
         
         with tab_ed1:
@@ -448,11 +448,11 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion == "III Jornada Médica 'Venezuela Renace'":
+elif seleccion == "III Jornada Médica":
     st.markdown("""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 1px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
         <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900; line-height: 1.1;">III ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900; line-height: 1.1;">III JORNADA MÉDICA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
         <h3 style="color: #e0e0e0; margin: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 0px 4px; border-radius: 2px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
@@ -673,6 +673,83 @@ elif seleccion == "III Jornada Médica 'Venezuela Renace'":
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+elif seleccion == "Hospitales de Campaña":
+    st.subheader(f"📋 Detalle: {seleccion}")
+    archivo_detalle = "hospitales_de_campaña.csv"
+    
+    if os.path.exists(archivo_detalle):
+        df_detalle = cargar_datos_cache(archivo_detalle)
+        
+        if not df_detalle.empty:
+            # Asegurar columnas normalizadas para el filtrado
+            if "NACIONALIAD" in df_detalle.columns:
+                df_detalle["NACIONALIAD_UP"] = df_detalle["NACIONALIAD"].astype(str).str.upper().str.strip()
+            else:
+                df_detalle["NACIONALIAD_UP"] = "NACIONAL"
+            
+            # Crear las 3 pestañas solicitadas
+            tab_nac, tab_ext, tab_tot = st.tabs(["🇻🇪 Nacionales", "🌐 Extranjeros", "📊 Total General"])
+            
+            with tab_nac:
+                df_nac = df_detalle[df_detalle["NACIONALIAD_UP"].isin(["NACIONAL", "NACIONALES"])]
+                df_nac_display = df_nac.drop(columns=["NACIONALIAD_UP"], errors="ignore")
+                
+                suma_nac = 0
+                if "ATENCIONES" in df_nac_display.columns:
+                    vals_nac = pd.to_numeric(df_nac_display["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                    suma_nac = int(vals_nac.sum())
+                
+                st.markdown(f"""
+                <div class="total-tab">
+                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL NACIONALES: </span>
+                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_nac)}</span>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.dataframe(df_nac_display, use_container_width=True, hide_index=True)
+                st.download_button("📥 Descargar Reporte Nacionales en Excel", data=convertir_df_a_excel(df_nac_display), file_name="hospitales_campaña_nacionales.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_nac")
+
+            with tab_ext:
+                df_ext = df_detalle[df_detalle["NACIONALIAD_UP"].isin(["EXTRANJERO", "EXTRANJEROS"])]
+                df_ext_display = df_ext.drop(columns=["NACIONALIAD_UP"], errors="ignore")
+                
+                suma_ext = 0
+                if "ATENCIONES" in df_ext_display.columns:
+                    vals_ext = pd.to_numeric(df_ext_display["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                    suma_ext = int(vals_ext.sum())
+                
+                st.markdown(f"""
+                <div class="total-tab">
+                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL EXTRANJEROS: </span>
+                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_ext)}</span>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.dataframe(df_ext_display, use_container_width=True, hide_index=True)
+                st.download_button("📥 Descargar Reporte Extranjeros en Excel", data=convertir_df_a_excel(df_ext_display), file_name="hospitales_campaña_extranjeros.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_ext")
+
+            with tab_tot:
+                df_tot_display = df_detalle.drop(columns=["NACIONALIAD_UP"], errors="ignore")
+                
+                suma_tot = 0
+                if "ATENCIONES" in df_tot_display.columns:
+                    vals_tot = pd.to_numeric(df_tot_display["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                    suma_tot = int(vals_tot.sum())
+                
+                st.markdown(f"""
+                <div class="total-tab">
+                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL HOSPITALES DE CAMPAÑA: </span>
+                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_tot)}</span>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.dataframe(df_tot_display, use_container_width=True, hide_index=True)
+                st.download_button("📥 Descargar Reporte Total en Excel", data=convertir_df_a_excel(df_tot_display), file_name="hospitales_campaña_total.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_tot")
+        else:
+            st.info("No hay registros disponibles para Hospitales de Campaña.")
+    else:
+        st.info("No hay registros disponibles para Hospitales de Campaña.")
 
 else:
     st.subheader(f"📋 Detalle: {seleccion}")
