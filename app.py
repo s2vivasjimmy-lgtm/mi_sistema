@@ -701,9 +701,9 @@ elif seleccion == "Hospitales de Campaña":
                     suma_nac = int(vals_nac.sum())
                 
                 st.markdown(f"""
-                <div class="total-tab">
-                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL NACIONALES: </span>
-                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_nac)}</span>
+                <div class="total-tab" style="width: 100%; text-align: center;">
+                    <span style="color: #b0b3b8; font-size: 13px; font-weight: bold; text-transform: uppercase;">TOTAL NACIONALES: </span>
+                    <span style="color: #ffffff; font-size: 22px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_nac)}</span>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -720,9 +720,9 @@ elif seleccion == "Hospitales de Campaña":
                     suma_ext = int(vals_ext.sum())
                 
                 st.markdown(f"""
-                <div class="total-tab">
-                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL EXTRANJEROS: </span>
-                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_ext)}</span>
+                <div class="total-tab" style="width: 100%; text-align: center;">
+                    <span style="color: #b0b3b8; font-size: 13px; font-weight: bold; text-transform: uppercase;">TOTAL EXTRANJEROS: </span>
+                    <span style="color: #ffffff; font-size: 22px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_ext)}</span>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -738,9 +738,9 @@ elif seleccion == "Hospitales de Campaña":
                     suma_tot = int(vals_tot.sum())
                 
                 st.markdown(f"""
-                <div class="total-tab">
-                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL HOSPITALES DE CAMPAÑA: </span>
-                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_tot)}</span>
+                <div class="total-tab" style="width: 100%; text-align: center;">
+                    <span style="color: #b0b3b8; font-size: 13px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL HOSPITALES DE CAMPAÑA: </span>
+                    <span style="color: #ffffff; font-size: 22px; font-weight: 900; margin-left: 10px;">{formatear_numero(suma_tot)}</span>
                 </div>
                 """, unsafe_allow_html=True)
                 
