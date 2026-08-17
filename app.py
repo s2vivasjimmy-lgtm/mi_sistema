@@ -131,12 +131,12 @@ with st.sidebar:
     seleccion = st.radio("Seleccionar categoría:", 
                          ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña", "Sistema de Salud Tradicional", 
                           "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", 
-                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", "II Atención Médica Especializada 'Venezuela Renace'"])
+                          "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", "III Jornada Médica 'Venezuela Renace'"])
 
 if st.session_state.admin_logueado:
     st.header(f"📝 Edición: {seleccion}")
     
-    if seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
+    if seleccion == "III Jornada Médica 'Venezuela Renace'":
         tab_ed1, tab_ed2, tab_ed3 = st.tabs(["🩺 Atenciones por Especialidad", "🤝 Apoyo Social", "👥 Demografía (Personas)"])
         
         with tab_ed1:
@@ -426,7 +426,6 @@ elif seleccion == "Ruta Epidemiológica":
     if os.path.exists(archivo_detalle):
         df_detalle = cargar_datos_cache(archivo_detalle)
         
-        # PESTAÑA DE TOTAL ARRIBA PARA RUTA EPIDEMIOLÓGICA (Si aplica o se mide por registros)
         if not df_detalle.empty:
             st.markdown(f"""
             <div class="total-tab">
@@ -449,11 +448,11 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
+elif seleccion == "III Jornada Médica 'Venezuela Renace'":
     st.markdown("""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 1px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
         <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900; line-height: 1.1;">II ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
+        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900; line-height: 1.1;">III JORNADA MÉDICA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
         <h3 style="color: #e0e0e0; margin: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 0px 4px; border-radius: 2px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
     </div>
     """, unsafe_allow_html=True)
@@ -676,14 +675,12 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
     """, unsafe_allow_html=True)
 
 else:
-    # --- DETALLE DE TABLAS CON PESTAÑA DE TOTAL ---
     st.subheader(f"📋 Detalle: {seleccion}")
     archivo_detalle = f"{seleccion.lower().replace(' ', '_').replace('\'', '').replace('“', '').replace('”', '')}.csv"
     
     if os.path.exists(archivo_detalle):
         df_detalle = cargar_datos_cache(archivo_detalle)
         
-        # PESTAÑA DE TOTAL AUTOMÁTICA ARRIBA DE CADA TABLA DE DETALLE
         if "ATENCIONES" in df_detalle.columns:
             vals = pd.to_numeric(df_detalle["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             total_seccion = int(vals.sum())
