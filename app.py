@@ -49,8 +49,8 @@ def convertir_df_a_excel(df):
 # --- CSS GENERAL ---
 st.markdown("""
 <style>
-/* Ocultar el botón y la barra flotante de "Manage app" de Streamlit */
-[data-testid="stStatusWidget"] {
+/* Ocultar el botón flotante de "Manage app" */
+button[kind="header"] {
     display: none !important;
 }
 
