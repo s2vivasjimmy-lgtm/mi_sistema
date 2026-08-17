@@ -214,7 +214,7 @@ if st.session_state.admin_logueado:
         with tab_ed3:
             st.markdown(f"### Desglose Demográfico ({seleccion})")
             if not os.path.exists(archivo_demo):
-                pd.DataFrame({"MUJERES": ["587"], "HOMBRES": ["431"], "NIÑAS": ["121"], "NIÑOS": ["96"]}).to_csv(archivo_demo, index=False)
+                pd.DataFrame({"MUJERES": ["0"], "HOMBRES": ["0"], "NIÑAS": ["0"], "NIÑOS": ["0"]}).to_csv(archivo_demo, index=False)
             df_demo = pd.read_csv(archivo_demo, dtype=str)
             df_demo_edit = st.data_editor(df_demo, use_container_width=True, num_rows="fixed", key=f"demo_{suf}")
             
@@ -621,28 +621,30 @@ elif seleccion in jornadas_map:
         else:
             st.info("Sin registros de apoyo social cargados.")
 
-    val_mujeres, val_hombres, val_ninas, val_ninos = 587, 431, 121, 96
+    # --- DESGLOSE DEMOGRÁFICO INICIANDO EN 0 ---
+    val_mujeres, val_hombres, val_ninas, val_ninos = 0, 0, 0, 0
     archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
+    
     if os.path.exists(archivo_demo):
         df_d = cargar_datos_cache(archivo_demo)
         if not df_d.empty:
             row_d = df_d.iloc[0]
             try:
-                val_mujeres = int(str(row_d.get("MUJERES", "587")).replace('.', ''))
-            except:
-                pass
+                val = str(row_d.get("MUJERES", "0")).replace('.', '')
+                val_mujeres = int(val) if val.isdigit() else 0
+            except: pass
             try:
-                val_hombres = int(str(row_d.get("HOMBRES", "431")).replace('.', ''))
-            except:
-                pass
+                val = str(row_d.get("HOMBRES", "0")).replace('.', '')
+                val_hombres = int(val) if val.isdigit() else 0
+            except: pass
             try:
-                val_ninas = int(str(row_d.get("NIÑAS", "121")).replace('.', ''))
-            except:
-                pass
+                val = str(row_d.get("NIÑAS", "0")).replace('.', '')
+                val_ninas = int(val) if val.isdigit() else 0
+            except: pass
             try:
-                val_ninos = int(str(row_d.get("NIÑOS", "96")).replace('.', ''))
-            except:
-                pass
+                val = str(row_d.get("NIÑOS", "0")).replace('.', '')
+                val_ninos = int(val) if val.isdigit() else 0
+            except: pass
 
     mujeres = formatear_numero(val_mujeres)
     hombres = formatear_numero(val_hombres)
