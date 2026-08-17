@@ -109,7 +109,7 @@ def guardar_en_github(archivo_local):
             repo.create_file(archivo_local, "Creación datos Puesto Comando", contenido)
         return True
     except Exception as e:
-        st.error(f"Error al respaldar en GitHub: {e}")
+        st.warning(f"Aviso: Los datos se guardaron localmente, pero falló el respaldo en GitHub. (Detalle: {e})")
         return False
 
 if "admin_logueado" not in st.session_state: 
@@ -134,7 +134,6 @@ with st.sidebar:
                           "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", 
                           "I Jornada Médica", "II Jornada Médica", "III Jornada Médica"])
 
-# Mapeo de jornadas para estandarizar sufijos de archivos
 jornadas_map = {
     "I Jornada Médica": ("i", "I"),
     "II Jornada Médica": ("ii", "II"),
@@ -549,6 +548,7 @@ elif seleccion in jornadas_map:
         
         if df_esp_viz is not None and not df_esp_viz.empty and "ESPECIALIDAD" in df_esp_viz.columns and "ATENCIONES" in df_esp_viz.columns:
             df_esp_viz["ATENCIONES_NUM"] = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            max_val_esp = df_esp_viz["ATENCIONES_NUM"].max() if not df_esp_viz["ATENCIONES_NUM"].empty else 100
             
             fig_esp = go.Figure(data=[go.Bar(
                 y=df_esp_viz["ESPECIALIDAD"],
@@ -564,13 +564,14 @@ elif seleccion in jornadas_map:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=11),
-                margin=dict(t=2, b=2, l=150, r=30),
+                margin=dict(t=2, b=2, l=150, r=40),
                 height=max(280, len(df_esp_viz) * 22), 
                 xaxis=dict(
                     showgrid=True, 
                     gridcolor='#30363d', 
                     tickfont=dict(size=11, color='white'), 
-                    fixedrange=True
+                    fixedrange=True,
+                    range=[0, max_val_esp * 1.15] # Margen extra para que el número quepa holgadamente
                 ),
                 yaxis=dict(
                     autorange="reversed", 
@@ -596,6 +597,7 @@ elif seleccion in jornadas_map:
             df_apo = cargar_datos_cache(archivo_apo)
             if not df_apo.empty and "CATEGORIA_APOYO" in df_apo.columns and "VALOR" in df_apo.columns:
                 df_apo["VALOR_NUM"] = pd.to_numeric(df_apo["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                max_val_apo = df_apo["VALOR_NUM"].max() if not df_apo["VALOR_NUM"].empty else 100
                 
                 fig_apo = go.Figure(data=[go.Bar(
                     y=df_apo["CATEGORIA_APOYO"],
@@ -603,16 +605,22 @@ elif seleccion in jornadas_map:
                     orientation='h',
                     marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                     text=df_apo["VALOR_NUM"],
-                    textposition='outside',
+                    textposition='outside', # Forzar etiqueta afuera de la barra
                     textfont=dict(size=12, color='white', family="sans-serif", weight="bold")
                 )])
                 fig_apo.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
                     font=dict(color='white', size=11),
-                    margin=dict(t=2, b=2, l=2, r=35),
-                    height=200,
-                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=11, color='white'), fixedrange=True),
+                    margin=dict(t=2, b=2, l=2, r=50), # Margen derecho ampliado para que no se corte el número mayor (ej. 1018)
+                    height=280,
+                    xaxis=dict(
+                        showgrid=True, 
+                        gridcolor='#30363d', 
+                        tickfont=dict(size=11, color='white'), 
+                        fixedrange=True,
+                        range=[0, max_val_apo * 1.2] # Espacio superior dinámico según el valor máximo
+                    ),
                     yaxis=dict(autorange="reversed", tickfont=dict(size=11, color='white'), fixedrange=True)
                 )
                 st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_dinamico_{suf}", config={'displayModeBar': False})
