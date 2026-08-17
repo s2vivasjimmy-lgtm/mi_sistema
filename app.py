@@ -49,6 +49,11 @@ def convertir_df_a_excel(df):
 # --- CSS GENERAL ---
 st.markdown("""
 <style>
+/* Ocultar el botón y la barra flotante de "Manage app" de Streamlit */
+[data-testid="stStatusWidget"] {
+    display: none !important;
+}
+
 .block-container { padding-top: 0rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
 
@@ -571,7 +576,7 @@ elif seleccion in jornadas_map:
                     gridcolor='#30363d', 
                     tickfont=dict(size=11, color='white'), 
                     fixedrange=True,
-                    range=[0, max_val_esp * 1.15] # Margen extra para que el número quepa holgadamente
+                    range=[0, max_val_esp * 1.15]
                 ),
                 yaxis=dict(
                     autorange="reversed", 
@@ -605,21 +610,21 @@ elif seleccion in jornadas_map:
                     orientation='h',
                     marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                     text=df_apo["VALOR_NUM"],
-                    textposition='outside', # Forzar etiqueta afuera de la barra
+                    textposition='outside',
                     textfont=dict(size=12, color='white', family="sans-serif", weight="bold")
                 )])
                 fig_apo.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
                     font=dict(color='white', size=11),
-                    margin=dict(t=2, b=2, l=2, r=50), # Margen derecho ampliado para que no se corte el número mayor (ej. 1018)
+                    margin=dict(t=2, b=2, l=2, r=50),
                     height=280,
                     xaxis=dict(
                         showgrid=True, 
                         gridcolor='#30363d', 
                         tickfont=dict(size=11, color='white'), 
                         fixedrange=True,
-                        range=[0, max_val_apo * 1.2] # Espacio superior dinámico según el valor máximo
+                        range=[0, max_val_apo * 1.2]
                     ),
                     yaxis=dict(autorange="reversed", tickfont=dict(size=11, color='white'), fixedrange=True)
                 )
@@ -629,7 +634,6 @@ elif seleccion in jornadas_map:
         else:
             st.info("Sin registros de apoyo social cargados.")
 
-    # --- DESGLOSE DEMOGRÁFICO INICIANDO EN 0 ---
     val_mujeres, val_hombres, val_ninas, val_ninos = 0, 0, 0, 0
     archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
     
