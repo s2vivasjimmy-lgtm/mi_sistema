@@ -649,16 +649,26 @@ elif seleccion == "II Atención Médica Especializada 'Venezuela Renace'":
                 <span style="color: #ff69b4; font-size: 15px; font-weight: 900;">{ninas}</span>
                 <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niñas</span>
             </div>
-            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #ffa500; display: flex; align-items: center; gap: 6px;">
+            <div style="background: #21262d; padding: 4px 10px; border-radius: 4px; border-left: 3px solid #ffd700; display: flex; align-items: center; gap: 6px;">
                 <span style="font-size: 14px;">👦</span>
-                <span style="color: #ffa500; font-size: 15px; font-weight: 900;">{ninos}</span>
+                <span style="color: #ffd700; font-size: 15px; font-weight: 900;">{ninos}</span>
                 <span style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">Niños</span>
             </div>
-            <div style="background: #21262d; padding: 4px 12px; border-radius: 4px; border-left: 3px solid #28a745; display: flex; align-items: center; gap: 6px;">
+            <div style="background: #1f3044; padding: 4px 12px; border-radius: 4px; border: 1px solid #00d2ff; display: flex; align-items: center; gap: 6px;">
                 <span style="font-size: 14px;">👥</span>
-                <span style="color: #28a745; font-size: 16px; font-weight: 900;">{total_personas}</span>
-                <span style="color: #ffffff; font-size: 10px; font-weight: bold; text-transform: uppercase;">Total Personas</span>
+                <span style="color: #ffffff; font-size: 16px; font-weight: 900;">{total_personas}</span>
+                <span style="color: #00d2ff; font-size: 10px; font-weight: bold; text-transform: uppercase;">Total Personas</span>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+else:
+    st.subheader(f"📋 Detalle: {seleccion}")
+    archivo_detalle = f"{seleccion.lower().replace(' ', '_').replace('\'', '').replace('“', '').replace('”', '')}.csv"
+    if os.path.exists(archivo_detalle):
+        df_detalle = cargar_datos_cache(archivo_detalle)
+        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    else:
+        st.info("No hay registros disponibles para esta sección.")
