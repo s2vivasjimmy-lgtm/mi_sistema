@@ -1301,3 +1301,40 @@ elif seleccion in jornadas_map:
             except: pass
 
             try:
+            val = str(row_d.get("NIÑAS", "0")).replace('.', '')
+            val_ninas = int(val) if val.isdigit() else 0
+        except: pass
+        try:
+            val = str(row_d.get("NIÑOS", "0")).replace('.', '')
+            val_ninos = int(val) if val.isdigit() else 0
+        except: pass
+
+    total_demo = val_mujeres + val_hombres + val_ninas + val_ninos
+
+    st.markdown(f"""
+    <div style="background: #161b22; padding: 10px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px;">
+        <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #00d2ff; padding-bottom: 4px;">👥 DESGLOSE DEMOGRÁFICO</h3>
+        <div style="display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap; gap: 10px;">
+            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">MUJERES</div>
+                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_mujeres)}</div>
+            </div>
+            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">HOMBRES</div>
+                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_hombres)}</div>
+            </div>
+            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">NIÑAS</div>
+                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_ninas)}</div>
+            </div>
+            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
+                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">NIÑOS</div>
+                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_ninos)}</div>
+            </div>
+            <div style="background: #28a745; padding: 8px 15px; border-radius: 4px;">
+                <div style="color: #ffffff; font-size: 11px; font-weight: bold;">TOTAL PERSONAS</div>
+                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(total_demo)}</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
