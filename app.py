@@ -52,12 +52,11 @@ def formatear_numero(n):
     except:
         return str(n)
 
-# --- GENERADOR DE TABLAS HTML PROFESIONALES (ESTILO TAILWIND) ---
+# --- GENERADOR DE TABLAS HTML PROFESIONALES (ESTILO TAILWIND + BADGES SÓLIDOS) ---
 def renderizar_tabla_html_pro(df):
     if df.empty:
         return "<p style='color: #8b949e; text-align: center;'>No hay registros disponibles.</p>"
     
-    # Inyectamos Tailwind CSS por CDN para asegurar los estilos de la tabla
     html = """
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/80 shadow-2xl backdrop-blur-md my-3">
@@ -66,7 +65,6 @@ def renderizar_tabla_html_pro(df):
           <tr>
     """
     
-    # Columnas dinámicas según el DataFrame
     columnas = list(df.columns)
     for i, col in enumerate(columnas):
         align = "text-center" if i == 0 or "ESTATUS" in col or "NACIONALIAD" in col else ("text-right" if "ATENCIONES" in col or "VALOR" in col else "text-left")
@@ -84,12 +82,15 @@ def renderizar_tabla_html_pro(df):
         for i, col in enumerate(columnas):
             val = str(row[col]) if pd.notna(row[col]) else ""
             
-            # Formatear celdas especiales (Estatus / Nacionalidad / Números)
             if i == 0:
                 html += f'<td class="px-6 py-4 text-center font-medium text-slate-500">{val.zfill(2) if val.isdigit() else val}</td>'
             elif "ESTATUS" in col.upper():
-                badge_bg = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" if val.upper() == "ACTIVO" else "bg-rose-500/10 text-rose-400 border-rose-500/20"
-                html += f'<td class="px-6 py-4 text-center"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border {badge_bg}">{val}</span></td>'
+                # Forzamos estilos en línea con fondo sólido translúcido para garantizar visibilidad
+                if val.upper() == "ACTIVO":
+                    badge_style = "background-color: rgba(16, 185, 129, 0.25); color: #34d399; border: 1px solid #34d399;"
+                else:
+                    badge_style = "background-color: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid #f87171;"
+                html += f'<td class="px-6 py-4 text-center"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" style="{badge_style}">{val}</span></td>'
             elif "ATENCIONES" in col.upper() or "VALOR" in col.upper():
                 html += f'<td class="px-6 py-4 text-right font-mono text-cyan-400 font-semibold">{formatear_numero(val)}</td>'
             elif i == 1:
