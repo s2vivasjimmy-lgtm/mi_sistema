@@ -470,6 +470,83 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
+elif seleccion == "Hospitales de Campaña":
+    st.markdown(f"""
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #00d2ff; padding-bottom: 8px; margin-bottom: 20px;">
+        <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">📊 REGISTROS INSTITUCIONALES: <span style="color: #00d2ff;">HOSPITALES DE CAMPAÑA</span></h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    archivo_cat = "hospitales_de_campaña.csv"
+    if os.path.exists(archivo_cat):
+        df_cat_vista = cargar_datos_cache(archivo_cat)
+        if not df_cat_vista.empty:
+            # Calcular totales por nacionalidad si existe la columna
+            val_nac = 0
+            val_ext = 0
+            val_total = 0
+            
+            if "ATENCIONES" in df_cat_vista.columns:
+                df_cat_vista["ATENCIONES_NUM"] = pd.to_numeric(df_cat_vista["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                val_total = int(df_cat_vista["ATENCIONES_NUM"].sum())
+                
+                if "NACIONALIAD" in df_cat_vista.columns:
+                    df_cat_vista["NACIONALIAD_LOWER"] = df_cat_vista["NACIONALIAD"].astype(str).str.upper().str.strip()
+                    val_nac = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "NACIONAL"]["ATENCIONES_NUM"].sum())
+                    val_ext = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "EXTRANJERO"]["ATENCIONES_NUM"].sum())
+
+            # Pestañas visuales estilo selector
+            tab_h1, tab_h2, tab_h3 = st.tabs(["TOTAL ATENCIONES", "NACIONALES", "EXTRANJEROS"])
+            
+            with tab_h1:
+                st.markdown(f"""
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #1f3044 0%, #16222a 100%); padding: 12px 20px; border-radius: 8px; border: 1px solid #00d2ff; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
+                        <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block;">TOTAL ATENCIONES</span>
+                        <span style="color: #ffffff; font-size: 26px; font-weight: 900;">{formatear_numero(val_total)}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            with tab_h2:
+                st.markdown(f"""
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #1f3044 0%, #16222a 100%); padding: 12px 20px; border-radius: 8px; border: 1px solid #00d2ff; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
+                        <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block;">NACIONALES</span>
+                        <span style="color: #ffffff; font-size: 26px; font-weight: 900;">{formatear_numero(val_nac)}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+            with tab_h3:
+                st.markdown(f"""
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div style="background: linear-gradient(135deg, #1f3044 0%, #16222a 100%); padding: 12px 20px; border-radius: 8px; border: 1px solid #00d2ff; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
+                        <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block;">EXTRANJEROS</span>
+                        <span style="color: #ffffff; font-size: 26px; font-weight: 900;">{formatear_numero(val_ext)}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Tabla completa
+            st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
+            st.dataframe(df_cat_vista.drop(columns=[col for col in ["ATENCIONES_NUM", "NACIONALIAD_LOWER"] if col in df_cat_vista.columns], errors='ignore'), use_container_width=True, hide_index=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            col_dl1, col_dl2 = st.columns([2, 8])
+            with col_dl1:
+                st.download_button(
+                    "📥 Descargar Reporte en Excel", 
+                    data=convertir_df_a_excel(df_cat_vista), 
+                    file_name="Hospitales_de_Campana.xlsx", 
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+        else:
+            st.info("No hay registros guardados actualmente en Hospitales de Campaña.")
+    else:
+        st.info("Aún no se ha creado el archivo de datos para Hospitales de Campaña.")
+
 elif seleccion not in jornadas_map:
     # --- VISTA GENERAL PROFESIONAL PARA EL RESTO DE CATEGORÍAS ---
     st.markdown(f"""
@@ -484,7 +561,6 @@ elif seleccion not in jornadas_map:
         df_cat_vista = cargar_datos_cache(archivo_cat)
         
         if not df_cat_vista.empty:
-            # Calcular la suma total de la columna ATENCIONES si existe
             suma_atenciones_cat = 0
             if "ATENCIONES" in df_cat_vista.columns:
                 vals_cat = pd.to_numeric(df_cat_vista["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
@@ -499,7 +575,6 @@ elif seleccion not in jornadas_map:
             </div>
             """, unsafe_allow_html=True)
             
-            # Contenedor profesional para la tabla
             st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
             st.dataframe(df_cat_vista, use_container_width=True, hide_index=True)
             st.markdown('</div>', unsafe_allow_html=True)
@@ -521,7 +596,6 @@ elif seleccion not in jornadas_map:
 elif seleccion in jornadas_map:
     suf, num_romano = jornadas_map[seleccion]
     
-    # --- BLOQUE INSTITUCIONAL CON ESPACIADO VERTICAL NULO ---
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 0px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin: 0 0 2px 0;">
         <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; padding: 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
@@ -700,7 +774,6 @@ elif seleccion in jornadas_map:
         else:
             st.info("Sin archivo de apoyo social.")
 
-    # --- DESGLOSE DEMOGRÁFICO (PERSONAS ATENDIDAS) AL FINAL ---
     st.markdown("""
     <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px; margin-bottom: 6px;">
         <h3 style="color: #20c997; text-align: center; font-size: 16px; margin: 0; padding-bottom: 2px;">👥 PERSONAS ATENDIDAS (DESGLOSE DEMOGRÁFICO)</h3>
