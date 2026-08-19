@@ -94,6 +94,16 @@ button[kind="header"] {
 }
 
 .logo-custom { width: 100%; height: 90px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
+
+/* Tarjeta contenedora profesional para tablas */
+.pro-table-container {
+    background: linear-gradient(145deg, #161b22, #0d1117);
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -459,6 +469,48 @@ elif seleccion == "Ruta Epidemiológica":
         </div>
         {js_fullscreen}
     """, height=510)
+
+elif seleccion not in jornadas_map:
+    # --- VISTA GENERAL PROFESIONAL PARA EL RESTO DE CATEGORÍAS ---
+    st.markdown(f"""
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #00d2ff; padding-bottom: 8px; margin-bottom: 20px;">
+        <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">📊 REGISTROS INSTITUCIONALES: <span style="color: #00d2ff;">{seleccion.upper()}</span></h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    archivo_cat = f"{seleccion.lower().replace(' ', '_').replace('\'', '').replace('“', '').replace('”', '')}.csv"
+    
+    if os.path.exists(archivo_cat):
+        df_cat_vista = cargar_datos_cache(archivo_cat)
+        
+        if not df_cat_vista.empty:
+            st.markdown(f"""
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div style="background: linear-gradient(135deg, #1f3044 0%, #16222a 100%); padding: 12px 20px; border-radius: 8px; border: 1px solid #00d2ff; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
+                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block;">TOTAL DE REGISTROS</span>
+                    <span style="color: #ffffff; font-size: 26px; font-weight: 900;">{formatear_numero(len(df_cat_vista))}</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Contenedor profesional para la tabla
+            st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
+            st.dataframe(df_cat_vista, use_container_width=True, hide_index=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            col_dl1, col_dl2 = st.columns([2, 8])
+            with col_dl1:
+                st.download_button(
+                    "📥 Descargar Reporte en Excel", 
+                    data=convertir_df_a_excel(df_cat_vista), 
+                    file_name=f"{seleccion.replace(' ', '_')}.xlsx", 
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+        else:
+            st.info(f"No hay registros guardados actualmente en {seleccion}.")
+    else:
+        st.info(f"Aún no se ha creado el archivo de datos para {seleccion}. Puede agregar registros desde el panel de configuración (⚙️).")
 
 elif seleccion in jornadas_map:
     suf, num_romano = jornadas_map[seleccion]
