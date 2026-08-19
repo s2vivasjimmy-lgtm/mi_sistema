@@ -649,3 +649,83 @@ elif seleccion in jornadas_map:
             <h3 style="color: #ffd700; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #ffd700; padding-bottom: 2px;">🤝 APOYO SOCIAL</h3>
         </div>
         """, unsafe_allow_html=True)
+
+        archivo_apo = f"{suf}_apoyo_social_venezuela_renace.csv"
+        if os.path.exists(archivo_apo):
+            df_apo_viz = cargar_datos_cache(archivo_apo)
+            if not df_apo_viz.empty and "CATEGORIA_APOYO" in df_apo_viz.columns and "VALOR" in df_apo_viz.columns:
+                df_apo_viz["VALOR_NUM"] = pd.to_numeric(df_apo_viz["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                max_val_apo = df_apo_viz["VALOR_NUM"].max() if not df_apo_viz["VALOR_NUM"].empty else 100
+                
+                fig_apo = go.Figure(data=[go.Bar(
+                    y=df_apo_viz["CATEGORIA_APOYO"],
+                    x=df_apo_viz["VALOR_NUM"],
+                    orientation='h',
+                    marker=dict(color='#ffd700', line=dict(color='#ffffff', width=1)),
+                    text=df_apo_viz["VALOR_NUM"],
+                    textposition='outside',
+                    textfont=dict(size=11, color='white', family="sans-serif", weight="bold")
+                )])
+                
+                fig_apo.update_layout(
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white', size=11),
+                    margin=dict(t=2, b=2, l=150, r=40),
+                    height=max(280, len(df_apo_viz) * 22),
+                    xaxis=dict(
+                        showgrid=True, 
+                        gridcolor='#30363d', 
+                        tickfont=dict(size=11, color='white'), 
+                        fixedrange=True,
+                        range=[0, max_val_apo * 1.15]
+                    ),
+                    yaxis=dict(
+                        autorange="reversed", 
+                        tickfont=dict(size=11, color='white', weight="bold"), 
+                        fixedrange=True,
+                        dtick=1, 
+                        showticklabels=True
+                    )
+                )
+                st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_social_dinamico_{suf}", config={'displayModeBar': False})
+            else:
+                st.info("Sin registros de apoyo social cargados.")
+        else:
+            st.info("Sin archivo de apoyo social.")
+
+    # --- DESGLOSE DEMOGRÁFICO (PERSONAS ATENDIDAS) AL FINAL ---
+    st.markdown("""
+    <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px; margin-bottom: 6px;">
+        <h3 style="color: #20c997; text-align: center; font-size: 16px; margin: 0; padding-bottom: 2px;">👥 PERSONAS ATENDIDAS (DESGLOSE DEMOGRÁFICO)</h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
+    mujeres, hombres, ninas, ninos = 0, 0, 0, 0
+
+    if os.path.exists(archivo_demo):
+        df_demo_viz = cargar_datos_cache(archivo_demo)
+        if not df_demo_viz.empty:
+            try:
+                row = df_demo_viz.iloc[0]
+                mujeres = int(str(row.get("MUJERES", "0")).replace('.', ''))
+                hombres = int(str(row.get("HOMBRES", "0")).replace('.', ''))
+                ninas = int(str(row.get("NIÑAS", "0")).replace('.', ''))
+                ninos = int(str(row.get("NIÑOS", "0")).replace('.', ''))
+            except:
+                pass
+
+    total_personas = mujeres + hombres + ninas + ninos
+
+    col_d1, col_d2, col_d3, col_d4, col_d5 = st.columns(5)
+    with col_d1:
+        st.markdown(f'<div class="compact-card"><div class="card-title">👩 MUJERES</div><div class="card-value">{formatear_numero(mujeres)}</div></div>', unsafe_allow_html=True)
+    with col_d2:
+        st.markdown(f'<div class="compact-card"><div class="card-title">👨 HOMBRES</div><div class="card-value">{formatear_numero(hombres)}</div></div>', unsafe_allow_html=True)
+    with col_d3:
+        st.markdown(f'<div class="compact-card"><div class="card-title">👧 NIÑAS</div><div class="card-value">{formatear_numero(ninas)}</div></div>', unsafe_allow_html=True)
+    with col_d4:
+        st.markdown(f'<div class="compact-card"><div class="card-title">👦 NIÑOS</div><div class="card-value">{formatear_numero(ninos)}</div></div>', unsafe_allow_html=True)
+    with col_d5:
+        st.markdown(f'<div class="compact-card" style="border: 1px solid #20c997;"><div class="card-title" style="color: #20c997;">👥 TOTAL PERSONAS</div><div class="card-value">{formatear_numero(total_personas)}</div></div>', unsafe_allow_html=True)
