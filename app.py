@@ -46,7 +46,7 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-# --- CSS GENERAL ---
+# --- CSS GENERAL Y ESTILOS PROFESIONALES DE TABLAS ---
 st.markdown("""
 <style>
 button[kind="header"] {
@@ -101,6 +101,38 @@ button[kind="header"] {
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     margin-bottom: 20px;
+}
+
+/* --- ESTILOS PROFESIONALES PARA TABLAS STREAMLIT --- */
+[data-testid="stDataFrame"] {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #30363d;
+    background-color: #161b22;
+}
+
+/* Encabezados de la tabla modernos y llamativos */
+[data-testid="stDataFrame"] th {
+    background-color: #1f3044 !important;
+    color: #00d2ff !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #00d2ff !important;
+}
+
+/* Celdas de datos con tipografía limpia */
+[data-testid="stDataFrame"] td {
+    color: #e6edf3 !important;
+    font-size: 13px !important;
+    background-color: #0d1117 !important;
+    border-bottom: 1px solid #21262d !important;
+}
+
+/* Efecto hover suave al pasar el cursor sobre las filas */
+[data-testid="stDataFrame"] tr:hover td {
+    background-color: #1f2630 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -454,7 +486,10 @@ elif seleccion == "Ruta Epidemiológica":
             </div>
             """, unsafe_allow_html=True)
 
+        st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
         st.dataframe(df_detalle, use_container_width=True, hide_index=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
     st.markdown("### 📍UBICACIÓN DEL PACIENTE")
@@ -479,7 +514,6 @@ elif seleccion == "Hospitales de Campaña":
     if os.path.exists(archivo_cat):
         df_cat_vista = cargar_datos_cache(archivo_cat)
         if not df_cat_vista.empty:
-            # Preparar datos numéricos y de nacionalidad
             if "ATENCIONES" in df_cat_vista.columns:
                 df_cat_vista["ATENCIONES_NUM"] = pd.to_numeric(df_cat_vista["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             else:
@@ -494,7 +528,6 @@ elif seleccion == "Hospitales de Campaña":
             val_nac = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "NACIONAL"]["ATENCIONES_NUM"].sum())
             val_ext = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "EXTRANJERO"]["ATENCIONES_NUM"].sum())
 
-            # Pestañas visuales
             tab_h1, tab_h2, tab_h3 = st.tabs(["TOTAL ATENCIONES", "NACIONALES", "EXTRANJEROS"])
             
             cols_limpias = [c for c in df_cat_vista.columns if c not in ["ATENCIONES_NUM", "NACIONALIAD_LOWER"]]
@@ -558,7 +591,6 @@ elif seleccion == "Hospitales de Campaña":
         st.info("Aún no se ha creado el archivo de datos para Hospitales de Campaña.")
 
 elif seleccion not in jornadas_map:
-    # --- VISTA GENERAL PROFESIONAL PARA EL RESTO DE CATEGORÍAS ---
     st.markdown(f"""
     <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #00d2ff; padding-bottom: 8px; margin-bottom: 20px;">
         <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">📊 REGISTROS INSTITUCIONALES: <span style="color: #00d2ff;">{seleccion.upper()}</span></h2>
