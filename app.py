@@ -52,16 +52,16 @@ def formatear_numero(n):
     except:
         return str(n)
 
-# --- GENERADOR DE TABLAS HTML PROFESIONALES (ESTILO TAILWIND + BADGES SÓLIDOS) ---
+# --- GENERADOR DE TABLAS HTML PROFESIONALES (TEXTOS CLAROS Y BADGES SÓLIDOS) ---
 def renderizar_tabla_html_pro(df):
     if df.empty:
-        return "<p style='color: #8b949e; text-align: center;'>No hay registros disponibles.</p>"
+        return "<p style='color: #cbd5e1; text-align: center;'>No hay registros disponibles.</p>"
     
     html = """
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/80 shadow-2xl backdrop-blur-md my-3">
-      <table class="w-full text-left text-sm text-slate-300">
-        <thead class="bg-slate-900/90 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+    <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-950 shadow-2xl my-3">
+      <table class="w-full text-left text-sm text-slate-100">
+        <thead class="bg-slate-900 text-xs uppercase tracking-wider text-slate-300 border-b border-slate-700">
           <tr>
     """
     
@@ -69,35 +69,34 @@ def renderizar_tabla_html_pro(df):
     for i, col in enumerate(columnas):
         align = "text-center" if i == 0 or "ESTATUS" in col or "NACIONALIAD" in col else ("text-right" if "ATENCIONES" in col or "VALOR" in col else "text-left")
         w_class = "w-16" if i == 0 else ""
-        html += f'<th scope="col" class="px-6 py-4 font-semibold {align} {w_class}">{col}</th>'
+        html += f'<th scope="col" class="px-6 py-4 font-bold {align} {w_class}">{col}</th>'
         
     html += """
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-800/60">
+        <tbody class="divide-y divide-slate-800">
     """
     
     for index, row in df.iterrows():
-        html += '<tr class="transition-colors hover:bg-slate-900/60 group">'
+        html += '<tr class="transition-colors hover:bg-slate-900/80 group">'
         for i, col in enumerate(columnas):
             val = str(row[col]) if pd.notna(row[col]) else ""
             
             if i == 0:
-                html += f'<td class="px-6 py-4 text-center font-medium text-slate-500">{val.zfill(2) if val.isdigit() else val}</td>'
+                html += f'<td class="px-6 py-4 text-center font-bold text-slate-300">{val.zfill(2) if val.isdigit() else val}</td>'
             elif "ESTATUS" in col.upper():
-                # Forzamos estilos en línea con fondo sólido translúcido para garantizar visibilidad
                 if val.upper() == "ACTIVO":
-                    badge_style = "background-color: rgba(16, 185, 129, 0.25); color: #34d399; border: 1px solid #34d399;"
+                    badge_style = "background-color: rgba(16, 185, 129, 0.3); color: #34d399; border: 1px solid #34d399;"
                 else:
-                    badge_style = "background-color: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid #f87171;"
+                    badge_style = "background-color: rgba(239, 68, 68, 0.3); color: #f87171; border: 1px solid #f87171;"
                 html += f'<td class="px-6 py-4 text-center"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold" style="{badge_style}">{val}</span></td>'
             elif "ATENCIONES" in col.upper() or "VALOR" in col.upper():
-                html += f'<td class="px-6 py-4 text-right font-mono text-cyan-400 font-semibold">{formatear_numero(val)}</td>'
+                html += f'<td class="px-6 py-4 text-right font-mono text-cyan-300 font-bold">{formatear_numero(val)}</td>'
             elif i == 1:
-                html += f'<td class="px-6 py-4 font-medium text-white group-hover:text-cyan-400 transition-colors">{val}</td>'
+                html += f'<td class="px-6 py-4 font-bold text-white group-hover:text-cyan-300 transition-colors">{val}</td>'
             else:
-                align_cls = "text-center" if "NACIONAL" in col.upper() or "PAIS" in col.upper() else "text-slate-400"
-                html += f'<td class="px-6 py-4 {align_cls}">{val}</td>'
+                align_cls = "text-center" if "NACIONAL" in col.upper() or "PAIS" in col.upper() else "text-slate-200"
+                html += f'<td class="px-6 py-4 {align_cls} font-medium">{val}</td>'
                 
         html += '</tr>'
         
