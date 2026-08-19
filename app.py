@@ -515,8 +515,9 @@ elif seleccion not in jornadas_map:
 elif seleccion in jornadas_map:
     suf, num_romano = jornadas_map[seleccion]
     
+    # --- BLOQUE INSTITUCIONAL COMPACTADO VERTICALMENTE ---
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 1px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 0px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
         <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
         <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900; line-height: 1.1;">{num_romano} ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
         <h3 style="color: #e0e0e0; margin: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 0px 4px; border-radius: 2px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
@@ -648,94 +649,3 @@ elif seleccion in jornadas_map:
             <h3 style="color: #ffd700; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #ffd700; padding-bottom: 2px;">🤝 APOYO SOCIAL</h3>
         </div>
         """, unsafe_allow_html=True)
-
-        archivo_apo = f"{suf}_apoyo_social_venezuela_renace.csv"
-        if os.path.exists(archivo_apo):
-            df_apo = cargar_datos_cache(archivo_apo)
-            if not df_apo.empty and "CATEGORIA_APOYO" in df_apo.columns and "VALOR" in df_apo.columns:
-                df_apo["VALOR_NUM"] = pd.to_numeric(df_apo["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                max_val_apo = df_apo["VALOR_NUM"].max() if not df_apo["VALOR_NUM"].empty else 100
-                
-                fig_apo = go.Figure(data=[go.Bar(
-                    y=df_apo["CATEGORIA_APOYO"],
-                    x=df_apo["VALOR_NUM"],
-                    orientation='h',
-                    marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
-                    text=df_apo["VALOR_NUM"],
-                    textposition='outside',
-                    textfont=dict(size=12, color='white', family="sans-serif", weight="bold")
-                )])
-                fig_apo.update_layout(
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white', size=11),
-                    margin=dict(t=2, b=2, l=2, r=50),
-                    height=280,
-                    xaxis=dict(
-                        showgrid=True, 
-                        gridcolor='#30363d', 
-                        tickfont=dict(size=11, color='white'), 
-                        fixedrange=True,
-                        range=[0, max_val_apo * 1.2]
-                    ),
-                    yaxis=dict(autorange="reversed", tickfont=dict(size=11, color='white'), fixedrange=True)
-                )
-                st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_dinamico_{suf}", config={'displayModeBar': False})
-            else:
-                st.info("Agregue los registros de apoyo social desde el panel (⚙️).")
-        else:
-            st.info("Sin registros de apoyo social cargados.")
-
-    # --- DESGLOSE DEMOGRÁFICO ---
-    val_mujeres, val_hombres, val_ninas, val_ninos = 0, 0, 0, 0
-    archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
-    if os.path.exists(archivo_demo):
-        df_d = cargar_datos_cache(archivo_demo)
-        if not df_d.empty:
-            row_d = df_d.iloc[0]
-            try:
-                val = str(row_d.get("MUJERES", "0")).replace('.', '')
-                val_mujeres = int(val) if val.isdigit() else 0
-            except: pass
-            try:
-                val = str(row_d.get("HOMBRES", "0")).replace('.', '')
-                val_hombres = int(val) if val.isdigit() else 0
-            except: pass
-            try:
-                val = str(row_d.get("NIÑAS", "0")).replace('.', '')
-                val_ninas = int(val) if val.isdigit() else 0
-            except: pass
-            try:
-                val = str(row_d.get("NIÑOS", "0")).replace('.', '')
-                val_ninos = int(val) if val.isdigit() else 0
-            except: pass
-
-    total_demo = val_mujeres + val_hombres + val_ninas + val_ninos
-
-    st.markdown(f"""
-    <div style="background: #161b22; padding: 10px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px;">
-        <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 10px; border-bottom: 2px solid #00d2ff; padding-bottom: 4px;">👥 DESGLOSE DEMOGRÁFICO</h3>
-        <div style="display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap; gap: 10px;">
-            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">MUJERES</div>
-                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_mujeres)}</div>
-            </div>
-            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">HOMBRES</div>
-                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_hombres)}</div>
-            </div>
-            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">NIÑAS</div>
-                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_ninas)}</div>
-            </div>
-            <div style="background: #1f3044; padding: 8px 15px; border-radius: 4px;">
-                <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">NIÑOS</div>
-                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(val_ninos)}</div>
-            </div>
-            <div style="background: #28a745; padding: 8px 15px; border-radius: 4px;">
-                <div style="color: #ffffff; font-size: 11px; font-weight: bold;">TOTAL PERSONAS</div>
-                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(total_demo)}</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
