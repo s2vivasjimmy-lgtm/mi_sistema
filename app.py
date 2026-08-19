@@ -49,7 +49,6 @@ def convertir_df_a_excel(df):
 # --- CSS GENERAL ---
 st.markdown("""
 <style>
-/* Ocultar el botón flotante de "Manage app" */
 button[kind="header"] {
     display: none !important;
 }
@@ -95,7 +94,6 @@ button[kind="header"] {
 
 .logo-custom { width: 100%; height: 90px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
 
-/* Tarjeta contenedora profesional para tablas */
 .pro-table-container {
     background: linear-gradient(145deg, #161b22, #0d1117);
     border: 1px solid #30363d;
@@ -481,22 +479,25 @@ elif seleccion == "Hospitales de Campaña":
     if os.path.exists(archivo_cat):
         df_cat_vista = cargar_datos_cache(archivo_cat)
         if not df_cat_vista.empty:
-            # Calcular totales por nacionalidad si existe la columna
-            val_nac = 0
-            val_ext = 0
-            val_total = 0
-            
+            # Preparar datos numéricos y de nacionalidad
             if "ATENCIONES" in df_cat_vista.columns:
                 df_cat_vista["ATENCIONES_NUM"] = pd.to_numeric(df_cat_vista["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                val_total = int(df_cat_vista["ATENCIONES_NUM"].sum())
+            else:
+                df_cat_vista["ATENCIONES_NUM"] = 0
                 
-                if "NACIONALIAD" in df_cat_vista.columns:
-                    df_cat_vista["NACIONALIAD_LOWER"] = df_cat_vista["NACIONALIAD"].astype(str).str.upper().str.strip()
-                    val_nac = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "NACIONAL"]["ATENCIONES_NUM"].sum())
-                    val_ext = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "EXTRANJERO"]["ATENCIONES_NUM"].sum())
+            if "NACIONALIAD" in df_cat_vista.columns:
+                df_cat_vista["NACIONALIAD_LOWER"] = df_cat_vista["NACIONALIAD"].astype(str).str.upper().str.strip()
+            else:
+                df_cat_vista["NACIONALIAD_LOWER"] = ""
 
-            # Pestañas visuales estilo selector
+            val_total = int(df_cat_vista["ATENCIONES_NUM"].sum())
+            val_nac = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "NACIONAL"]["ATENCIONES_NUM"].sum())
+            val_ext = int(df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "EXTRANJERO"]["ATENCIONES_NUM"].sum())
+
+            # Pestañas visuales
             tab_h1, tab_h2, tab_h3 = st.tabs(["TOTAL ATENCIONES", "NACIONALES", "EXTRANJEROS"])
+            
+            cols_limpias = [c for c in df_cat_vista.columns if c not in ["ATENCIONES_NUM", "NACIONALIAD_LOWER"]]
             
             with tab_h1:
                 st.markdown(f"""
@@ -508,6 +509,10 @@ elif seleccion == "Hospitales de Campaña":
                 </div>
                 """, unsafe_allow_html=True)
                 
+                st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
+                st.dataframe(df_cat_vista[cols_limpias], use_container_width=True, hide_index=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+                
             with tab_h2:
                 st.markdown(f"""
                 <div style="display: flex; gap: 15px; margin-bottom: 15px;">
@@ -518,6 +523,11 @@ elif seleccion == "Hospitales de Campaña":
                 </div>
                 """, unsafe_allow_html=True)
                 
+                df_nac_filtrado = df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "NACIONAL"]
+                st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
+                st.dataframe(df_nac_filtrado[cols_limpias], use_container_width=True, hide_index=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+                
             with tab_h3:
                 st.markdown(f"""
                 <div style="display: flex; gap: 15px; margin-bottom: 15px;">
@@ -527,11 +537,11 @@ elif seleccion == "Hospitales de Campaña":
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-            
-            # Tabla completa
-            st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
-            st.dataframe(df_cat_vista.drop(columns=[col for col in ["ATENCIONES_NUM", "NACIONALIAD_LOWER"] if col in df_cat_vista.columns], errors='ignore'), use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+                
+                df_ext_filtrado = df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "EXTRANJERO"]
+                st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
+                st.dataframe(df_ext_filtrado[cols_limpias], use_container_width=True, hide_index=True)
+                st.markdown('</div>', unsafe_allow_html=True)
             
             col_dl1, col_dl2 = st.columns([2, 8])
             with col_dl1:
