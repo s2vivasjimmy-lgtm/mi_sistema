@@ -15,6 +15,50 @@ st_autorefresh(interval=5000, key="dataview_autorefresh")
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
+# --- CSS GENERAL Y OCULTAR "MANAGE APP" ---
+st.markdown("""
+<style>
+/* Ocultar la insignia flotante de Manage app / Streamlit Viewer Badge */
+.viewerBadge_container__1QSob, 
+.styles_viewerBadge__1yB5_, 
+[data-testid="stStatusWidget"] {
+    display: none !important;
+}
+
+button[kind="header"] { display: none !important; }
+.block-container { padding-top: 0rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
+.stApp { background-color: #0E1117 !important; }
+
+.strat-card { 
+    background-color: #2b3a4a; padding: 12px; border-radius: 6px; 
+    border-left: 4px solid #00d2ff; text-align: center; margin-bottom: 10px; height: 105px; 
+}
+.strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 6px; }
+.strat-value { font-size: 26px; font-weight: 900; color: #ffffff; }
+
+.compact-card { background-color: #1a1c23; padding: 8px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 8px; }
+.card-title { font-size: 12px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 4px; }
+.card-value { font-size: 18px; font-weight: 800; color: #ffffff; }
+
+.total-card { background-color: #1e2025; padding: 12px; border-radius: 6px; border: 2px solid #FFD700; text-align: center; margin-top: 5px; }
+.total-title { font-size: 15px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 4px; }
+.total-value { font-size: 30px; font-weight: 900; color: #ffffff; }
+
+.total-tab { background: #1f3044; padding: 10px 20px; border-radius: 6px; border: 1px solid #00d2ff; display: inline-block; margin-bottom: 15px; }
+
+.marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 2px 0; }
+.marquee-text { 
+    display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; 
+    color: #ffffff !important; font-weight: bold; font-size: 20px; 
+}
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.logo-custom { width: 100%; height: 90px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
+</style>
+""", unsafe_allow_html=True)
+
 def obtener_hora_red():
     """Obtiene la hora oficial de Venezuela (America/Caracas) desde worldtimeapi, con respaldo en UTC-4."""
     try:
@@ -104,43 +148,6 @@ def renderizar_tabla_html_pro(df):
     </div>
     """
     return html
-
-# --- CSS GENERAL ---
-st.markdown("""
-<style>
-button[kind="header"] { display: none !important; }
-.block-container { padding-top: 0rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
-.stApp { background-color: #0E1117 !important; }
-
-.strat-card { 
-    background-color: #2b3a4a; padding: 12px; border-radius: 6px; 
-    border-left: 4px solid #00d2ff; text-align: center; margin-bottom: 10px; height: 105px; 
-}
-.strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 6px; }
-.strat-value { font-size: 26px; font-weight: 900; color: #ffffff; }
-
-.compact-card { background-color: #1a1c23; padding: 8px; border-radius: 4px; border: 1px solid #31333f; text-align: center; margin-bottom: 8px; }
-.card-title { font-size: 12px; text-transform: uppercase; color: #b0b3b8; font-weight: bold; margin-bottom: 4px; }
-.card-value { font-size: 18px; font-weight: 800; color: #ffffff; }
-
-.total-card { background-color: #1e2025; padding: 12px; border-radius: 6px; border: 2px solid #FFD700; text-align: center; margin-top: 5px; }
-.total-title { font-size: 15px; text-transform: uppercase; color: #FFD700; font-weight: bold; margin-bottom: 4px; }
-.total-value { font-size: 30px; font-weight: 900; color: #ffffff; }
-
-.total-tab { background: #1f3044; padding: 10px 20px; border-radius: 6px; border: 1px solid #00d2ff; display: inline-block; margin-bottom: 15px; }
-
-.marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 2px 0; }
-.marquee-text { 
-    display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; 
-    color: #ffffff !important; font-weight: bold; font-size: 20px; 
-}
-@keyframes marquee {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-}
-.logo-custom { width: 100%; height: 90px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
-</style>
-""", unsafe_allow_html=True)
 
 ARCHIVO_RESUMEN = "mis_datos.csv"
 
