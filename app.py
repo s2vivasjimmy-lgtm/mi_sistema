@@ -484,11 +484,17 @@ elif seleccion not in jornadas_map:
         df_cat_vista = cargar_datos_cache(archivo_cat)
         
         if not df_cat_vista.empty:
+            # Calcular la suma total de la columna ATENCIONES si existe
+            suma_atenciones_cat = 0
+            if "ATENCIONES" in df_cat_vista.columns:
+                vals_cat = pd.to_numeric(df_cat_vista["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                suma_atenciones_cat = int(vals_cat.sum())
+
             st.markdown(f"""
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                 <div style="background: linear-gradient(135deg, #1f3044 0%, #16222a 100%); padding: 12px 20px; border-radius: 8px; border: 1px solid #00d2ff; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
-                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block;">TOTAL DE REGISTROS</span>
-                    <span style="color: #ffffff; font-size: 26px; font-weight: 900;">{formatear_numero(len(df_cat_vista))}</span>
+                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block;">TOTAL ATENCIONES</span>
+                    <span style="color: #ffffff; font-size: 26px; font-weight: 900;">{formatear_numero(suma_atenciones_cat)}</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
