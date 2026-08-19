@@ -46,24 +46,77 @@ def convertir_df_a_excel(df):
         df.to_excel(writer, index=False, sheet_name='Reporte')
     return output.getvalue()
 
-# --- CSS GENERAL Y ESTILOS PROFESIONALES DE TABLAS ---
+def formatear_numero(n):
+    try:
+        return f"{int(str(n).replace('.', '')):,}".replace(",", ".")
+    except:
+        return str(n)
+
+# --- GENERADOR DE TABLAS HTML PROFESIONALES (ESTILO TAILWIND) ---
+def renderizar_tabla_html_pro(df):
+    if df.empty:
+        return "<p style='color: #8b949e; text-align: center;'>No hay registros disponibles.</p>"
+    
+    # Inyectamos Tailwind CSS por CDN para asegurar los estilos de la tabla
+    html = """
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/80 shadow-2xl backdrop-blur-md my-3">
+      <table class="w-full text-left text-sm text-slate-300">
+        <thead class="bg-slate-900/90 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+          <tr>
+    """
+    
+    # Columnas dinámicas según el DataFrame
+    columnas = list(df.columns)
+    for i, col in enumerate(columnas):
+        align = "text-center" if i == 0 or "ESTATUS" in col or "NACIONALIAD" in col else ("text-right" if "ATENCIONES" in col or "VALOR" in col else "text-left")
+        w_class = "w-16" if i == 0 else ""
+        html += f'<th scope="col" class="px-6 py-4 font-semibold {align} {w_class}">{col}</th>'
+        
+    html += """
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/60">
+    """
+    
+    for index, row in df.iterrows():
+        html += '<tr class="transition-colors hover:bg-slate-900/60 group">'
+        for i, col in enumerate(columnas):
+            val = str(row[col]) if pd.notna(row[col]) else ""
+            
+            # Formatear celdas especiales (Estatus / Nacionalidad / Números)
+            if i == 0:
+                html += f'<td class="px-6 py-4 text-center font-medium text-slate-500">{val.zfill(2) if val.isdigit() else val}</td>'
+            elif "ESTATUS" in col.upper():
+                badge_bg = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" if val.upper() == "ACTIVO" else "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                html += f'<td class="px-6 py-4 text-center"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border {badge_bg}">{val}</span></td>'
+            elif "ATENCIONES" in col.upper() or "VALOR" in col.upper():
+                html += f'<td class="px-6 py-4 text-right font-mono text-cyan-400 font-semibold">{formatear_numero(val)}</td>'
+            elif i == 1:
+                html += f'<td class="px-6 py-4 font-medium text-white group-hover:text-cyan-400 transition-colors">{val}</td>'
+            else:
+                align_cls = "text-center" if "NACIONAL" in col.upper() or "PAIS" in col.upper() else "text-slate-400"
+                html += f'<td class="px-6 py-4 {align_cls}">{val}</td>'
+                
+        html += '</tr>'
+        
+    html += """
+        </tbody>
+      </table>
+    </div>
+    """
+    return html
+
+# --- CSS GENERAL ---
 st.markdown("""
 <style>
-button[kind="header"] {
-    display: none !important;
-}
-
+button[kind="header"] { display: none !important; }
 .block-container { padding-top: 0rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
 .stApp { background-color: #0E1117 !important; }
 
 .strat-card { 
-    background-color: #2b3a4a; 
-    padding: 12px; 
-    border-radius: 6px; 
-    border-left: 4px solid #00d2ff; 
-    text-align: center; 
-    margin-bottom: 10px; 
-    height: 105px; 
+    background-color: #2b3a4a; padding: 12px; border-radius: 6px; 
+    border-left: 4px solid #00d2ff; text-align: center; margin-bottom: 10px; height: 105px; 
 }
 .strat-title { font-size: 12px; text-transform: uppercase; color: #e0e0e0; font-weight: bold; margin-bottom: 6px; }
 .strat-value { font-size: 26px; font-weight: 900; color: #ffffff; }
@@ -80,60 +133,14 @@ button[kind="header"] {
 
 .marquee-container { width: 100%; overflow: hidden; background-color: #0E1117; padding: 2px 0; }
 .marquee-text { 
-    display: inline-block; 
-    white-space: nowrap; 
-    animation: marquee 15s linear infinite; 
-    color: #ffffff !important; 
-    font-weight: bold; 
-    font-size: 20px; 
+    display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; 
+    color: #ffffff !important; font-weight: bold; font-size: 20px; 
 }
 @keyframes marquee {
     0% { transform: translateX(100%); }
     100% { transform: translateX(-100%); }
 }
-
 .logo-custom { width: 100%; height: 90px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
-
-.pro-table-container {
-    background: linear-gradient(145deg, #161b22, #0d1117);
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    margin-bottom: 20px;
-}
-
-/* --- ESTILOS PROFESIONALES PARA TABLAS STREAMLIT --- */
-[data-testid="stDataFrame"] {
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #30363d;
-    background-color: #161b22;
-}
-
-/* Encabezados de la tabla modernos y llamativos */
-[data-testid="stDataFrame"] th {
-    background-color: #1f3044 !important;
-    color: #00d2ff !important;
-    font-weight: 800 !important;
-    font-size: 13px !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid #00d2ff !important;
-}
-
-/* Celdas de datos con tipografía limpia */
-[data-testid="stDataFrame"] td {
-    color: #e6edf3 !important;
-    font-size: 13px !important;
-    background-color: #0d1117 !important;
-    border-bottom: 1px solid #21262d !important;
-}
-
-/* Efecto hover suave al pasar el cursor sobre las filas */
-[data-testid="stDataFrame"] tr:hover td {
-    background-color: #1f2630 !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -208,7 +215,6 @@ if st.session_state.admin_logueado:
             
             if st.button("💾 Guardar Especialidades y Autosumar", key=f"btn_esp_{suf}"):
                 df_esp_edit.to_csv(archivo_esp, index=False)
-                
                 try:
                     vals_esp = pd.to_numeric(df_esp_edit["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
                     suma_especialidades = int(vals_esp.sum())
@@ -229,7 +235,7 @@ if st.session_state.admin_logueado:
                     st.error(f"Error al autosumar y actualizar fecha: {e}")
 
                 guardar_en_github(archivo_esp)
-                st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada con la hora de Caracas!")
+                st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada!")
 
         with tab_ed2:
             st.markdown(f"### Tabla: Apoyo Social ({seleccion})")
@@ -241,7 +247,6 @@ if st.session_state.admin_logueado:
             
             if st.button("💾 Guardar Apoyo Social", key=f"btn_apo_{suf}"):
                 df_apo_edit.to_csv(archivo_apo, index=False)
-                
                 try:
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
@@ -251,9 +256,8 @@ if st.session_state.admin_logueado:
                         guardar_en_github(archivo_meta)
                 except:
                     pass
-
                 guardar_en_github(archivo_apo)
-                st.success("Apoyo social guardado y hora de Caracas actualizada.")
+                st.success("Apoyo social guardado y hora actualizada.")
 
         with tab_ed3:
             st.markdown(f"### Desglose Demográfico ({seleccion})")
@@ -274,7 +278,7 @@ if st.session_state.admin_logueado:
                 except:
                     pass
                 guardar_en_github(archivo_demo)
-                st.success("Demografía guardada y hora de Caracas actualizada.")
+                st.success("Demografía guardada.")
 
         if st.button("❌ Cerrar Sesión", key=f"logout_{suf}"):
             st.session_state.admin_logueado = False
@@ -352,12 +356,6 @@ def cargar_datos_cache(archivo):
     if os.path.exists(archivo):
         return pd.read_csv(archivo, dtype=str)
     return pd.DataFrame()
-
-def formatear_numero(n):
-    try:
-        return f"{int(n):,}".replace(",", ".")
-    except:
-        return "0"
 
 if seleccion == "Resumen General":
     st.subheader("🧑‍⚕️ ATENCIONES")
@@ -486,9 +484,7 @@ elif seleccion == "Ruta Epidemiológica":
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
-        st.dataframe(df_detalle, use_container_width=True, hide_index=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.components.v1.html(renderizar_tabla_html_pro(df_detalle), height=350, scrolling=True)
         
         st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_detalle), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     
@@ -542,9 +538,7 @@ elif seleccion == "Hospitales de Campaña":
                 </div>
                 """, unsafe_allow_html=True)
                 
-                st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
-                st.dataframe(df_cat_vista[cols_limpias], use_container_width=True, hide_index=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.components.v1.html(renderizar_tabla_html_pro(df_cat_vista[cols_limpias]), height=380, scrolling=True)
                 
             with tab_h2:
                 st.markdown(f"""
@@ -557,9 +551,7 @@ elif seleccion == "Hospitales de Campaña":
                 """, unsafe_allow_html=True)
                 
                 df_nac_filtrado = df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "NACIONAL"]
-                st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
-                st.dataframe(df_nac_filtrado[cols_limpias], use_container_width=True, hide_index=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.components.v1.html(renderizar_tabla_html_pro(df_nac_filtrado[cols_limpias]), height=320, scrolling=True)
                 
             with tab_h3:
                 st.markdown(f"""
@@ -572,9 +564,7 @@ elif seleccion == "Hospitales de Campaña":
                 """, unsafe_allow_html=True)
                 
                 df_ext_filtrado = df_cat_vista[df_cat_vista["NACIONALIAD_LOWER"] == "EXTRANJERO"]
-                st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
-                st.dataframe(df_ext_filtrado[cols_limpias], use_container_width=True, hide_index=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+                st.components.v1.html(renderizar_tabla_html_pro(df_ext_filtrado[cols_limpias]), height=250, scrolling=True)
             
             col_dl1, col_dl2 = st.columns([2, 8])
             with col_dl1:
@@ -617,9 +607,7 @@ elif seleccion not in jornadas_map:
             </div>
             """, unsafe_allow_html=True)
             
-            st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
-            st.dataframe(df_cat_vista, use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.components.v1.html(renderizar_tabla_html_pro(df_cat_vista), height=380, scrolling=True)
             
             col_dl1, col_dl2 = st.columns([2, 8])
             with col_dl1:
@@ -746,20 +734,8 @@ elif seleccion in jornadas_map:
                 font=dict(color='white', size=11),
                 margin=dict(t=2, b=2, l=150, r=40),
                 height=max(280, len(df_esp_viz) * 22), 
-                xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='#30363d', 
-                    tickfont=dict(size=11, color='white'), 
-                    fixedrange=True,
-                    range=[0, max_val_esp * 1.15]
-                ),
-                yaxis=dict(
-                    autorange="reversed", 
-                    tickfont=dict(size=11, color='white', weight="bold"), 
-                    fixedrange=True,
-                    dtick=1, 
-                    showticklabels=True
-                )
+                xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=11, color='white'), fixedrange=True, range=[0, max_val_esp * 1.15]),
+                yaxis=dict(autorange="reversed", tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True, dtick=1, showticklabels=True)
             )
             st.plotly_chart(fig_esp, use_container_width=True, key=f"grafico_especialidades_dinamico_{suf}", config={'displayModeBar': False})
         else:
@@ -795,20 +771,8 @@ elif seleccion in jornadas_map:
                     font=dict(color='white', size=11),
                     margin=dict(t=2, b=2, l=150, r=40),
                     height=max(280, len(df_apo_viz) * 22),
-                    xaxis=dict(
-                        showgrid=True, 
-                        gridcolor='#30363d', 
-                        tickfont=dict(size=11, color='white'), 
-                        fixedrange=True,
-                        range=[0, max_val_apo * 1.15]
-                    ),
-                    yaxis=dict(
-                        autorange="reversed", 
-                        tickfont=dict(size=11, color='white', weight="bold"), 
-                        fixedrange=True,
-                        dtick=1, 
-                        showticklabels=True
-                    )
+                    xaxis=dict(showgrid=True, gridcolor='#30363d', tickfont=dict(size=11, color='white'), fixedrange=True, range=[0, max_val_apo * 1.15]),
+                    yaxis=dict(autorange="reversed", tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True, dtick=1, showticklabels=True)
                 )
                 st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_social_dinamico_{suf}", config={'displayModeBar': False})
             else:
