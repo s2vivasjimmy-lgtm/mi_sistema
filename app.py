@@ -10,8 +10,8 @@ import plotly.graph_objects as go
 from github import Github
 from streamlit_autorefresh import st_autorefresh
 
-# Refrescar la aplicación automáticamente cada 5 segundos
-st_autorefresh(interval=5000, key="dataview_autorefresh")
+# Refrescar la aplicación automáticamente cada 2 segundos
+st_autorefresh(interval=2000, key="dataview_autorefresh")
 
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
