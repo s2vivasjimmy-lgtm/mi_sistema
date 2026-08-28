@@ -701,12 +701,6 @@ elif seleccion in jornadas_map:
             st.info("Sin registros de apoyo social cargados.")
 
     # --- SECCIÓN INFERIOR: DEMOGRAFÍA ---
-    st.markdown("""
-    <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px; margin-bottom: 6px;">
-        <h3 style="color: #20c997; text-align: center; font-size: 15px; margin: 0; padding: 0;">👥 DESGLOSE DEMOGRÁFICO DE ATENCIONES</h3>
-    </div>
-    """, unsafe_allow_html=True)
-
     archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
     mujeres, hombres, ninas, ninos = 0, 0, 0, 0
 
@@ -721,32 +715,41 @@ elif seleccion in jornadas_map:
             except:
                 pass
 
+    total_personas_atendidas = mujeres + hombres + ninas + ninos
+
+    st.markdown(f"""
+    <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px; margin-bottom: 6px; text-align: center;">
+        <h3 style="color: #20c997; font-size: 15px; margin: 0; padding: 0; display: inline-block;">👥 DESGLOSE DEMOGRÁFICO DE PERSONAS ATENDIDAS</h3>
+        <span style="color: #ffd700; font-size: 15px; font-weight: bold; margin-left: 15px;">TOTAL: {formatear_numero(total_personas_atendidas)}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
     col_d1, col_d2, col_d3, col_d4 = st.columns(4)
     with col_d1:
         st.markdown(f'''
         <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #ff69b4; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">MUJERES</div>
+            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👩 MUJERES</div>
             <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(mujeres)}</div>
         </div>
         ''', unsafe_allow_html=True)
     with col_d2:
         st.markdown(f'''
         <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">HOMBRES</div>
+            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👨 HOMBRES</div>
             <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(hombres)}</div>
         </div>
         ''', unsafe_allow_html=True)
     with col_d3:
         st.markdown(f'''
         <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #ff1493; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">NIÑAS</div>
+            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👧 NIÑAS</div>
             <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(ninas)}</div>
         </div>
         ''', unsafe_allow_html=True)
     with col_d4:
         st.markdown(f'''
         <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #1e90ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">NIÑOS</div>
+            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👦 NIÑOS</div>
             <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(ninos)}</div>
         </div>
         ''', unsafe_allow_html=True)
