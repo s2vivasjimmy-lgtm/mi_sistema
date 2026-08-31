@@ -475,7 +475,6 @@ elif seleccion == "Total 4 Jornadas":
     </div>
     """, unsafe_allow_html=True)
 
-    # Consolidar datos de las 4 jornadas
     jornadas_ids = ['i', 'ii', 'iii', 'iv']
     
     total_atenciones_acumulado = 0
@@ -486,18 +485,15 @@ elif seleccion == "Total 4 Jornadas":
     df_apo_list = []
 
     for s in jornadas_ids:
-        # Especialidades
         f_esp = f"{s}_especialidades_venezuela_renace.csv"
         if os.path.exists(f_esp):
             df_e = cargar_datos_cache(f_esp)
             if not df_e.empty and "ATENCIONES" in df_e.columns and "ESPECIALIDAD" in df_e.columns:
                 df_e["ATENCIONES_NUM"] = pd.to_numeric(df_e["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                # Normalizar texto para evitar duplicados por mayúsculas/minúsculas o espacios
                 df_e["ESPECIALIDAD"] = df_e["ESPECIALIDAD"].astype(str).str.strip().str.upper()
                 total_atenciones_acumulado += df_e["ATENCIONES_NUM"].sum()
                 df_esp_list.append(df_e)
         
-        # Apoyo Social
         f_apo = f"{s}_apoyo_social_venezuela_renace.csv"
         if os.path.exists(f_apo):
             df_a = cargar_datos_cache(f_apo)
@@ -507,7 +503,6 @@ elif seleccion == "Total 4 Jornadas":
                 total_apoyo_acumulado += df_a["VALOR_NUM"].sum()
                 df_apo_list.append(df_a)
 
-        # Demografía
         f_dem = f"{s}_demografia_venezuela_renace.csv"
         if os.path.exists(f_dem):
             df_d = cargar_datos_cache(f_dem)
@@ -564,7 +559,6 @@ elif seleccion == "Total 4 Jornadas":
 
     if df_esp_list:
         df_esp_total = pd.concat(df_esp_list, ignore_index=True)
-        # Agrupar sumando las cantidades de especialidades idénticas (sin repeticiones)
         df_esp_grouped = df_esp_total.groupby("ESPECIALIDAD", as_index=False)["ATENCIONES_NUM"].sum()
         df_esp_grouped = df_esp_grouped.sort_values(by="ATENCIONES_NUM", ascending=True)
 
@@ -591,7 +585,6 @@ elif seleccion == "Total 4 Jornadas":
 
     if df_apo_list:
         df_apo_total = pd.concat(df_apo_list, ignore_index=True)
-        # Agrupar sumando las cantidades de apoyo social idénticas (sin repeticiones)
         df_apo_grouped = df_apo_total.groupby("CATEGORIA_APOYO", as_index=False)["VALOR_NUM"].sum()
         df_apo_grouped = df_apo_grouped.sort_values(by="VALOR_NUM", ascending=True)
 
@@ -884,6 +877,10 @@ elif seleccion in jornadas_map:
             <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #ffd700; text-align: center;">
                 <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
                 <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(ninos)}</div>
+            </div>
+            <div style="grid-column: span 2; background: #1f3044; padding: 8px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center;">
+                <div style="color: #00d2ff; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL PERSONAS ATENDIDAS</div>
+                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(mujeres + hombres + ninas + ninos)}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
