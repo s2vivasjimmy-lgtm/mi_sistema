@@ -490,8 +490,10 @@ elif seleccion == "Total 4 Jornadas":
         f_esp = f"{s}_especialidades_venezuela_renace.csv"
         if os.path.exists(f_esp):
             df_e = cargar_datos_cache(f_esp)
-            if not df_e.empty and "ATENCIONES" in df_e.columns:
+            if not df_e.empty and "ATENCIONES" in df_e.columns and "ESPECIALIDAD" in df_e.columns:
                 df_e["ATENCIONES_NUM"] = pd.to_numeric(df_e["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                # Normalizar texto para evitar duplicados por mayúsculas/minúsculas o espacios
+                df_e["ESPECIALIDAD"] = df_e["ESPECIALIDAD"].astype(str).str.strip().str.upper()
                 total_atenciones_acumulado += df_e["ATENCIONES_NUM"].sum()
                 df_esp_list.append(df_e)
         
@@ -499,8 +501,9 @@ elif seleccion == "Total 4 Jornadas":
         f_apo = f"{s}_apoyo_social_venezuela_renace.csv"
         if os.path.exists(f_apo):
             df_a = cargar_datos_cache(f_apo)
-            if not df_a.empty and "VALOR" in df_a.columns:
+            if not df_a.empty and "VALOR" in df_a.columns and "CATEGORIA_APOYO" in df_a.columns:
                 df_a["VALOR_NUM"] = pd.to_numeric(df_a["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                df_a["CATEGORIA_APOYO"] = df_a["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
                 total_apoyo_acumulado += df_a["VALOR_NUM"].sum()
                 df_apo_list.append(df_a)
 
@@ -561,6 +564,7 @@ elif seleccion == "Total 4 Jornadas":
 
     if df_esp_list:
         df_esp_total = pd.concat(df_esp_list, ignore_index=True)
+        # Agrupar sumando las cantidades de especialidades idénticas (sin repeticiones)
         df_esp_grouped = df_esp_total.groupby("ESPECIALIDAD", as_index=False)["ATENCIONES_NUM"].sum()
         df_esp_grouped = df_esp_grouped.sort_values(by="ATENCIONES_NUM", ascending=True)
 
@@ -584,6 +588,33 @@ elif seleccion == "Total 4 Jornadas":
             yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
         )
         st.plotly_chart(fig_total_esp, use_container_width=True, config={'displayModeBar': False})
+
+    if df_apo_list:
+        df_apo_total = pd.concat(df_apo_list, ignore_index=True)
+        # Agrupar sumando las cantidades de apoyo social idénticas (sin repeticiones)
+        df_apo_grouped = df_apo_total.groupby("CATEGORIA_APOYO", as_index=False)["VALOR_NUM"].sum()
+        df_apo_grouped = df_apo_grouped.sort_values(by="VALOR_NUM", ascending=True)
+
+        st.markdown("### 🤝 Consolidado de Apoyo Social")
+        fig_total_apo = go.Figure(data=[go.Bar(
+            y=df_apo_grouped["CATEGORIA_APOYO"],
+            x=df_apo_grouped["VALOR_NUM"],
+            orientation='h',
+            marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
+            text=df_apo_grouped["VALOR_NUM"],
+            textposition='outside',
+            textfont=dict(size=11, color='white', weight="bold")
+        )])
+        fig_total_apo.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', size=11),
+            margin=dict(t=10, b=10, l=180, r=40),
+            height=max(250, len(df_apo_grouped) * 25),
+            xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
+            yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
+        )
+        st.plotly_chart(fig_total_apo, use_container_width=True, config={'displayModeBar': False})
 
 elif seleccion not in jornadas_map:
     st.markdown(f"""
