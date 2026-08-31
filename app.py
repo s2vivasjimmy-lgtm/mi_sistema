@@ -420,7 +420,7 @@ if seleccion == "Resumen General":
     st.subheader("🏥 RESUMEN OPERATIVO")
     df = cargar_datos_cache(ARCHIVO_RESUMEN)
     iconos = {"ALTAS MÉDICAS": "✅", "TRASLADOS": "🚑", "CAMAS OCUPADAS": "🛌", 
-               "CAMAS DISPONIBLES": "🛏️", "INTERVENCIONES Q.": "🔪"}
+              "CAMAS DISPONIBLES": "🛏️", "INTERVENCIONES Q.": "🔪"}
     cols_mostrar = ["ALTAS MÉDICAS", "TRASLADOS", "CAMAS OCUPADAS", 
                     "CAMAS DISPONIBLES", "INTERVENCIONES Q."]
     
@@ -647,109 +647,123 @@ elif seleccion in jornadas_map:
     with col_der:
         st.markdown("""
         <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-bottom: 4px;">
-            <h3 style="color: #ffd700; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #ffd700; padding-bottom: 2px;">🤝 APOYO SOCIAL</h3>
+            <h3 style="color: #ffaa00; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #ffaa00; padding-bottom: 2px;">🤝 APOYO SOCIAL</h3>
         </div>
         """, unsafe_allow_html=True)
-        
+
         archivo_apo = f"{suf}_apoyo_social_venezuela_renace.csv"
         df_apo_viz = None
         if f"apo_{suf}" in st.session_state and st.session_state[f"apo_{suf}"] is not None:
-            edited_data_apo = st.session_state[f"apo_{suf}"]
-            if isinstance(edited_data_apo, pd.DataFrame):
-                df_apo_viz = edited_data_apo
-        
+            edited_apo = st.session_state[f"apo_{suf}"]
+            if isinstance(edited_apo, pd.DataFrame):
+                df_apo_viz = edited_apo
         if df_apo_viz is None and os.path.exists(archivo_apo):
             df_apo_viz = cargar_datos_cache(archivo_apo)
-            
+
         if df_apo_viz is not None and not df_apo_viz.empty and "CATEGORIA_APOYO" in df_apo_viz.columns and "VALOR" in df_apo_viz.columns:
             df_apo_viz["VALOR_NUM"] = pd.to_numeric(df_apo_viz["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             max_val_apo = df_apo_viz["VALOR_NUM"].max() if not df_apo_viz["VALOR_NUM"].empty else 100
-            
+
             fig_apo = go.Figure(data=[go.Bar(
                 y=df_apo_viz["CATEGORIA_APOYO"],
                 x=df_apo_viz["VALOR_NUM"],
                 orientation='h',
-                marker=dict(color='#ffd700', line=dict(color='#ffffff', width=1)),
+                marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                 text=df_apo_viz["VALOR_NUM"],
                 textposition='outside',
                 textfont=dict(size=11, color='white', family="sans-serif", weight="bold")
             )])
-            
+
             fig_apo.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=11),
-                margin=dict(t=2, b=2, l=170, r=40),
-                height=max(280, len(df_apo_viz) * 22), 
+                margin=dict(t=2, b=2, l=150, r=40),
+                height=max(140, len(df_apo_viz) * 22),
                 xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='#30363d', 
-                    tickfont=dict(size=11, color='white'), 
+                    showgrid=True,
+                    gridcolor='#30363d',
+                    tickfont=dict(size=11, color='white'),
                     fixedrange=True,
                     range=[0, max_val_apo * 1.15]
                 ),
                 yaxis=dict(
-                    autorange="reversed", 
-                    tickfont=dict(size=11, color='white', weight="bold"), 
+                    autorange="reversed",
+                    tickfont=dict(size=11, color='white', weight="bold"),
                     fixedrange=True,
-                    dtick=1, 
+                    dtick=1,
                     showticklabels=True
                 )
             )
-            st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_dinamico_{suf}", config={'displayModeBar': False})
+            st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_social_dinamico_{suf}", config={'displayModeBar': False})
         else:
             st.info("Sin registros de apoyo social cargados.")
 
-    # --- SECCIÓN INFERIOR: DEMOGRAFÍA ---
-    archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
-    mujeres, hombres, ninas, ninos = 0, 0, 0, 0
+        st.markdown("""
+        <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px; margin-bottom: 4px;">
+            <h3 style="color: #20c997; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #20c997; padding-bottom: 2px;">👥 DESGLOSE DEMOGRÁFICO</h3>
+        </div>
+        """, unsafe_allow_html=True)
 
-    if os.path.exists(archivo_demo):
-        df_demo_viz = cargar_datos_cache(archivo_demo)
-        if not df_demo_viz.empty:
+        archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
+        df_demo_viz = None
+        if f"demo_{suf}" in st.session_state and st.session_state[f"demo_{suf}"] is not None:
+            edited_demo = st.session_state[f"demo_{suf}"]
+            if isinstance(edited_demo, pd.DataFrame):
+                df_demo_viz = edited_demo
+        if df_demo_viz is None and os.path.exists(archivo_demo):
+            df_demo_viz = cargar_datos_cache(archivo_demo)
+
+        mujeres, hombres, ninas, ninos = 0, 0, 0, 0
+        if df_demo_viz is not None and not df_demo_viz.empty:
             try:
-                mujeres = int(str(df_demo_viz.iloc[0].get("MUJERES", "0")).replace('.', ''))
-                hombres = int(str(df_demo_viz.iloc[0].get("HOMBRES", "0")).replace('.', ''))
-                ninas = int(str(df_demo_viz.iloc[0].get("NIÑAS", "0")).replace('.', ''))
-                ninos = int(str(df_demo_viz.iloc[0].get("NIÑOS", "0")).replace('.', ''))
+                row = df_demo_viz.iloc[0]
+                mujeres = int(str(row.get("MUJERES", "0")).replace('.', ''))
+                hombres = int(str(row.get("HOMBRES", "0")).replace('.', ''))
+                ninas = int(str(row.get("NIÑAS", "0")).replace('.', ''))
+                ninos = int(str(row.get("NIÑOS", "0")).replace('.', ''))
             except:
                 pass
 
-    total_personas_atendidas = mujeres + hombres + ninas + ninos
+        st.markdown(f"""
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 5px;">
+            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #ff4b4b; text-align: center;">
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
+                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(mujeres)}</div>
+            </div>
+            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #00d2ff; text-align: center;">
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
+                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(hombres)}</div>
+            </div>
+            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #ff88ff; text-align: center;">
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
+                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(ninas)}</div>
+            </div>
+            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #ffd700; text-align: center;">
+                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
+                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(ninos)}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px; margin-bottom: 6px; text-align: center;">
-        <h3 style="color: #20c997; font-size: 15px; margin: 0; padding: 0; display: inline-block;">👥 DESGLOSE DEMOGRÁFICO DE PERSONAS ATENDIDAS</h3>
-        <span style="color: #ffd700; font-size: 15px; font-weight: bold; margin-left: 15px;">TOTAL: {formatear_numero(total_personas_atendidas)}</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    col_d1, col_d2, col_d3, col_d4 = st.columns(4)
-    with col_d1:
-        st.markdown(f'''
-        <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #ff69b4; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👩 MUJERES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(mujeres)}</div>
-        </div>
-        ''', unsafe_allow_html=True)
-    with col_d2:
-        st.markdown(f'''
-        <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👨 HOMBRES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(hombres)}</div>
-        </div>
-        ''', unsafe_allow_html=True)
-    with col_d3:
-        st.markdown(f'''
-        <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #ff1493; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👧 NIÑAS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(ninas)}</div>
-        </div>
-        ''', unsafe_allow_html=True)
-    with col_d4:
-        st.markdown(f'''
-        <div style="background: #1f242d; padding: 8px; border-radius: 6px; border-left: 4px solid #1e90ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; text-transform: uppercase; font-weight: bold;">👦 NIÑOS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(ninos)}</div>
-        </div>
-        ''', unsafe_allow_html=True)
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        if os.path.exists(archivo_esp):
+            df_dl_esp = cargar_datos_cache(archivo_esp)
+            st.download_button(
+                f"📥 Descargar Especialidades ({num_romano})",
+                data=convertir_df_a_excel(df_dl_esp),
+                file_name=f"{suf}_especialidades_venezuela_renace.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
+    with col_btn2:
+        if os.path.exists(archivo_apo):
+            df_dl_apo = cargar_datos_cache(archivo_apo)
+            st.download_button(
+                f"📥 Descargar Apoyo Social ({num_romano})",
+                data=convertir_df_a_excel(df_dl_apo),
+                file_name=f"{suf}_apoyo_social_venezuela_renace.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
