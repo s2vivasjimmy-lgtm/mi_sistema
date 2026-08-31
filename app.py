@@ -49,7 +49,6 @@ def convertir_df_a_excel(df):
 # --- CSS GENERAL ---
 st.markdown("""
 <style>
-/* Ocultar el botón flotante de "Manage app" */
 button[kind="header"] {
     display: none !important;
 }
@@ -95,7 +94,6 @@ button[kind="header"] {
 
 .logo-custom { width: 100%; height: 90px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
 
-/* Tarjeta contenedora profesional para tablas */
 .pro-table-container {
     background: linear-gradient(145deg, #161b22, #0d1117);
     border: 1px solid #30363d;
@@ -147,7 +145,7 @@ with st.sidebar:
                          ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña", "Sistema de Salud Tradicional", 
                           "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", 
                           "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", 
-                          "I Jornada Médica", "II Jornada Médica", "III Jornada Médica", "IV Jornada Médica"])
+                          "Total 4 Jornadas", "I Jornada Médica", "II Jornada Médica", "III Jornada Médica", "IV Jornada Médica"])
 
 jornadas_map = {
     "I Jornada Médica": ("i", "I"),
@@ -200,7 +198,7 @@ if st.session_state.admin_logueado:
                     st.error(f"Error al autosumar y actualizar fecha: {e}")
 
                 guardar_en_github(archivo_esp)
-                st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada con la hora de Caracas!")
+                st.success(f"¡Especialidades guardadas, Total de Atenciones actualizado a {suma_especialidades} y Fecha/Hora sincronizada!")
 
         with tab_ed2:
             st.markdown(f"### Tabla: Apoyo Social ({seleccion})")
@@ -212,7 +210,6 @@ if st.session_state.admin_logueado:
             
             if st.button("💾 Guardar Apoyo Social", key=f"btn_apo_{suf}"):
                 df_apo_edit.to_csv(archivo_apo, index=False)
-                
                 try:
                     if os.path.exists(archivo_meta):
                         df_m = pd.read_csv(archivo_meta, dtype=str)
@@ -222,9 +219,8 @@ if st.session_state.admin_logueado:
                         guardar_en_github(archivo_meta)
                 except:
                     pass
-
                 guardar_en_github(archivo_apo)
-                st.success("Apoyo social guardado y hora de Caracas actualizada.")
+                st.success("Apoyo social guardado.")
 
         with tab_ed3:
             st.markdown(f"### Desglose Demográfico ({seleccion})")
@@ -245,7 +241,7 @@ if st.session_state.admin_logueado:
                 except:
                     pass
                 guardar_en_github(archivo_demo)
-                st.success("Demografía guardada y hora de Caracas actualizada.")
+                st.success("Demografía guardada.")
 
         if st.button("❌ Cerrar Sesión", key=f"logout_{suf}"):
             st.session_state.admin_logueado = False
@@ -471,8 +467,125 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
+elif seleccion == "Total 4 Jornadas":
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 15px;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 900;">CONSOLIDADO GENERAL DE LAS 4 JORNADAS VENEZUELA RENACE</h1>
+        <p style="color: #00d2ff; margin: 0; font-size: 13px;">Acumulado total de atenciones, apoyo social y demografía de las jornadas I, II, III y IV.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Consolidar datos de las 4 jornadas
+    jornadas_ids = ['i', 'ii', 'iii', 'iv']
+    
+    total_atenciones_acumulado = 0
+    total_apoyo_acumulado = 0
+    tot_mujeres, tot_hombres, tot_ninas, tot_ninos = 0, 0, 0, 0
+    
+    df_esp_list = []
+    df_apo_list = []
+
+    for s in jornadas_ids:
+        # Especialidades
+        f_esp = f"{s}_especialidades_venezuela_renace.csv"
+        if os.path.exists(f_esp):
+            df_e = cargar_datos_cache(f_esp)
+            if not df_e.empty and "ATENCIONES" in df_e.columns:
+                df_e["ATENCIONES_NUM"] = pd.to_numeric(df_e["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                total_atenciones_acumulado += df_e["ATENCIONES_NUM"].sum()
+                df_esp_list.append(df_e)
+        
+        # Apoyo Social
+        f_apo = f"{s}_apoyo_social_venezuela_renace.csv"
+        if os.path.exists(f_apo):
+            df_a = cargar_datos_cache(f_apo)
+            if not df_a.empty and "VALOR" in df_a.columns:
+                df_a["VALOR_NUM"] = pd.to_numeric(df_a["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+                total_apoyo_acumulado += df_a["VALOR_NUM"].sum()
+                df_apo_list.append(df_a)
+
+        # Demografía
+        f_dem = f"{s}_demografia_venezuela_renace.csv"
+        if os.path.exists(f_dem):
+            df_d = cargar_datos_cache(f_dem)
+            if not df_d.empty:
+                try:
+                    row = df_d.iloc[0]
+                    tot_mujeres += int(str(row.get("MUJERES", "0")).replace('.', ''))
+                    tot_hombres += int(str(row.get("HOMBRES", "0")).replace('.', ''))
+                    tot_ninas += int(str(row.get("NIÑAS", "0")).replace('.', ''))
+                    tot_ninos += int(str(row.get("NIÑOS", "0")).replace('.', ''))
+                except:
+                    pass
+
+    gran_total_general = total_atenciones_acumulado + total_apoyo_acumulado
+
+    st.markdown(f"""
+    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 20px; border-radius: 6px; text-align: center; box-shadow: 0 2px 6px rgba(0,210,255,0.3);">
+            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES:</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(total_atenciones_acumulado)}</div>
+        </div>
+        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 12px 20px; border-radius: 6px; text-align: center; box-shadow: 0 2px 6px rgba(255,170,0,0.3);">
+            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(total_apoyo_acumulado)}</div>
+        </div>
+        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 12px 20px; border-radius: 6px; text-align: center; box-shadow: 0 2px 6px rgba(40,167,69,0.3);">
+            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">CONSOLIDADO GENERAL:</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(gran_total_general)}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### 👥 Desglose Demográfico Acumulado (Las 4 Jornadas)")
+    st.markdown(f"""
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px;">
+        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_mujeres)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_hombres)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_ninas)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_ninos)}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if df_esp_list:
+        df_esp_total = pd.concat(df_esp_list, ignore_index=True)
+        df_esp_grouped = df_esp_total.groupby("ESPECIALIDAD", as_index=False)["ATENCIONES_NUM"].sum()
+        df_esp_grouped = df_esp_grouped.sort_values(by="ATENCIONES_NUM", ascending=True)
+
+        st.markdown("### 🩺 Consolidado de Atenciones por Especialidad")
+        fig_total_esp = go.Figure(data=[go.Bar(
+            y=df_esp_grouped["ESPECIALIDAD"],
+            x=df_esp_grouped["ATENCIONES_NUM"],
+            orientation='h',
+            marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
+            text=df_esp_grouped["ATENCIONES_NUM"],
+            textposition='outside',
+            textfont=dict(size=11, color='white', weight="bold")
+        )])
+        fig_total_esp.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', size=11),
+            margin=dict(t=10, b=10, l=180, r=40),
+            height=max(350, len(df_esp_grouped) * 25),
+            xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
+            yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
+        )
+        st.plotly_chart(fig_total_esp, use_container_width=True, config={'displayModeBar': False})
+
 elif seleccion not in jornadas_map:
-    # --- VISTA GENERAL PROFESIONAL PARA EL RESTO DE CATEGORÍAS ---
     st.markdown(f"""
     <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #00d2ff; padding-bottom: 8px; margin-bottom: 20px;">
         <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">📊 REGISTROS INSTITUCIONALES: <span style="color: #00d2ff;">{seleccion.upper()}</span></h2>
@@ -494,7 +607,6 @@ elif seleccion not in jornadas_map:
             </div>
             """, unsafe_allow_html=True)
             
-            # Contenedor profesional para la tabla
             st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
             st.dataframe(df_cat_vista, use_container_width=True, hide_index=True)
             st.markdown('</div>', unsafe_allow_html=True)
@@ -511,12 +623,11 @@ elif seleccion not in jornadas_map:
         else:
             st.info(f"No hay registros guardados actualmente en {seleccion}.")
     else:
-        st.info(f"Aún no se ha creado el archivo de datos para {seleccion}. Puede agregar registros desde el panel de configuración (⚙️).")
+        st.info(f"Aún no se ha creado el archivo de datos para {seleccion}.")
 
 elif seleccion in jornadas_map:
     suf, num_romano = jornadas_map[seleccion]
     
-    # --- BLOQUE INSTITUCIONAL CON ESPACIADO VERTICAL NULO ---
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 0px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin: 0 0 2px 0;">
         <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; padding: 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
