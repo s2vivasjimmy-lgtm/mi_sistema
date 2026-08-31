@@ -554,6 +554,10 @@ elif seleccion == "Total 4 Jornadas":
             <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
             <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_ninos)}</div>
         </div>
+        <div style="grid-column: span 4; background: #1f3044; padding: 12px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
+            <div style="color: #00d2ff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL PERSONAS ATENDIDAS</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(tot_mujeres + tot_hombres + tot_ninas + tot_ninos)}</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
