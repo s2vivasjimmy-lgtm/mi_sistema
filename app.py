@@ -16,7 +16,6 @@ st_autorefresh(interval=5000, key="dataview_autorefresh")
 st.set_page_config(page_title="Puesto de Comando", layout="wide", initial_sidebar_state="expanded")
 
 def obtener_hora_red():
-    """Obtiene la hora oficial de Venezuela (America/Caracas) desde worldtimeapi, con respaldo en UTC-4."""
     try:
         with urllib.request.urlopen("https://worldtimeapi.org/api/timezone/America/Caracas", timeout=3) as response:
             data = json.loads(response.read().decode())
@@ -525,7 +524,7 @@ elif seleccion in jornadas_map:
     </div>
     """, unsafe_allow_html=True)
 
-    # --- CARGA DE DATOS PARA ESPECIALIDADES Y APOYO SOCIAL ---
+    # --- CARGA DE DATOS PARA ESPECIALIDADES Y APOYO SOCIAL (MANTENIENDO ORDEN DE REGISTRO) ---
     tot_esp_val = 0
     df_esp_vis = pd.DataFrame()
     if os.path.exists(archivo_esp):
@@ -534,7 +533,8 @@ elif seleccion in jornadas_map:
             df_esp_vis["ATENCIONES_NUM"] = pd.to_numeric(df_esp_vis["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_esp_vis["ESPECIALIDAD"] = df_esp_vis["ESPECIALIDAD"].astype(str).str.strip().str.upper()
             tot_esp_val = int(df_esp_vis["ATENCIONES_NUM"].sum())
-            df_esp_vis = df_esp_vis.sort_values(by="ATENCIONES_NUM", ascending=True)
+            # Invertimos el DataFrame para que el primer registro del Excel quede arriba en el gráfico de barras horizontales
+            df_esp_vis = df_esp_vis.iloc[::-1].reset_index(drop=True)
 
     tot_apo_val = 0
     df_apo_vis = pd.DataFrame()
@@ -544,13 +544,14 @@ elif seleccion in jornadas_map:
             df_apo_vis["VALOR_NUM"] = pd.to_numeric(df_apo_vis["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_apo_vis["CATEGORIA_APOYO"] = df_apo_vis["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
             tot_apo_val = int(df_apo_vis["VALOR_NUM"].sum())
-            df_apo_vis = df_apo_vis.sort_values(by="VALOR_NUM", ascending=True)
+            # Invertimos el DataFrame para que el primer registro del Excel quede arriba en el gráfico de barras horizontales
+            df_apo_vis = df_apo_vis.iloc[::-1].reset_index(drop=True)
 
     total_general_jornada = tot_esp_val + tot_apo_val
 
-    # --- ALTURA DINÁMICA PARA EVITAR COMPRESIÓN Y MEJORAR PROYECCIÓN ---
-    altura_esp = max(300, len(df_esp_vis) * 28) if not df_esp_vis.empty else 300
-    altura_apo = max(300, len(df_apo_vis) * 28) if not df_apo_vis.empty else 300
+    # --- ALTURA DINÁMICA ---
+    altura_esp = max(300, len(df_esp_vis) * 32) if not df_esp_vis.empty else 300
+    altura_apo = max(300, len(df_apo_vis) * 32) if not df_apo_vis.empty else 300
 
     # --- SECCIÓN LADO A LADO ---
     col_izq, col_der = st.columns(2)
@@ -571,10 +572,10 @@ elif seleccion in jornadas_map:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=180, r=50),
+                margin=dict(t=20, b=20, l=220, r=80),
                 height=altura_esp,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
-                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_esp_vis["ESPECIALIDAD"].tolist())
             )
             st.plotly_chart(fig_esp, use_container_width=True, config={'displayModeBar': False})
             st.download_button("📥 Descargar Especialidades Excel", data=convertir_df_a_excel(df_esp_vis), file_name=f"{seleccion}_especialidades.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key=f"dl_esp_{suf}")
@@ -595,10 +596,10 @@ elif seleccion in jornadas_map:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=180, r=50),
+                margin=dict(t=20, b=20, l=220, r=80),
                 height=altura_apo,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
-                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_apo_vis["CATEGORIA_APOYO"].tolist())
             )
             st.plotly_chart(fig_apo, use_container_width=True, config={'displayModeBar': False})
             st.download_button("📥 Descargar Apoyo Social Excel", data=convertir_df_a_excel(df_apo_vis), file_name=f"{seleccion}_apoyo_social.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key=f"dl_apo_{suf}")
@@ -641,7 +642,6 @@ elif seleccion == "Total 5 Jornadas":
 
     jornadas_ids = ['i', 'ii', 'iii', 'iv', 'v']
     
-    # Consolidar Especialidades de las 5 jornadas
     lista_df_esp = []
     lista_df_apo = []
     
@@ -674,29 +674,27 @@ elif seleccion == "Total 5 Jornadas":
                 except:
                     pass
 
-    # Unir y agrupar especialidades
+    # Consolidar manteniendo el orden acumulado de registro sin ordenar de mayor a menor
     df_cons_esp = pd.DataFrame()
     if lista_df_esp:
         df_concat_esp = pd.concat(lista_df_esp, ignore_index=True)
         df_concat_esp["ATENCIONES_NUM"] = pd.to_numeric(df_concat_esp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
         df_concat_esp["ESPECIALIDAD"] = df_concat_esp["ESPECIALIDAD"].astype(str).str.strip().str.upper()
         df_cons_esp = df_concat_esp.groupby("ESPECIALIDAD", as_index=False)["ATENCIONES_NUM"].sum()
-        df_cons_esp = df_cons_esp.sort_values(by="ATENCIONES_NUM", ascending=True)
+        df_cons_esp = df_cons_esp.iloc[::-1].reset_index(drop=True)
 
-    # Unir y agrupar apoyo social
     df_cons_apo = pd.DataFrame()
     if lista_df_apo:
         df_concat_apo = pd.concat(lista_df_apo, ignore_index=True)
         df_concat_apo["VALOR_NUM"] = pd.to_numeric(df_concat_apo["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
         df_concat_apo["CATEGORIA_APOYO"] = df_concat_apo["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
         df_cons_apo = df_concat_apo.groupby("CATEGORIA_APOYO", as_index=False)["VALOR_NUM"].sum()
-        df_cons_apo = df_cons_apo.sort_values(by="VALOR_NUM", ascending=True)
+        df_cons_apo = df_cons_apo.iloc[::-1].reset_index(drop=True)
 
     tot_cons_esp = int(df_cons_esp["ATENCIONES_NUM"].sum()) if not df_cons_esp.empty else 0
     tot_cons_apo = int(df_cons_apo["VALOR_NUM"].sum()) if not df_cons_apo.empty else 0
     total_general_5 = tot_cons_esp + tot_cons_apo
 
-    # Tarjetas Demográficas del Consolidado
     st.markdown(f"""
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
         <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
@@ -718,9 +716,8 @@ elif seleccion == "Total 5 Jornadas":
     </div>
     """, unsafe_allow_html=True)
 
-    # --- ALTURA DINÁMICA PARA EL CONSOLIDADO ---
-    altura_c_esp = max(300, len(df_cons_esp) * 28) if not df_cons_esp.empty else 300
-    altura_c_apo = max(300, len(df_cons_apo) * 28) if not df_cons_apo.empty else 300
+    altura_c_esp = max(300, len(df_cons_esp) * 32) if not df_cons_esp.empty else 300
+    altura_c_apo = max(300, len(df_cons_apo) * 32) if not df_cons_apo.empty else 300
 
     col_c1, col_c2 = st.columns(2)
 
@@ -740,10 +737,10 @@ elif seleccion == "Total 5 Jornadas":
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=180, r=50),
+                margin=dict(t=20, b=20, l=220, r=80),
                 height=altura_c_esp,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
-                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_cons_esp["ESPECIALIDAD"].tolist())
             )
             st.plotly_chart(fig_c_esp, use_container_width=True, config={'displayModeBar': False})
             st.download_button("📥 Descargar Consolidado Especialidades Excel", data=convertir_df_a_excel(df_cons_esp), file_name="consolidado_especialidades.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_cons_esp")
@@ -764,15 +761,14 @@ elif seleccion == "Total 5 Jornadas":
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=180, r=50),
+                margin=dict(t=20, b=20, l=220, r=80),
                 height=altura_c_apo,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
-                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_cons_apo["CATEGORIA_APOYO"].tolist())
             )
             st.plotly_chart(fig_c_apo, use_container_width=True, config={'displayModeBar': False})
             st.download_button("📥 Descargar Consolidado Apoyo Social Excel", data=convertir_df_a_excel(df_cons_apo), file_name="consolidado_apoyo_social.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_cons_apo")
 
-    # --- TOTALES FINALES CONSOLIDADOS ---
     st.markdown("---")
     tc_1, tc_2, tc_3 = st.columns(3)
     
