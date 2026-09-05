@@ -1,25 +1,25 @@
 Nº,ESPECIALIDAD,ATENCIONES
-01,Medicina Interna ,71
-02,Cardiología ,57
-03,Neumonología,36
-04,Pediatría,81
-05,Traumatología,114
-06,Odontología,121
-07,Oftalmología,35
-08,Dermatología ,50
-09,Cx Pediátrica,19
-10,Neurología Adulto,48
-11,Nutrición y Dietética,88
-12,Psicología y Psiquiatría ,21
-13,Cardiología Infantil,12
-14,Cx de la Mano,28
-15,Cx General,33
-16,Urología,74
-17,Gastroenterología,45
-18,Otorrinolaringología,113
-19,Ginecología y Obstetricia ,99
-20,Medicina General,123
-21,Neurología Pediátrica,16
-22,Nefrología ,11
-23,Endocrinología,20
-24,Neurocirugía ,40
+01,MEDICINA INTERNA ,71
+02,CARDIOLOGÍA ,57
+03,NEUMONOLOGÍA,36
+04,PEDIATRÍA,81
+05,TRAUMATOLOGÍA,114
+06,ODONTOLOGÍA,121
+07,OFTALMOLOGÍA,35
+08,DERMATOLOGÍA ,50
+09,CIRUGÍA PEDIÁTRICA ,19
+10,NEUROLOGÍA ADULTO,48
+11,NUTRICIÓN Y DIETÉTICA,88
+12,PSICOLOGÍA Y PSIQUIATRÍA ,21
+13,CARDIOLOGÍA PEDIÁTRICA,12
+14,CIRUGÍA DE MANO ,28
+15,CIRUGÍA DE MANO ,33
+16,UROLOGÍA,74
+17,GASTROENTEROLOGÍA,45
+18,ORL,113
+19,GINECOLOGÍA Y OBSTETRICIA ,99
+20,MEDICINA GENERAL,123
+21,NEUROLOGÍA PEDIÁTRICA,16
+22,NEFROLOGÍA ,11
+23,ENDOCRINOLOGÍA,20
+24,NEUROCIRUGÍA ,40
