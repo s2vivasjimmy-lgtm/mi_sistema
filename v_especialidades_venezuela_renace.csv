@@ -1,16 +1,16 @@
 Nº,ESPECIALIDAD,ATENCIONES
-01,Medicina Interna ,
-02,Cardiología ,
-03,Neumonología,
-04,Pediatría,
+01,Medicina Interna ,28
+02,Cardiología ,24
+03,Neumonología,17
+04,Pediatría,30
 05,Traumatología,
 06,Odontología,
 07,Oftalmología,
-08,Dermatología ,
-09,Cx Pediátrica,
-10,Neurología Adulto,
+08,Dermatología ,16
+09,Cx Pediátrica,9
+10,Neurología Adulto,22
 11,Nutrición y Dietética,
-12,Psicología y Psiquiatría ,
+12,Psicología y Psiquiatría ,8
 13,Cardiología Infantil,
 14,Cx de la Mano,
 15,Cx General,
@@ -19,6 +19,6 @@ Nº,ESPECIALIDAD,ATENCIONES
 18,Otorrinolaringología,
 19,Ginecología y Obstetricia ,
 20,Medicina General,
-21,Neurología Pediátrica,
-22,Nefrología ,
-23,Endocrinología,
+21,Neurología Pediátrica,16
+22,Nefrología ,4
+23,Endocrinología,8
