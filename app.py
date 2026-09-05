@@ -547,9 +547,13 @@ elif seleccion in jornadas_map:
 
     total_general_jornada = tot_esp_val + tot_apo_val
 
-    # --- ALTURA COMPACTA (Reducción de espacio entre líneas) ---
+    # --- ALTURA COMPACTA ---
     altura_esp = max(250, len(df_esp_vis) * 22) if not df_esp_vis.empty else 250
     altura_apo = max(250, len(df_apo_vis) * 22) if not df_apo_vis.empty else 250
+
+    # Cálculo seguro de máximos para el eje X para evitar recortes del número exterior
+    max_x_esp = df_esp_vis["ATENCIONES_NUM"].max() * 1.25 if not df_esp_vis.empty and len(df_esp_vis) > 0 else 10
+    max_x_apo = df_apo_vis["VALOR_NUM"].max() * 1.25 if not df_apo_vis.empty and len(df_apo_vis) > 0 else 10
 
     # --- SECCIÓN LADO A LADO ---
     col_izq, col_der = st.columns(2)
@@ -570,9 +574,9 @@ elif seleccion in jornadas_map:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=10, b=10, l=220, r=120),
+                margin=dict(t=10, b=10, l=220, r=160),
                 height=altura_esp,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white'), range=[0, max_x_esp]),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_esp_vis["ESPECIALIDAD"].tolist())
             )
             st.plotly_chart(fig_esp, use_container_width=True, config={'displayModeBar': False})
@@ -594,9 +598,9 @@ elif seleccion in jornadas_map:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=10, b=10, l=220, r=120),
+                margin=dict(t=10, b=10, l=220, r=160),
                 height=altura_apo,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white'), range=[0, max_x_apo]),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_apo_vis["CATEGORIA_APOYO"].tolist())
             )
             st.plotly_chart(fig_apo, use_container_width=True, config={'displayModeBar': False})
@@ -716,6 +720,9 @@ elif seleccion == "Total 5 Jornadas":
     altura_c_esp = max(250, len(df_cons_esp) * 22) if not df_cons_esp.empty else 250
     altura_c_apo = max(250, len(df_cons_apo) * 22) if not df_cons_apo.empty else 250
 
+    max_x_c_esp = df_cons_esp["ATENCIONES_NUM"].max() * 1.25 if not df_cons_esp.empty and len(df_cons_esp) > 0 else 10
+    max_x_c_apo = df_cons_apo["VALOR_NUM"].max() * 1.25 if not df_cons_apo.empty and len(df_cons_apo) > 0 else 10
+
     col_c1, col_c2 = st.columns(2)
 
     with col_c1:
@@ -734,9 +741,9 @@ elif seleccion == "Total 5 Jornadas":
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=10, b=10, l=220, r=120),
+                margin=dict(t=10, b=10, l=220, r=160),
                 height=altura_c_esp,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white'), range=[0, max_x_c_esp]),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_cons_esp["ESPECIALIDAD"].tolist())
             )
             st.plotly_chart(fig_c_esp, use_container_width=True, config={'displayModeBar': False})
@@ -758,9 +765,9 @@ elif seleccion == "Total 5 Jornadas":
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=10, b=10, l=220, r=120),
+                margin=dict(t=10, b=10, l=220, r=160),
                 height=altura_c_apo,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white'), range=[0, max_x_c_apo]),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_cons_apo["CATEGORIA_APOYO"].tolist())
             )
             st.plotly_chart(fig_c_apo, use_container_width=True, config={'displayModeBar': False})
