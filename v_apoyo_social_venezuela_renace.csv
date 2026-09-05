@@ -1,8 +1,8 @@
 Nº,CATEGORIA_APOYO,VALOR
 01,Laboratorios ,315
 02,Rayos X,21
-03,Tomografías ,02
-04,Ecografías,3
+03,Tomografías ,
+04,Ecografías,10
 05,Entrega de Medicamentos ,275
 06,Ayudas Sociales ,02
 07,Ayudas Técnicas ,12
