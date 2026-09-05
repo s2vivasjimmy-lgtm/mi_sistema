@@ -483,9 +483,9 @@ elif seleccion in jornadas_map:
             tot_atenciones = int(pd.to_numeric(df_e_tmp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum())
 
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 6px 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 6px;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900;">{seleccion.upper()} - VENEZUELA RENACE</h1>
-        <p style="color: #00d2ff; margin: 2px 0 0 0; font-size: 11px;">Sincronización: <b>{fecha_jornada_str}</b></p>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 2px 6px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA VENEZUELA RENACE - {num_romano} JORNADA - ESTADO LA GUAIRA</h1>
+        <p style="color: #00d2ff; margin: 0; font-size: 10px;">Sincronización: <b>{fecha_jornada_str}</b></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -569,30 +569,30 @@ elif seleccion in jornadas_map:
             st.plotly_chart(fig_apo, use_container_width=True, config={'displayModeBar': False})
 
     # --- TOTALES HORIZONTALES (INTERCAMBIADOS A LA PARTE SUPERIOR DE ESTA ZONA) ---
-    st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
     t_col1, t_col2, t_col3 = st.columns(3)
     
     with t_col1:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 6px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 2px;">{formatear_numero(tot_esp_val)}</div>
+        <div style="background: #1a1c23; padding: 3px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900; margin-top: 1px;">{formatear_numero(tot_esp_val)}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with t_col2:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 6px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 2px;">{formatear_numero(tot_apo_val)}</div>
+        <div style="background: #1a1c23; padding: 3px; border-radius: 4px; border: 1px solid #ffaa00; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900; margin-top: 1px;">{formatear_numero(tot_apo_val)}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with t_col3:
         st.markdown(f"""
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
-            <div style="color: #FFD700; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 2px;">{formatear_numero(total_general_jornada)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border: 2px solid #FFD700; text-align: center;">
+            <div style="color: #FFD700; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900; margin-top: 1px;">{formatear_numero(total_general_jornada)}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -611,31 +611,31 @@ elif seleccion in jornadas_map:
                 pass
 
     st.markdown(f"""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px;">
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_muj)}</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 4px;">
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ff4b4b; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(m_muj)}</div>
         </div>
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_hom)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(m_hom)}</div>
         </div>
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_nin)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ff88ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(m_nin)}</div>
         </div>
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_ninos)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ffd700; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(m_ninos)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 elif seleccion == "Total 5 Jornadas":
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 6px 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 6px;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 18px; font-weight: 900;">CONSOLIDADO GENERAL DE LAS 5 JORNADAS VENEZUELA RENACE</h1>
-        <p style="color: #00d2ff; margin: 0; font-size: 11px;">Acumulado total de atenciones, apoyo social y demografía de las jornadas I, II, III, IV y V.</p>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 2px 6px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 2px;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 15px; font-weight: 900;">ATENCIÓN MÉDICA ESPECIALIZADA VENEZUELA RENACE - CONSOLIDADO 5 JORNADAS - ESTADO LA GUAIRA</h1>
+        <p style="color: #00d2ff; margin: 0; font-size: 10px;">Acumulado total de atenciones, apoyo social y demografía de las jornadas I, II, III, IV y V.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -748,51 +748,51 @@ elif seleccion == "Total 5 Jornadas":
             st.plotly_chart(fig_c_apo, use_container_width=True, config={'displayModeBar': False})
 
     # --- TOTALES HORIZONTALES (ARRIBA EN EL CONSOLIDADO) ---
-    st.markdown("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
     tc_1, tc_2, tc_3 = st.columns(3)
     
     with tc_1:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 6px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ACUMULADO ESPECIALIDAD</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 2px;">{formatear_numero(tot_cons_esp)}</div>
+        <div style="background: #1a1c23; padding: 3px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL ACUMULADO ESPECIALIDAD</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900; margin-top: 1px;">{formatear_numero(tot_cons_esp)}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with tc_2:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 6px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ACUMULADO APOYO SOCIAL</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 2px;">{formatear_numero(tot_cons_apo)}</div>
+        <div style="background: #1a1c23; padding: 3px; border-radius: 4px; border: 1px solid #ffaa00; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL ACUMULADO APOYO SOCIAL</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900; margin-top: 1px;">{formatear_numero(tot_cons_apo)}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with tc_3:
         st.markdown(f"""
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
-            <div style="color: #FFD700; font-size: 11px; font-weight: bold; text-transform: uppercase;">GRAN TOTAL 5 JORNADAS</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 2px;">{formatear_numero(total_general_5)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border: 2px solid #FFD700; text-align: center;">
+            <div style="color: #FFD700; font-size: 10px; font-weight: bold; text-transform: uppercase;">GRAN TOTAL 5 JORNADAS</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900; margin-top: 1px;">{formatear_numero(total_general_5)}</div>
         </div>
         """, unsafe_allow_html=True)
 
     # --- DEMOGRAFÍA CONSOLIDADA (ABAJO Y COMPACTA) ---
     st.markdown(f"""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px;">
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL MUJERES</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_muj)}</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 4px;">
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ff4b4b; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL MUJERES</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(c_muj)}</div>
         </div>
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL HOMBRES</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_hom)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL HOMBRES</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(c_hom)}</div>
         </div>
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑAS</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_nin)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ff88ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑAS</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(c_nin)}</div>
         </div>
-        <div style="background: #1e2025; padding: 6px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑOS</div>
-            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_ninos)}</div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ffd700; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑOS</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(c_ninos)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
