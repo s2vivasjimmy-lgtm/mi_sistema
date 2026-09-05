@@ -459,6 +459,135 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
+elif seleccion in jornadas_map:
+    suf, num_romano = jornadas_map[seleccion]
+    
+    archivo_esp = f"{suf}_especialidades_venezuela_renace.csv"
+    archivo_apo = f"{suf}_apoyo_social_venezuela_renace.csv"
+    archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
+    archivo_meta = f"{suf}_meta_venezuela_renace.csv"
+
+    # Obtener totales y metadatos
+    tot_atenciones = 0
+    fecha_jornada_str = "S/F"
+    if os.path.exists(archivo_meta):
+        df_meta = cargar_datos_cache(archivo_meta)
+        if not df_meta.empty:
+            fecha_jornada_str = str(df_meta.loc[0, "FECHA_JORNADA"]) if "FECHA_JORNADA" in df_meta.columns else "S/F"
+            try:
+                tot_atenciones = int(str(df_meta.loc[0, "TOTAL_ATENCIONES"]).replace('.', ''))
+            except:
+                pass
+
+    if tot_atenciones == 0 and os.path.exists(archivo_esp):
+        df_e_tmp = cargar_datos_cache(archivo_esp)
+        if not df_e_tmp.empty and "ATENCIONES" in df_e_tmp.columns:
+            tot_atenciones = int(pd.to_numeric(df_e_tmp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum())
+
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 15px; border-radius: 8px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 20px;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 900;">{seleccion.upper()} - VENEZUELA RENACE</h1>
+        <p style="color: #00d2ff; margin: 5px 0 0 0; font-size: 13px;">Sincronización: <b>{fecha_jornada_str}</b></p>
+        <div style="margin-top: 10px; font-size: 24px; color: #FFD700; font-weight: bold;">Total Atenciones: {formatear_numero(tot_atenciones)}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Demografía
+    m_muj, m_hom, m_nin, m_ninos = 0, 0, 0, 0
+    if os.path.exists(archivo_demo):
+        df_d_vis = cargar_datos_cache(archivo_demo)
+        if not df_d_vis.empty:
+            try:
+                row = df_d_vis.iloc[0]
+                m_muj = int(str(row.get("MUJERES", "0")).replace('.', ''))
+                m_hom = int(str(row.get("HOMBRES", "0")).replace('.', ''))
+                m_nin = int(str(row.get("NIÑAS", "0")).replace('.', ''))
+                m_ninos = int(str(row.get("NIÑOS", "0")).replace('.', ''))
+            except:
+                pass
+
+    st.markdown("### 👥 Desglose Demográfico")
+    st.markdown(f"""
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_muj)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_hom)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_nin)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_ninos)}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Especialidades
+    if os.path.exists(archivo_esp):
+        df_esp_vis = cargar_datos_cache(archivo_esp)
+        if not df_esp_vis.empty and "ATENCIONES" in df_esp_vis.columns and "ESPECIALIDAD" in df_esp_vis.columns:
+            df_esp_vis["ATENCIONES_NUM"] = pd.to_numeric(df_esp_vis["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_esp_vis["ESPECIALIDAD"] = df_esp_vis["ESPECIALIDAD"].astype(str).str.strip().str.upper()
+            df_esp_vis = df_esp_vis.sort_values(by="ATENCIONES_NUM", ascending=True)
+
+            st.markdown("### 🩺 Atenciones por Especialidad")
+            fig_esp = go.Figure(data=[go.Bar(
+                y=df_esp_vis["ESPECIALIDAD"],
+                x=df_esp_vis["ATENCIONES_NUM"],
+                orientation='h',
+                marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
+                text=df_esp_vis["ATENCIONES_NUM"],
+                textposition='outside',
+                textfont=dict(size=11, color='white', weight="bold")
+            )])
+            fig_esp.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', size=11),
+                margin=dict(t=10, b=10, l=180, r=40),
+                height=max(300, len(df_esp_vis) * 25),
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
+                yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
+            )
+            st.plotly_chart(fig_esp, use_container_width=True, config={'displayModeBar': False})
+            st.download_button("📥 Descargar Especialidades en Excel", data=convertir_df_a_excel(df_esp_vis), file_name=f"{seleccion}_especialidades.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+    # Apoyo social
+    if os.path.exists(archivo_apo):
+        df_apo_vis = cargar_datos_cache(archivo_apo)
+        if not df_apo_vis.empty and "VALOR" in df_apo_vis.columns and "CATEGORIA_APOYO" in df_apo_vis.columns:
+            df_apo_vis["VALOR_NUM"] = pd.to_numeric(df_apo_vis["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_apo_vis["CATEGORIA_APOYO"] = df_apo_vis["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
+            df_apo_vis = df_apo_vis.sort_values(by="VALOR_NUM", ascending=True)
+
+            st.markdown("### 🤝 Apoyo Social")
+            fig_apo = go.Figure(data=[go.Bar(
+                y=df_apo_vis["CATEGORIA_APOYO"],
+                x=df_apo_vis["VALOR_NUM"],
+                orientation='h',
+                marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
+                text=df_apo_vis["VALOR_NUM"],
+                textposition='outside',
+                textfont=dict(size=11, color='white', weight="bold")
+            )])
+            fig_apo.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', size=11),
+                margin=dict(t=10, b=10, l=180, r=40),
+                height=max(250, len(df_apo_vis) * 25),
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
+                yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
+            )
+            st.plotly_chart(fig_apo, use_container_width=True, config={'displayModeBar': False})
+            st.download_button("📥 Descargar Apoyo Social en Excel", data=convertir_df_a_excel(df_apo_vis), file_name=f"{seleccion}_apoyo_social.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 elif seleccion == "Total 5 Jornadas":
     st.markdown("""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 15px;">
