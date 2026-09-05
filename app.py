@@ -548,7 +548,11 @@ elif seleccion in jornadas_map:
 
     total_general_jornada = tot_esp_val + tot_apo_val
 
-    # --- SECCIÓN LADO A LADO PARA REDUCIR ESPACIO VERTICAL ---
+    # --- ALTURA DINÁMICA PARA EVITAR COMPRESIÓN Y MEJORAR PROYECCIÓN ---
+    altura_esp = max(300, len(df_esp_vis) * 28) if not df_esp_vis.empty else 300
+    altura_apo = max(300, len(df_apo_vis) * 28) if not df_apo_vis.empty else 300
+
+    # --- SECCIÓN LADO A LADO ---
     col_izq, col_der = st.columns(2)
 
     with col_izq:
@@ -561,16 +565,16 @@ elif seleccion in jornadas_map:
                 marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
                 text=df_esp_vis["ATENCIONES_NUM"],
                 textposition='outside',
-                textfont=dict(size=10, color='white', weight="bold")
+                textfont=dict(size=13, color='white', family="Arial Black")
             )])
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=10),
-                margin=dict(t=10, b=10, l=140, r=30),
-                height=260,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
-                yaxis=dict(tickfont=dict(size=10, color='white', weight="bold"), fixedrange=True)
+                font=dict(color='white', size=13),
+                margin=dict(t=20, b=20, l=180, r=50),
+                height=altura_esp,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
             )
             st.plotly_chart(fig_esp, use_container_width=True, config={'displayModeBar': False})
             st.download_button("📥 Descargar Especialidades Excel", data=convertir_df_a_excel(df_esp_vis), file_name=f"{seleccion}_especialidades.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key=f"dl_esp_{suf}")
@@ -585,21 +589,21 @@ elif seleccion in jornadas_map:
                 marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                 text=df_apo_vis["VALOR_NUM"],
                 textposition='outside',
-                textfont=dict(size=10, color='white', weight="bold")
+                textfont=dict(size=13, color='white', family="Arial Black")
             )])
             fig_apo.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=10),
-                margin=dict(t=10, b=10, l=140, r=30),
-                height=260,
-                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
-                yaxis=dict(tickfont=dict(size=10, color='white', weight="bold"), fixedrange=True)
+                font=dict(color='white', size=13),
+                margin=dict(t=20, b=20, l=180, r=50),
+                height=altura_apo,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
             )
             st.plotly_chart(fig_apo, use_container_width=True, config={'displayModeBar': False})
             st.download_button("📥 Descargar Apoyo Social Excel", data=convertir_df_a_excel(df_apo_vis), file_name=f"{seleccion}_apoyo_social.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key=f"dl_apo_{suf}")
 
-    # --- TOTALES SOLICITADOS (DISPOSICIÓN HORIZONTAL EN 3 TARJETAS) ---
+    # --- TOTALES HORIZONTALES ---
     st.markdown("---")
     t_col1, t_col2, t_col3 = st.columns(3)
     
@@ -637,75 +641,161 @@ elif seleccion == "Total 5 Jornadas":
 
     jornadas_ids = ['i', 'ii', 'iii', 'iv', 'v']
     
-    total_atenciones_acumulado = 0
-    total_apoyo_acumulado = 0
-    demografia_acumulada = {"MUJERES": 0, "HOMBRES": 0, "NIÑAS": 0, "NIÑOS": 0}
+    # Consolidar Especialidades de las 5 jornadas
+    lista_df_esp = []
+    lista_df_apo = []
     
-    for j_id in jornadas_ids:
-        f_esp = f"{j_id}_especialidades_venezuela_renace.csv"
+    c_muj, c_hom, c_nin, c_ninos = 0, 0, 0, 0
+
+    for jid in jornadas_ids:
+        f_esp = f"{jid}_especialidades_venezuela_renace.csv"
+        f_apo = f"{jid}_apoyo_social_venezuela_renace.csv"
+        f_demo = f"{jid}_demografia_venezuela_renace.csv"
+        
         if os.path.exists(f_esp):
             df_e = cargar_datos_cache(f_esp)
-            if not df_e.empty and "ATENCIONES" in df_e.columns:
-                total_atenciones_acumulado += int(pd.to_numeric(df_e["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum())
+            if not df_e.empty and "ESPECIALIDAD" in df_e.columns and "ATENCIONES" in df_e.columns:
+                lista_df_esp.append(df_e)
                 
-        f_apo = f"{j_id}_apoyo_social_venezuela_renace.csv"
         if os.path.exists(f_apo):
             df_a = cargar_datos_cache(f_apo)
-            if not df_a.empty and "VALOR" in df_a.columns:
-                total_apoyo_acumulado += int(pd.to_numeric(df_a["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum())
+            if not df_a.empty and "CATEGORIA_APOYO" in df_a.columns and "VALOR" in df_a.columns:
+                lista_df_apo.append(df_a)
                 
-        f_demo = f"{j_id}_demografia_venezuela_renace.csv"
         if os.path.exists(f_demo):
             df_d = cargar_datos_cache(f_demo)
             if not df_d.empty:
-                row = df_d.iloc[0]
-                demografia_acumulada["MUJERES"] += int(str(row.get("MUJERES", "0")).replace('.', ''))
-                demografia_acumulada["HOMBRES"] += int(str(row.get("HOMBRES", "0")).replace('.', ''))
-                demografia_acumulada["NIÑAS"] += int(str(row.get("NIÑAS", "0")).replace('.', ''))
-                demografia_acumulada["NIÑOS"] += int(str(row.get("NIÑOS", "0")).replace('.', ''))
+                try:
+                    row = df_d.iloc[0]
+                    c_muj += int(str(row.get("MUJERES", "0")).replace('.', ''))
+                    c_hom += int(str(row.get("HOMBRES", "0")).replace('.', ''))
+                    c_nin += int(str(row.get("NIÑAS", "0")).replace('.', ''))
+                    c_ninos += int(str(row.get("NIÑOS", "0")).replace('.', ''))
+                except:
+                    pass
 
-    gran_total_general = total_atenciones_acumulado + total_apoyo_acumulado
+    # Unir y agrupar especialidades
+    df_cons_esp = pd.DataFrame()
+    if lista_df_esp:
+        df_concat_esp = pd.concat(lista_df_esp, ignore_index=True)
+        df_concat_esp["ATENCIONES_NUM"] = pd.to_numeric(df_concat_esp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+        df_concat_esp["ESPECIALIDAD"] = df_concat_esp["ESPECIALIDAD"].astype(str).str.strip().str.upper()
+        df_cons_esp = df_concat_esp.groupby("ESPECIALIDAD", as_index=False)["ATENCIONES_NUM"].sum()
+        df_cons_esp = df_cons_esp.sort_values(by="ATENCIONES_NUM", ascending=True)
 
+    # Unir y agrupar apoyo social
+    df_cons_apo = pd.DataFrame()
+    if lista_df_apo:
+        df_concat_apo = pd.concat(lista_df_apo, ignore_index=True)
+        df_concat_apo["VALOR_NUM"] = pd.to_numeric(df_concat_apo["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+        df_concat_apo["CATEGORIA_APOYO"] = df_concat_apo["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
+        df_cons_apo = df_concat_apo.groupby("CATEGORIA_APOYO", as_index=False)["VALOR_NUM"].sum()
+        df_cons_apo = df_cons_apo.sort_values(by="VALOR_NUM", ascending=True)
+
+    tot_cons_esp = int(df_cons_esp["ATENCIONES_NUM"].sum()) if not df_cons_esp.empty else 0
+    tot_cons_apo = int(df_cons_apo["VALOR_NUM"].sum()) if not df_cons_apo.empty else 0
+    total_general_5 = tot_cons_esp + tot_cons_apo
+
+    # Tarjetas Demográficas del Consolidado
     st.markdown(f"""
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL MUJERES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["MUJERES"])}</div>
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL MUJERES</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_muj)}</div>
         </div>
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL HOMBRES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["HOMBRES"])}</div>
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL HOMBRES</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_hom)}</div>
         </div>
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑAS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["NIÑAS"])}</div>
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑAS</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_nin)}</div>
         </div>
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑOS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["NIÑOS"])}</div>
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑOS</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(c_ninos)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
+    # --- ALTURA DINÁMICA PARA EL CONSOLIDADO ---
+    altura_c_esp = max(300, len(df_cons_esp) * 28) if not df_cons_esp.empty else 300
+    altura_c_apo = max(300, len(df_cons_apo) * 28) if not df_cons_apo.empty else 300
+
+    col_c1, col_c2 = st.columns(2)
+
+    with col_c1:
+        st.markdown("### 🩺 Consolidado Atenciones por Especialidad")
+        if not df_cons_esp.empty:
+            fig_c_esp = go.Figure(data=[go.Bar(
+                y=df_cons_esp["ESPECIALIDAD"],
+                x=df_cons_esp["ATENCIONES_NUM"],
+                orientation='h',
+                marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
+                text=df_cons_esp["ATENCIONES_NUM"],
+                textposition='outside',
+                textfont=dict(size=13, color='white', family="Arial Black")
+            )])
+            fig_c_esp.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', size=13),
+                margin=dict(t=20, b=20, l=180, r=50),
+                height=altura_c_esp,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
+            )
+            st.plotly_chart(fig_c_esp, use_container_width=True, config={'displayModeBar': False})
+            st.download_button("📥 Descargar Consolidado Especialidades Excel", data=convertir_df_a_excel(df_cons_esp), file_name="consolidado_especialidades.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_cons_esp")
+
+    with col_c2:
+        st.markdown("### 🤝 Consolidado Apoyo Social")
+        if not df_cons_apo.empty:
+            fig_c_apo = go.Figure(data=[go.Bar(
+                y=df_cons_apo["CATEGORIA_APOYO"],
+                x=df_cons_apo["VALOR_NUM"],
+                orientation='h',
+                marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
+                text=df_cons_apo["VALOR_NUM"],
+                textposition='outside',
+                textfont=dict(size=13, color='white', family="Arial Black")
+            )])
+            fig_c_apo.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', size=13),
+                margin=dict(t=20, b=20, l=180, r=50),
+                height=altura_c_apo,
+                xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
+                yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, autorange="reversed")
+            )
+            st.plotly_chart(fig_c_apo, use_container_width=True, config={'displayModeBar': False})
+            st.download_button("📥 Descargar Consolidado Apoyo Social Excel", data=convertir_df_a_excel(df_cons_apo), file_name="consolidado_apoyo_social.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key="dl_cons_apo")
+
+    # --- TOTALES FINALES CONSOLIDADOS ---
+    st.markdown("---")
+    tc_1, tc_2, tc_3 = st.columns(3)
+    
+    with tc_1:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 12px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">ACUMULADO ESPECIALIDADES</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_atenciones_acumulado)}</div>
+        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ACUMULADO ESPECIALIDAD</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(tot_cons_esp)}</div>
         </div>
         """, unsafe_allow_html=True)
-    with c2:
+
+    with tc_2:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 12px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">ACUMULADO APOYO SOCIAL</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_apoyo_acumulado)}</div>
+        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ACUMULADO APOYO SOCIAL</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(tot_cons_apo)}</div>
         </div>
         """, unsafe_allow_html=True)
-    with c3:
+
+    with tc_3:
         st.markdown(f"""
-        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
-            <div style="color: #FFD700; font-size: 12px; font-weight: bold; text-transform: uppercase;">GRAN TOTAL GENERAL</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 5px;">{formatear_numero(gran_total_general)}</div>
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
+            <div style="color: #FFD700; font-size: 11px; font-weight: bold; text-transform: uppercase;">GRAN TOTAL 5 JORNADAS</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_general_5)}</div>
         </div>
         """, unsafe_allow_html=True)
