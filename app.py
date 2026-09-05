@@ -524,7 +524,7 @@ elif seleccion in jornadas_map:
     </div>
     """, unsafe_allow_html=True)
 
-    # --- CARGA DE DATOS PARA ESPECIALIDADES Y APOYO SOCIAL (MANTENIENDO ORDEN DE REGISTRO) ---
+    # --- CARGA DE DATOS PARA ESPECIALIDADES Y APOYO SOCIAL ---
     tot_esp_val = 0
     df_esp_vis = pd.DataFrame()
     if os.path.exists(archivo_esp):
@@ -533,7 +533,6 @@ elif seleccion in jornadas_map:
             df_esp_vis["ATENCIONES_NUM"] = pd.to_numeric(df_esp_vis["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_esp_vis["ESPECIALIDAD"] = df_esp_vis["ESPECIALIDAD"].astype(str).str.strip().str.upper()
             tot_esp_val = int(df_esp_vis["ATENCIONES_NUM"].sum())
-            # Invertimos el DataFrame para que el primer registro del Excel quede arriba en el gráfico de barras horizontales
             df_esp_vis = df_esp_vis.iloc[::-1].reset_index(drop=True)
 
     tot_apo_val = 0
@@ -544,14 +543,13 @@ elif seleccion in jornadas_map:
             df_apo_vis["VALOR_NUM"] = pd.to_numeric(df_apo_vis["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_apo_vis["CATEGORIA_APOYO"] = df_apo_vis["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
             tot_apo_val = int(df_apo_vis["VALOR_NUM"].sum())
-            # Invertimos el DataFrame para que el primer registro del Excel quede arriba en el gráfico de barras horizontales
             df_apo_vis = df_apo_vis.iloc[::-1].reset_index(drop=True)
 
     total_general_jornada = tot_esp_val + tot_apo_val
 
-    # --- ALTURA DINÁMICA ---
-    altura_esp = max(300, len(df_esp_vis) * 32) if not df_esp_vis.empty else 300
-    altura_apo = max(300, len(df_apo_vis) * 32) if not df_apo_vis.empty else 300
+    # --- ALTURA COMPACTA (Reducción de espacio entre líneas) ---
+    altura_esp = max(250, len(df_esp_vis) * 22) if not df_esp_vis.empty else 250
+    altura_apo = max(250, len(df_apo_vis) * 22) if not df_apo_vis.empty else 250
 
     # --- SECCIÓN LADO A LADO ---
     col_izq, col_der = st.columns(2)
@@ -572,7 +570,7 @@ elif seleccion in jornadas_map:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=220, r=80),
+                margin=dict(t=10, b=10, l=220, r=120),
                 height=altura_esp,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_esp_vis["ESPECIALIDAD"].tolist())
@@ -596,7 +594,7 @@ elif seleccion in jornadas_map:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=220, r=80),
+                margin=dict(t=10, b=10, l=220, r=120),
                 height=altura_apo,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_apo_vis["CATEGORIA_APOYO"].tolist())
@@ -674,7 +672,6 @@ elif seleccion == "Total 5 Jornadas":
                 except:
                     pass
 
-    # Consolidar manteniendo el orden acumulado de registro sin ordenar de mayor a menor
     df_cons_esp = pd.DataFrame()
     if lista_df_esp:
         df_concat_esp = pd.concat(lista_df_esp, ignore_index=True)
@@ -716,8 +713,8 @@ elif seleccion == "Total 5 Jornadas":
     </div>
     """, unsafe_allow_html=True)
 
-    altura_c_esp = max(300, len(df_cons_esp) * 32) if not df_cons_esp.empty else 300
-    altura_c_apo = max(300, len(df_cons_apo) * 32) if not df_cons_apo.empty else 300
+    altura_c_esp = max(250, len(df_cons_esp) * 22) if not df_cons_esp.empty else 250
+    altura_c_apo = max(250, len(df_cons_apo) * 22) if not df_cons_apo.empty else 250
 
     col_c1, col_c2 = st.columns(2)
 
@@ -737,7 +734,7 @@ elif seleccion == "Total 5 Jornadas":
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=220, r=80),
+                margin=dict(t=10, b=10, l=220, r=120),
                 height=altura_c_esp,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_cons_esp["ESPECIALIDAD"].tolist())
@@ -761,7 +758,7 @@ elif seleccion == "Total 5 Jornadas":
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', size=13),
-                margin=dict(t=20, b=20, l=220, r=80),
+                margin=dict(t=10, b=10, l=220, r=120),
                 height=altura_c_apo,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True, tickfont=dict(size=12, color='white')),
                 yaxis=dict(tickfont=dict(size=13, color='white', family="Arial Black"), fixedrange=True, categoryorder="array", categoryarray=df_cons_apo["CATEGORIA_APOYO"].tolist())
