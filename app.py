@@ -467,7 +467,6 @@ elif seleccion in jornadas_map:
     archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
     archivo_meta = f"{suf}_meta_venezuela_renace.csv"
 
-    # Obtener totales y metadatos
     tot_atenciones = 0
     fecha_jornada_str = "S/F"
     if os.path.exists(archivo_meta):
@@ -485,10 +484,9 @@ elif seleccion in jornadas_map:
             tot_atenciones = int(pd.to_numeric(df_e_tmp["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum())
 
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 15px; border-radius: 8px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 20px;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 900;">{seleccion.upper()} - VENEZUELA RENACE</h1>
-        <p style="color: #00d2ff; margin: 5px 0 0 0; font-size: 13px;">Sincronización: <b>{fecha_jornada_str}</b></p>
-        <div style="margin-top: 10px; font-size: 24px; color: #FFD700; font-weight: bold;">Total Atenciones: {formatear_numero(tot_atenciones)}</div>
+    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 12px; border-radius: 8px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 15px;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 900;">{seleccion.upper()} - VENEZUELA RENACE</h1>
+        <p style="color: #00d2ff; margin: 3px 0 0 0; font-size: 12px;">Sincronización: <b>{fecha_jornada_str}</b></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -506,37 +504,56 @@ elif seleccion in jornadas_map:
             except:
                 pass
 
-    st.markdown("### 👥 Desglose Demográfico")
     st.markdown(f"""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_muj)}</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_muj)}</div>
         </div>
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_hom)}</div>
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_hom)}</div>
         </div>
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_nin)}</div>
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_nin)}</div>
         </div>
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(m_ninos)}</div>
+        <div style="background: #1e2025; padding: 8px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
+            <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(m_ninos)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Especialidades
+    # --- CARGA DE DATOS PARA ESPECIALIDADES Y APOYO SOCIAL ---
+    tot_esp_val = 0
+    df_esp_vis = pd.DataFrame()
     if os.path.exists(archivo_esp):
         df_esp_vis = cargar_datos_cache(archivo_esp)
         if not df_esp_vis.empty and "ATENCIONES" in df_esp_vis.columns and "ESPECIALIDAD" in df_esp_vis.columns:
             df_esp_vis["ATENCIONES_NUM"] = pd.to_numeric(df_esp_vis["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
             df_esp_vis["ESPECIALIDAD"] = df_esp_vis["ESPECIALIDAD"].astype(str).str.strip().str.upper()
+            tot_esp_val = int(df_esp_vis["ATENCIONES_NUM"].sum())
             df_esp_vis = df_esp_vis.sort_values(by="ATENCIONES_NUM", ascending=True)
 
-            st.markdown("### 🩺 Atenciones por Especialidad")
+    tot_apo_val = 0
+    df_apo_vis = pd.DataFrame()
+    if os.path.exists(archivo_apo):
+        df_apo_vis = cargar_datos_cache(archivo_apo)
+        if not df_apo_vis.empty and "VALOR" in df_apo_vis.columns and "CATEGORIA_APOYO" in df_apo_vis.columns:
+            df_apo_vis["VALOR_NUM"] = pd.to_numeric(df_apo_vis["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
+            df_apo_vis["CATEGORIA_APOYO"] = df_apo_vis["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
+            tot_apo_val = int(df_apo_vis["VALOR_NUM"].sum())
+            df_apo_vis = df_apo_vis.sort_values(by="VALOR_NUM", ascending=True)
+
+    total_general_jornada = tot_esp_val + tot_apo_val
+
+    # --- SECCIÓN LADO A LADO PARA REDUCIR ESPACIO VERTICAL ---
+    col_izq, col_der = st.columns(2)
+
+    with col_izq:
+        st.markdown("### 🩺 Atenciones por Especialidad")
+        if not df_esp_vis.empty:
             fig_esp = go.Figure(data=[go.Bar(
                 y=df_esp_vis["ESPECIALIDAD"],
                 x=df_esp_vis["ATENCIONES_NUM"],
@@ -544,29 +561,23 @@ elif seleccion in jornadas_map:
                 marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
                 text=df_esp_vis["ATENCIONES_NUM"],
                 textposition='outside',
-                textfont=dict(size=11, color='white', weight="bold")
+                textfont=dict(size=10, color='white', weight="bold")
             )])
             fig_esp.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=11),
-                margin=dict(t=10, b=10, l=180, r=40),
-                height=max(300, len(df_esp_vis) * 25),
+                font=dict(color='white', size=10),
+                margin=dict(t=10, b=10, l=140, r=30),
+                height=260,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
-                yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
+                yaxis=dict(tickfont=dict(size=10, color='white', weight="bold"), fixedrange=True)
             )
             st.plotly_chart(fig_esp, use_container_width=True, config={'displayModeBar': False})
-            st.download_button("📥 Descargar Especialidades en Excel", data=convertir_df_a_excel(df_esp_vis), file_name=f"{seleccion}_especialidades.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            st.download_button("📥 Descargar Especialidades Excel", data=convertir_df_a_excel(df_esp_vis), file_name=f"{seleccion}_especialidades.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key=f"dl_esp_{suf}")
 
-    # Apoyo social
-    if os.path.exists(archivo_apo):
-        df_apo_vis = cargar_datos_cache(archivo_apo)
-        if not df_apo_vis.empty and "VALOR" in df_apo_vis.columns and "CATEGORIA_APOYO" in df_apo_vis.columns:
-            df_apo_vis["VALOR_NUM"] = pd.to_numeric(df_apo_vis["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            df_apo_vis["CATEGORIA_APOYO"] = df_apo_vis["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
-            df_apo_vis = df_apo_vis.sort_values(by="VALOR_NUM", ascending=True)
-
-            st.markdown("### 🤝 Apoyo Social")
+    with col_der:
+        st.markdown("### 🤝 Apoyo Social")
+        if not df_apo_vis.empty:
             fig_apo = go.Figure(data=[go.Bar(
                 y=df_apo_vis["CATEGORIA_APOYO"],
                 x=df_apo_vis["VALOR_NUM"],
@@ -574,19 +585,47 @@ elif seleccion in jornadas_map:
                 marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
                 text=df_apo_vis["VALOR_NUM"],
                 textposition='outside',
-                textfont=dict(size=11, color='white', weight="bold")
+                textfont=dict(size=10, color='white', weight="bold")
             )])
             fig_apo.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=11),
-                margin=dict(t=10, b=10, l=180, r=40),
-                height=max(250, len(df_apo_vis) * 25),
+                font=dict(color='white', size=10),
+                margin=dict(t=10, b=10, l=140, r=30),
+                height=260,
                 xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
-                yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
+                yaxis=dict(tickfont=dict(size=10, color='white', weight="bold"), fixedrange=True)
             )
             st.plotly_chart(fig_apo, use_container_width=True, config={'displayModeBar': False})
-            st.download_button("📥 Descargar Apoyo Social en Excel", data=convertir_df_a_excel(df_apo_vis), file_name=f"{seleccion}_apoyo_social.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            st.download_button("📥 Descargar Apoyo Social Excel", data=convertir_df_a_excel(df_apo_vis), file_name=f"{seleccion}_apoyo_social.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", key=f"dl_apo_{suf}")
+
+    # --- TOTALES SOLICITADOS (DISPOSICIÓN HORIZONTAL EN 3 TARJETAS) ---
+    st.markdown("---")
+    t_col1, t_col2, t_col3 = st.columns(3)
+    
+    with t_col1:
+        st.markdown(f"""
+        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(tot_esp_val)}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with t_col2:
+        st.markdown(f"""
+        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(tot_apo_val)}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with t_col3:
+        st.markdown(f"""
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
+            <div style="color: #FFD700; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_general_jornada)}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 elif seleccion == "Total 5 Jornadas":
     st.markdown("""
@@ -637,128 +676,48 @@ elif seleccion == "Total 5 Jornadas":
                 except:
                     pass
 
-    gran_total_general = total_atenciones_acumulado + total_apoyo_acumulado
+    total_general_5 = total_atenciones_acumulado + total_apoyo_acumulado
 
     st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 12px 20px; border-radius: 6px; text-align: center; box-shadow: 0 2px 6px rgba(0,210,255,0.3);">
-            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(total_atenciones_acumulado)}</div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL MUJERES</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_mujeres)}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 12px 20px; border-radius: 6px; text-align: center; box-shadow: 0 2px 6px rgba(255,170,0,0.3);">
-            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(total_apoyo_acumulado)}</div>
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL HOMBRES</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_hombres)}</div>
         </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 12px 20px; border-radius: 6px; text-align: center; box-shadow: 0 2px 6px rgba(40,167,69,0.3);">
-            <div style="color: #ffffff; font-size: 12px; font-weight: bold; text-transform: uppercase;">CONSOLIDADO GENERAL:</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(gran_total_general)}</div>
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL NIÑAS</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_ninas)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL NIÑOS</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_ninos)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("### 👥 Desglose Demográfico Acumulado (Las 5 Jornadas)")
-    st.markdown(f"""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px;">
-        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_mujeres)}</div>
+    c5_1, c5_2, c5_3 = st.columns(3)
+    with c5_1:
+        st.markdown(f"""
+        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL ATENCIONES ESPECIALIDAD</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_atenciones_acumulado)}</div>
         </div>
-        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_hombres)}</div>
+        """, unsafe_allow_html=True)
+    with c5_2:
+        st.markdown(f"""
+        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL APOYO SOCIAL</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_apoyo_acumulado)}</div>
         </div>
-        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_ninas)}</div>
+        """, unsafe_allow_html=True)
+    with c5_3:
+        st.markdown(f"""
+        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
+            <div style="color: #FFD700; font-size: 11px; font-weight: bold;">TOTAL GENERAL ACUMULADO</div>
+            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_general_5)}</div>
         </div>
-        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900;">{formatear_numero(tot_ninos)}</div>
-        </div>
-        <div style="grid-column: span 4; background: #1f3044; padding: 12px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
-            <div style="color: #00d2ff; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL PERSONAS ATENDIDAS</div>
-            <div style="color: #ffffff; font-size: 24px; font-weight: 900;">{formatear_numero(tot_mujeres + tot_hombres + tot_ninas + tot_ninos)}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if df_esp_list:
-        df_esp_total = pd.concat(df_esp_list, ignore_index=True)
-        df_esp_grouped = df_esp_total.groupby("ESPECIALIDAD", as_index=False)["ATENCIONES_NUM"].sum()
-        df_esp_grouped = df_esp_grouped.sort_values(by="ATENCIONES_NUM", ascending=True)
-
-        st.markdown("### 🩺 Consolidado de Atenciones por Especialidad")
-        fig_total_esp = go.Figure(data=[go.Bar(
-            y=df_esp_grouped["ESPECIALIDAD"],
-            x=df_esp_grouped["ATENCIONES_NUM"],
-            orientation='h',
-            marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
-            text=df_esp_grouped["ATENCIONES_NUM"],
-            textposition='outside',
-            textfont=dict(size=11, color='white', weight="bold")
-        )])
-        fig_total_esp.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', size=11),
-            margin=dict(t=10, b=10, l=180, r=40),
-            height=max(350, len(df_esp_grouped) * 25),
-            xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
-            yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
-        )
-        st.plotly_chart(fig_total_esp, use_container_width=True, config={'displayModeBar': False})
-
-    if df_apo_list:
-        df_apo_total = pd.concat(df_apo_list, ignore_index=True)
-        df_apo_grouped = df_apo_total.groupby("CATEGORIA_APOYO", as_index=False)["VALOR_NUM"].sum()
-        df_apo_grouped = df_apo_grouped.sort_values(by="VALOR_NUM", ascending=True)
-
-        st.markdown("### 🤝 Consolidado de Apoyo Social")
-        fig_total_apo = go.Figure(data=[go.Bar(
-            y=df_apo_grouped["CATEGORIA_APOYO"],
-            x=df_apo_grouped["VALOR_NUM"],
-            orientation='h',
-            marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
-            text=df_apo_grouped["VALOR_NUM"],
-            textposition='outside',
-            textfont=dict(size=11, color='white', weight="bold")
-        )])
-        fig_total_apo.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', size=11),
-            margin=dict(t=10, b=10, l=180, r=40),
-            height=max(250, len(df_apo_grouped) * 25),
-            xaxis=dict(showgrid=True, gridcolor='#30363d', fixedrange=True),
-            yaxis=dict(tickfont=dict(size=11, color='white', weight="bold"), fixedrange=True)
-        )
-        st.plotly_chart(fig_total_apo, use_container_width=True, config={'displayModeBar': False})
-
-elif seleccion not in jornadas_map:
-    st.markdown(f"""
-    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #00d2ff; padding-bottom: 8px; margin-bottom: 20px;">
-        <h2 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">📊 REGISTROS INSTITUCIONALES: <span style="color: #00d2ff;">{seleccion.upper()}</span></h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    archivo_cat = f"{seleccion.lower().replace(' ', '_').replace('\'', '').replace('“', '').replace('”', '')}.csv"
-    
-    if os.path.exists(archivo_cat):
-        df_cat_vista = cargar_datos_cache(archivo_cat)
-        
-        if not df_cat_vista.empty:
-            st.markdown(f"""
-            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                <div style="background: linear-gradient(135deg, #1f3044 0%, #16222a 100%); padding: 12px 20px; border-radius: 8px; border: 1px solid #00d2ff; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
-                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL REGISTROS: </span>
-                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(len(df_cat_vista))}</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            st.dataframe(df_cat_vista, use_container_width=True, hide_index=True)
-            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_cat_vista), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        else:
-            st.info("No hay registros cargados para esta categoría.")
-    else:
-        st.info("El archivo de datos para esta categoría aún no ha sido creado.")
+        """, unsafe_allow_html=True)
