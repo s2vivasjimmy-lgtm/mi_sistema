@@ -93,15 +93,6 @@ button[kind="header"] {
 }
 
 .logo-custom { width: 100%; height: 90px; object-fit: contain; display: block; margin-left: auto; margin-right: auto; margin-bottom: 2px; }
-
-.pro-table-container {
-    background: linear-gradient(145deg, #161b22, #0d1117);
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    margin-bottom: 20px;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -145,13 +136,14 @@ with st.sidebar:
                          ["Resumen General", "Red Sanitaria Militar", "Hospitales de Campaña", "Sistema de Salud Tradicional", 
                           "Campamentos Transitorios", "Campamentos Itinerantes", "Inmunización", "Saneamiento Ambiental", 
                           "Programas de Salud", "Ruta Epidemiológica", "Daños de Infraestructura", 
-                          "Total 4 Jornadas", "I Jornada Médica", "II Jornada Médica", "III Jornada Médica", "IV Jornada Médica"])
+                          "Total 5 Jornadas", "I Jornada Médica", "II Jornada Médica", "III Jornada Médica", "IV Jornada Médica", "V Jornada Médica"])
 
 jornadas_map = {
     "I Jornada Médica": ("i", "I"),
     "II Jornada Médica": ("ii", "II"),
     "III Jornada Médica": ("iii", "III"),
-    "IV Jornada Médica": ("iv", "IV")
+    "IV Jornada Médica": ("iv", "IV"),
+    "V Jornada Médica": ("v", "V")
 }
 
 if st.session_state.admin_logueado:
@@ -467,15 +459,15 @@ elif seleccion == "Ruta Epidemiológica":
         {js_fullscreen}
     """, height=510)
 
-elif seleccion == "Total 4 Jornadas":
+elif seleccion == "Total 5 Jornadas":
     st.markdown("""
     <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center; margin-bottom: 15px;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 900;">CONSOLIDADO GENERAL DE LAS 4 JORNADAS VENEZUELA RENACE</h1>
-        <p style="color: #00d2ff; margin: 0; font-size: 13px;">Acumulado total de atenciones, apoyo social y demografía de las jornadas I, II, III y IV.</p>
+        <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 900;">CONSOLIDADO GENERAL DE LAS 5 JORNADAS VENEZUELA RENACE</h1>
+        <p style="color: #00d2ff; margin: 0; font-size: 13px;">Acumulado total de atenciones, apoyo social y demografía de las jornadas I, II, III, IV y V.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    jornadas_ids = ['i', 'ii', 'iii', 'iv']
+    jornadas_ids = ['i', 'ii', 'iii', 'iv', 'v']
     
     total_atenciones_acumulado = 0
     total_apoyo_acumulado = 0
@@ -535,7 +527,7 @@ elif seleccion == "Total 4 Jornadas":
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("### 👥 Desglose Demográfico Acumulado (Las 4 Jornadas)")
+    st.markdown("### 👥 Desglose Demográfico Acumulado (Las 5 Jornadas)")
     st.markdown(f"""
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px;">
         <div style="background: #1e2025; padding: 12px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
@@ -629,284 +621,15 @@ elif seleccion not in jornadas_map:
             st.markdown(f"""
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                 <div style="background: linear-gradient(135deg, #1f3044 0%, #16222a 100%); padding: 12px 20px; border-radius: 8px; border: 1px solid #00d2ff; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
-                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase; display: block;">TOTAL DE REGISTROS</span>
-                    <span style="color: #ffffff; font-size: 26px; font-weight: 900;">{formatear_numero(len(df_cat_vista))}</span>
+                    <span style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">TOTAL REGISTROS: </span>
+                    <span style="color: #ffffff; font-size: 20px; font-weight: 900; margin-left: 10px;">{formatear_numero(len(df_cat_vista))}</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-            st.markdown('<div class="pro-table-container">', unsafe_allow_html=True)
             st.dataframe(df_cat_vista, use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            col_dl1, col_dl2 = st.columns([2, 8])
-            with col_dl1:
-                st.download_button(
-                    "📥 Descargar Reporte en Excel", 
-                    data=convertir_df_a_excel(df_cat_vista), 
-                    file_name=f"{seleccion.replace(' ', '_')}.xlsx", 
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    use_container_width=True
-                )
+            st.download_button("📥 Descargar Reporte en Excel", data=convertir_df_a_excel(df_cat_vista), file_name=f"{seleccion}.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         else:
-            st.info(f"No hay registros guardados actualmente en {seleccion}.")
+            st.info("No hay registros cargados para esta categoría.")
     else:
-        st.info(f"Aún no se ha creado el archivo de datos para {seleccion}.")
-
-elif seleccion in jornadas_map:
-    suf, num_romano = jornadas_map[seleccion]
-    
-    st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%); padding: 0px 4px; border-radius: 3px; border: 1px solid #00d2ff; text-align: center; margin: 0 0 2px 0;">
-        <h4 style="color: #00d2ff; letter-spacing: 0.5px; margin: 0; padding: 0; font-size: 11px; font-weight: bold; line-height: 1;">REPÚBLICA BOLIVARIANA DE VENEZUELA • MINISTERIO DEL PODER POPULAR PARA LA DEFENSA</h4>
-        <h1 style="color: #ffffff; margin: 0; padding: 0; font-size: 18px; font-weight: 900; line-height: 1.05;">{num_romano} ATENCIÓN MÉDICA ESPECIALIZADA <span style="color: #ffd700;">VENEZUELA RENACE</span></h1>
-        <h3 style="color: #e0e0e0; margin: 0; padding: 0; font-size: 12px; background: #1f3044; display: inline-block; padding: 0px 4px; border-radius: 2px; line-height: 1;">PARA EL ESTADO LA GUAIRA</h3>
-    </div>
-    """, unsafe_allow_html=True)
-
-    df_esp_viz = None
-    archivo_esp = f"{suf}_especialidades_venezuela_renace.csv"
-    
-    if f"esp_{suf}" in st.session_state and st.session_state[f"esp_{suf}"] is not None:
-        edited_data = st.session_state[f"esp_{suf}"]
-        if isinstance(edited_data, pd.DataFrame):
-            df_esp_viz = edited_data
-
-    if df_esp_viz is None and os.path.exists(archivo_esp):
-        df_esp_viz = cargar_datos_cache(archivo_esp)
-
-    total_atenciones_num = 0
-    if df_esp_viz is not None and not df_esp_viz.empty and "ATENCIONES" in df_esp_viz.columns:
-        try:
-            vals_temp = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            total_atenciones_num = int(vals_temp.sum())
-        except:
-            pass
-    else:
-        archivo_meta = f"{suf}_meta_venezuela_renace.csv"
-        if os.path.exists(archivo_meta):
-            df_m = cargar_datos_cache(archivo_meta)
-            if not df_m.empty:
-                try:
-                    total_atenciones_num = int(str(df_m.iloc[0].get("TOTAL_ATENCIONES", "0")).replace('.', ''))
-                except:
-                    pass
-
-    total_atenciones_val = formatear_numero(total_atenciones_num)
-
-    total_apoyo_num = 0
-    archivo_apo_calc = f"{suf}_apoyo_social_venezuela_renace.csv"
-    if os.path.exists(archivo_apo_calc):
-        df_apo_calc = cargar_datos_cache(archivo_apo_calc)
-        if not df_apo_calc.empty and "VALOR" in df_apo_calc.columns:
-            try:
-                vals_apo = pd.to_numeric(df_apo_calc["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                total_apoyo_num = int(vals_apo.sum())
-            except:
-                pass
-
-    total_apoyo_val = formatear_numero(total_apoyo_num)
-    suma_total_ambos = formatear_numero(total_atenciones_num + total_apoyo_num)
-
-    fecha_str = "13AGO2026 - 15:03:52"
-    archivo_meta = f"{suf}_meta_venezuela_renace.csv"
-    if os.path.exists(archivo_meta):
-        df_m = cargar_datos_cache(archivo_meta)
-        if not df_m.empty:
-            fecha_str = df_m.iloc[0].get("FECHA_JORNADA", fecha_str)
-
-    st.markdown(f"""
-    <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 6px; flex-wrap: wrap;">
-        <div style="background: #1e2025; padding: 6px 12px; border-radius: 4px; border: 1px solid #444; color: #ffd700; font-weight: bold; font-size: 16px; display: flex; align-items: center;">
-            📅 {fecha_str}
-        </div>
-        <div style="background: linear-gradient(90deg, #0055ff, #00d2ff); padding: 6px 14px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(0,210,255,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL ATENCIONES ESPECIALIDAD:</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{total_atenciones_val}</div>
-        </div>
-        <div style="background: linear-gradient(90deg, #ff8800, #ffaa00); padding: 6px 14px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(255,170,0,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL APOYO SOCIAL:</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{total_apoyo_val}</div>
-        </div>
-        <div style="background: linear-gradient(90deg, #28a745, #20c997); padding: 6px 14px; border-radius: 4px; text-align: center; box-shadow: 0 2px 6px rgba(40,167,69,0.3);">
-            <div style="color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL GENERAL:</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900; line-height: 1.1;">{suma_total_ambos}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    col_izq, col_der = st.columns([1.1, 0.9])
-
-    with col_izq:
-        st.markdown("""
-        <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d;">
-            <h3 style="color: #00d2ff; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #00d2ff; padding-bottom: 2px;">🩺 ATENCIONES POR ESPECIALIDAD</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if df_esp_viz is not None and not df_esp_viz.empty and "ESPECIALIDAD" in df_esp_viz.columns and "ATENCIONES" in df_esp_viz.columns:
-            df_esp_viz["ATENCIONES_NUM"] = pd.to_numeric(df_esp_viz["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            max_val_esp = df_esp_viz["ATENCIONES_NUM"].max() if not df_esp_viz["ATENCIONES_NUM"].empty else 100
-            
-            fig_esp = go.Figure(data=[go.Bar(
-                y=df_esp_viz["ESPECIALIDAD"],
-                x=df_esp_viz["ATENCIONES_NUM"],
-                orientation='h',
-                marker=dict(color='#00d2ff', line=dict(color='#ffffff', width=1)),
-                text=df_esp_viz["ATENCIONES_NUM"],
-                textposition='outside',
-                textfont=dict(size=11, color='white', family="sans-serif", weight="bold")
-            )])
-            
-            fig_esp.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=11),
-                margin=dict(t=2, b=2, l=150, r=40),
-                height=max(280, len(df_esp_viz) * 22), 
-                xaxis=dict(
-                    showgrid=True, 
-                    gridcolor='#30363d', 
-                    tickfont=dict(size=11, color='white'), 
-                    fixedrange=True,
-                    range=[0, max_val_esp * 1.15]
-                ),
-                yaxis=dict(
-                    autorange="reversed", 
-                    tickfont=dict(size=11, color='white', weight="bold"), 
-                    fixedrange=True,
-                    dtick=1, 
-                    showticklabels=True
-                )
-            )
-            st.plotly_chart(fig_esp, use_container_width=True, key=f"grafico_especialidades_dinamico_{suf}", config={'displayModeBar': False})
-        else:
-            st.info("Sin registros de especialidades cargados.")
-
-    with col_der:
-        st.markdown("""
-        <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-bottom: 4px;">
-            <h3 style="color: #ffaa00; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #ffaa00; padding-bottom: 2px;">🤝 APOYO SOCIAL</h3>
-        </div>
-        """, unsafe_allow_html=True)
-
-        archivo_apo = f"{suf}_apoyo_social_venezuela_renace.csv"
-        df_apo_viz = None
-        if f"apo_{suf}" in st.session_state and st.session_state[f"apo_{suf}"] is not None:
-            edited_apo = st.session_state[f"apo_{suf}"]
-            if isinstance(edited_apo, pd.DataFrame):
-                df_apo_viz = edited_apo
-        if df_apo_viz is None and os.path.exists(archivo_apo):
-            df_apo_viz = cargar_datos_cache(archivo_apo)
-
-        if df_apo_viz is not None and not df_apo_viz.empty and "CATEGORIA_APOYO" in df_apo_viz.columns and "VALOR" in df_apo_viz.columns:
-            df_apo_viz["VALOR_NUM"] = pd.to_numeric(df_apo_viz["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-            max_val_apo = df_apo_viz["VALOR_NUM"].max() if not df_apo_viz["VALOR_NUM"].empty else 100
-
-            fig_apo = go.Figure(data=[go.Bar(
-                y=df_apo_viz["CATEGORIA_APOYO"],
-                x=df_apo_viz["VALOR_NUM"],
-                orientation='h',
-                marker=dict(color='#ffaa00', line=dict(color='#ffffff', width=1)),
-                text=df_apo_viz["VALOR_NUM"],
-                textposition='outside',
-                textfont=dict(size=11, color='white', family="sans-serif", weight="bold")
-            )])
-
-            fig_apo.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', size=11),
-                margin=dict(t=2, b=2, l=150, r=40),
-                height=max(140, len(df_apo_viz) * 22),
-                xaxis=dict(
-                    showgrid=True,
-                    gridcolor='#30363d',
-                    tickfont=dict(size=11, color='white'),
-                    fixedrange=True,
-                    range=[0, max_val_apo * 1.15]
-                ),
-                yaxis=dict(
-                    autorange="reversed",
-                    tickfont=dict(size=11, color='white', weight="bold"),
-                    fixedrange=True,
-                    dtick=1,
-                    showticklabels=True
-                )
-            )
-            st.plotly_chart(fig_apo, use_container_width=True, key=f"grafico_apoyo_social_dinamico_{suf}", config={'displayModeBar': False})
-        else:
-            st.info("Sin registros de apoyo social cargados.")
-
-        st.markdown("""
-        <div style="background: #161b22; padding: 6px; border-radius: 6px; border: 1px solid #30363d; margin-top: 10px; margin-bottom: 4px;">
-            <h3 style="color: #20c997; text-align: center; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #20c997; padding-bottom: 2px;">👥 DESGLOSE DEMOGRÁFICO</h3>
-        </div>
-        """, unsafe_allow_html=True)
-
-        archivo_demo = f"{suf}_demografia_venezuela_renace.csv"
-        df_demo_viz = None
-        if f"demo_{suf}" in st.session_state and st.session_state[f"demo_{suf}"] is not None:
-            edited_demo = st.session_state[f"demo_{suf}"]
-            if isinstance(edited_demo, pd.DataFrame):
-                df_demo_viz = edited_demo
-        if df_demo_viz is None and os.path.exists(archivo_demo):
-            df_demo_viz = cargar_datos_cache(archivo_demo)
-
-        mujeres, hombres, ninas, ninos = 0, 0, 0, 0
-        if df_demo_viz is not None and not df_demo_viz.empty:
-            try:
-                row = df_demo_viz.iloc[0]
-                mujeres = int(str(row.get("MUJERES", "0")).replace('.', ''))
-                hombres = int(str(row.get("HOMBRES", "0")).replace('.', ''))
-                ninas = int(str(row.get("NIÑAS", "0")).replace('.', ''))
-                ninos = int(str(row.get("NIÑOS", "0")).replace('.', ''))
-            except:
-                pass
-
-        st.markdown(f"""
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 5px;">
-            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #ff4b4b; text-align: center;">
-                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
-                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(mujeres)}</div>
-            </div>
-            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #00d2ff; text-align: center;">
-                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">HOMBRES</div>
-                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(hombres)}</div>
-            </div>
-            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #ff88ff; text-align: center;">
-                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑAS</div>
-                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(ninas)}</div>
-            </div>
-            <div style="background: #1e2025; padding: 8px; border-radius: 4px; border-left: 3px solid #ffd700; text-align: center;">
-                <div style="color: #b0b3b8; font-size: 10px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
-                <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(ninos)}</div>
-            </div>
-            <div style="grid-column: span 2; background: #1f3044; padding: 8px; border-radius: 4px; border: 1px solid #00d2ff; text-align: center;">
-                <div style="color: #00d2ff; font-size: 10px; font-weight: bold; text-transform: uppercase;">TOTAL PERSONAS ATENDIDAS</div>
-                <div style="color: #ffffff; font-size: 18px; font-weight: 900;">{formatear_numero(mujeres + hombres + ninas + ninos)}</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    col_btn1, col_btn2 = st.columns(2)
-    with col_btn1:
-        if os.path.exists(archivo_esp):
-            df_dl_esp = cargar_datos_cache(archivo_esp)
-            st.download_button(
-                f"📥 Descargar Especialidades ({num_romano})",
-                data=convertir_df_a_excel(df_dl_esp),
-                file_name=f"{suf}_especialidades_venezuela_renace.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
-    with col_btn2:
-        if os.path.exists(archivo_apo):
-            df_dl_apo = cargar_datos_cache(archivo_apo)
-            st.download_button(
-                f"📥 Descargar Apoyo Social ({num_romano})",
-                data=convertir_df_a_excel(df_dl_apo),
-                file_name=f"{suf}_apoyo_social_venezuela_renace.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
-            )
+        st.info("El archivo de datos para esta categoría aún no ha sido creado.")
