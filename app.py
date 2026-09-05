@@ -639,85 +639,73 @@ elif seleccion == "Total 5 Jornadas":
     
     total_atenciones_acumulado = 0
     total_apoyo_acumulado = 0
-    tot_mujeres, tot_hombres, tot_ninas, tot_ninos = 0, 0, 0, 0
+    demografia_acumulada = {"MUJERES": 0, "HOMBRES": 0, "NIÑAS": 0, "NIÑOS": 0}
     
-    df_esp_list = []
-    df_apo_list = []
-
-    for s in jornadas_ids:
-        f_esp = f"{s}_especialidades_venezuela_renace.csv"
+    for j_id in jornadas_ids:
+        f_esp = f"{j_id}_especialidades_venezuela_renace.csv"
         if os.path.exists(f_esp):
             df_e = cargar_datos_cache(f_esp)
-            if not df_e.empty and "ATENCIONES" in df_e.columns and "ESPECIALIDAD" in df_e.columns:
-                df_e["ATENCIONES_NUM"] = pd.to_numeric(df_e["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                df_e["ESPECIALIDAD"] = df_e["ESPECIALIDAD"].astype(str).str.strip().str.upper()
-                total_atenciones_acumulado += df_e["ATENCIONES_NUM"].sum()
-                df_esp_list.append(df_e)
-        
-        f_apo = f"{s}_apoyo_social_venezuela_renace.csv"
+            if not df_e.empty and "ATENCIONES" in df_e.columns:
+                total_atenciones_acumulado += int(pd.to_numeric(df_e["ATENCIONES"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum())
+                
+        f_apo = f"{j_id}_apoyo_social_venezuela_renace.csv"
         if os.path.exists(f_apo):
             df_a = cargar_datos_cache(f_apo)
-            if not df_a.empty and "VALOR" in df_a.columns and "CATEGORIA_APOYO" in df_a.columns:
-                df_a["VALOR_NUM"] = pd.to_numeric(df_a["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0)
-                df_a["CATEGORIA_APOYO"] = df_a["CATEGORIA_APOYO"].astype(str).str.strip().str.upper()
-                total_apoyo_acumulado += df_a["VALOR_NUM"].sum()
-                df_apo_list.append(df_a)
-
-        f_dem = f"{s}_demografia_venezuela_renace.csv"
-        if os.path.exists(f_dem):
-            df_d = cargar_datos_cache(f_dem)
+            if not df_a.empty and "VALOR" in df_a.columns:
+                total_apoyo_acumulado += int(pd.to_numeric(df_a["VALOR"].astype(str).str.replace('.', '', regex=False), errors='coerce').fillna(0).sum())
+                
+        f_demo = f"{j_id}_demografia_venezuela_renace.csv"
+        if os.path.exists(f_demo):
+            df_d = cargar_datos_cache(f_demo)
             if not df_d.empty:
-                try:
-                    row = df_d.iloc[0]
-                    tot_mujeres += int(str(row.get("MUJERES", "0")).replace('.', ''))
-                    tot_hombres += int(str(row.get("HOMBRES", "0")).replace('.', ''))
-                    tot_ninas += int(str(row.get("NIÑAS", "0")).replace('.', ''))
-                    tot_ninos += int(str(row.get("NIÑOS", "0")).replace('.', ''))
-                except:
-                    pass
+                row = df_d.iloc[0]
+                demografia_acumulada["MUJERES"] += int(str(row.get("MUJERES", "0")).replace('.', ''))
+                demografia_acumulada["HOMBRES"] += int(str(row.get("HOMBRES", "0")).replace('.', ''))
+                demografia_acumulada["NIÑAS"] += int(str(row.get("NIÑAS", "0")).replace('.', ''))
+                demografia_acumulada["NIÑOS"] += int(str(row.get("NIÑOS", "0")).replace('.', ''))
 
-    total_general_5 = total_atenciones_acumulado + total_apoyo_acumulado
+    gran_total_general = total_atenciones_acumulado + total_apoyo_acumulado
 
     st.markdown(f"""
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
         <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff4b4b; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL MUJERES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_mujeres)}</div>
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL MUJERES</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["MUJERES"])}</div>
         </div>
         <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL HOMBRES</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_hombres)}</div>
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL HOMBRES</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["HOMBRES"])}</div>
         </div>
         <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ff88ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL NIÑAS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_ninas)}</div>
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑAS</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["NIÑAS"])}</div>
         </div>
         <div style="background: #1e2025; padding: 10px; border-radius: 6px; border-left: 4px solid #ffd700; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL NIÑOS</div>
-            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(tot_ninos)}</div>
+            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑOS</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: 900;">{formatear_numero(demografia_acumulada["NIÑOS"])}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    c5_1, c5_2, c5_3 = st.columns(3)
-    with c5_1:
+    c1, c2, c3 = st.columns(3)
+    with c1:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL ATENCIONES ESPECIALIDAD</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_atenciones_acumulado)}</div>
+        <div style="background: #1a1c23; padding: 12px; border-radius: 6px; border: 1px solid #00d2ff; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">ACUMULADO ESPECIALIDADES</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_atenciones_acumulado)}</div>
         </div>
         """, unsafe_allow_html=True)
-    with c5_2:
+    with c2:
         st.markdown(f"""
-        <div style="background: #1a1c23; padding: 10px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
-            <div style="color: #b0b3b8; font-size: 11px; font-weight: bold;">TOTAL APOYO SOCIAL</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_apoyo_acumulado)}</div>
+        <div style="background: #1a1c23; padding: 12px; border-radius: 6px; border: 1px solid #ffaa00; text-align: center;">
+            <div style="color: #b0b3b8; font-size: 12px; font-weight: bold; text-transform: uppercase;">ACUMULADO APOYO SOCIAL</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_apoyo_acumulado)}</div>
         </div>
         """, unsafe_allow_html=True)
-    with c5_3:
+    with c3:
         st.markdown(f"""
-        <div style="background: #1e2025; padding: 10px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
-            <div style="color: #FFD700; font-size: 11px; font-weight: bold;">TOTAL GENERAL ACUMULADO</div>
-            <div style="color: #ffffff; font-size: 22px; font-weight: 900; margin-top: 5px;">{formatear_numero(total_general_5)}</div>
+        <div style="background: #1e2025; padding: 12px; border-radius: 6px; border: 2px solid #FFD700; text-align: center;">
+            <div style="color: #FFD700; font-size: 12px; font-weight: bold; text-transform: uppercase;">GRAN TOTAL GENERAL</div>
+            <div style="color: #ffffff; font-size: 24px; font-weight: 900; margin-top: 5px;">{formatear_numero(gran_total_general)}</div>
         </div>
         """, unsafe_allow_html=True)
