@@ -568,7 +568,7 @@ elif seleccion in jornadas_map:
             )
             st.plotly_chart(fig_apo, use_container_width=True, config={'displayModeBar': False})
 
-    # --- TOTALES HORIZONTALES (INTERCAMBIADOS A LA PARTE SUPERIOR DE ESTA ZONA) ---
+    # --- TOTALES HORIZONTALES ---
     st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
     t_col1, t_col2, t_col3 = st.columns(3)
     
@@ -596,7 +596,7 @@ elif seleccion in jornadas_map:
         </div>
         """, unsafe_allow_html=True)
 
-    # --- DEMOGRAFÍA (INTERCAMBIADA A LA PARTE INFERIOR Y MÁS COMPACTA) ---
+    # --- DEMOGRAFÍA (5 COLUMNAS: MUJERES, HOMBRES, NIÑAS, NIÑOS, TOTAL) ---
     m_muj, m_hom, m_nin, m_ninos = 0, 0, 0, 0
     if os.path.exists(archivo_demo):
         df_d_vis = cargar_datos_cache(archivo_demo)
@@ -610,8 +610,10 @@ elif seleccion in jornadas_map:
             except:
                 pass
 
+    total_demografia = m_muj + m_hom + m_nin + m_ninos
+
     st.markdown(f"""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 4px;">
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 4px;">
         <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ff4b4b; text-align: center;">
             <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">MUJERES</div>
             <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(m_muj)}</div>
@@ -627,6 +629,10 @@ elif seleccion in jornadas_map:
         <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ffd700; text-align: center;">
             <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">NIÑOS</div>
             <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(m_ninos)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #00ffaa; text-align: center;">
+            <div style="color: #00ffaa; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL PERSONAS</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(total_demografia)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -693,6 +699,8 @@ elif seleccion == "Total 5 Jornadas":
     tot_cons_apo = int(df_cons_apo["VALOR_NUM"].sum()) if not df_cons_apo.empty else 0
     total_general_5 = tot_cons_esp + tot_cons_apo
 
+    total_cons_demografia = c_muj + c_hom + c_nin + c_ninos
+
     altura_c_esp = max(220, len(df_cons_esp) * 20) if not df_cons_esp.empty else 220
     altura_c_apo = max(220, len(df_cons_apo) * 20) if not df_cons_apo.empty else 220
 
@@ -747,7 +755,7 @@ elif seleccion == "Total 5 Jornadas":
             )
             st.plotly_chart(fig_c_apo, use_container_width=True, config={'displayModeBar': False})
 
-    # --- TOTALES HORIZONTALES (ARRIBA EN EL CONSOLIDADO) ---
+    # --- TOTALES HORIZONTALES ---
     st.markdown("<div style='margin-top: 2px;'></div>", unsafe_allow_html=True)
     tc_1, tc_2, tc_3 = st.columns(3)
     
@@ -775,9 +783,9 @@ elif seleccion == "Total 5 Jornadas":
         </div>
         """, unsafe_allow_html=True)
 
-    # --- DEMOGRAFÍA CONSOLIDADA (ABAJO Y COMPACTA) ---
+    # --- DEMOGRAFÍA CONSOLIDADA (5 COLUMNAS) ---
     st.markdown(f"""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 4px;">
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 4px;">
         <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ff4b4b; text-align: center;">
             <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL MUJERES</div>
             <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(c_muj)}</div>
@@ -793,6 +801,10 @@ elif seleccion == "Total 5 Jornadas":
         <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #ffd700; text-align: center;">
             <div style="color: #b0b3b8; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL NIÑOS</div>
             <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(c_ninos)}</div>
+        </div>
+        <div style="background: #1e2025; padding: 3px; border-radius: 4px; border-left: 4px solid #00ffaa; text-align: center;">
+            <div style="color: #00ffaa; font-size: 9px; font-weight: bold; text-transform: uppercase;">TOTAL PERSONAS</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: 900;">{formatear_numero(total_cons_demografia)}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
